@@ -2,6 +2,7 @@ import { Button, Col, Row } from "antd";
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ConnectButton } from "../../components/ConnectButton";
+import { Pyth } from "../../components/Icons/pyth";
 import { TokenIcon } from "../../components/TokenIcon";
 import { useConnectionConfig } from "../../contexts/connection";
 import { useMarkets } from "../../contexts/market";
@@ -41,10 +42,15 @@ export const HomeView = () => {
         </h2>
       </Col>
 
-      <Col span={12}>
+      <Col span={8}>
         <ConnectButton />
       </Col>
-      <Col span={12}>
+      <Col span={8}>
+        <Link to="/pyth">
+          <Button icon={<Pyth />}>Pyth</Button>
+        </Link>
+      </Col>
+      <Col span={8}>
         <Link to="/faucet">
           <Button>Faucet</Button>
         </Link>
