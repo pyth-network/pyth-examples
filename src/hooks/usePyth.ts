@@ -5,6 +5,7 @@ import {
 } from "@pythnetwork/client";
 import { AccountInfo, PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
+import { getMultipleAccounts } from "../contexts/accounts";
 import { useConnection } from "../contexts/connection";
 
 const oraclePublicKey = "ArppEFcsybCLE8CRtQJLQ9tLv2peGmQoKWFuiUWm4KBP";
@@ -51,61 +52,51 @@ const usePyth = (symbolFilter?: Array<String>) => {
   const [symbolMap, setSymbolMap] = useState<ISymbolMap>({});
   useEffect(() => {
     const subscription_ids: number[] = [];
-    // read mapping account
+    (async () => {
+      // read mapping account
     const publicKey = new PublicKey(oraclePublicKey);
-    connection
-      .getAccountInfo(publicKey)
-      .then((accountInfo) => {
-        setIsLoading(false);
+    try {
+    const accountInfo = await connection.getAccountInfo(publicKey);
+    setIsLoading(false);
         if (!accountInfo || !accountInfo.data) return;
         const { productAccountKeys } = parseMappingData(accountInfo.data);
         setNumProducts(productAccountKeys.length);
-        // get sub-accounts per symbol
-        for (const productAccountKey of productAccountKeys) {
-          connection
-            .getAccountInfo(productAccountKey)
-            .then((accountInfo) => {
-              if (!accountInfo || !accountInfo.data) return;
-              const { priceAccountKey, product } = parseProductData(
-                accountInfo.data
-              );
-              const symbol = product["symbol"];
-              if (
-                (!symbolFilter || symbolFilter.includes(symbol)) &&
-                !BAD_SYMBOLS.includes(symbol)
-              ) {
-                // TODO: we can add product info here and update the price later
-                connection
-                  .getAccountInfo(priceAccountKey)
-                  .then((accountInfo) => {
-                    handlePriceInfo(symbol, product, accountInfo, setSymbolMap);
-                  })
-                  .catch(() => {
-                    console.warn(
-                      `Failed to fetch price for ${product["symbol"]}`
-                    );
-                  });
-                subscription_ids.push(
-                  connection.onAccountChange(priceAccountKey, (accountInfo) => {
-                    handlePriceInfo(symbol, product, accountInfo, setSymbolMap);
-                  })
-                );
-              }
-            })
-            .catch(() => {
-              console.warn(
-                `Failed to fetch product info for ${productAccountKey.toString()}`
-              );
-            });
+        const productsInfos = await getMultipleAccounts(connection, productAccountKeys.map(p => p.toBase58()), 'confirmed')
+        const productsData = productsInfos.array.map(p => parseProductData(p.data));
+        const priceInfos = await getMultipleAccounts(connection, productsData.map(p => p.priceAccountKey.toBase58()), 'confirmed');
+
+        for (let i = 0; i < productsInfos.keys.length; i++) {
+          const key = productsInfos.keys[i];
+          
+          const productData = productsData[i];
+          const product = productData.product;
+          const symbol = product["symbol"];
+          const priceAccountKey = productData.priceAccountKey;
+          const priceInfo = priceInfos.array[i];
+
+          console.log(`Product ${symbol} key: ${key} price: ${priceInfos.keys[i]}`);
+
+          if (
+            (!symbolFilter || symbolFilter.includes(symbol)) &&
+            !BAD_SYMBOLS.includes(symbol)
+          ) {
+            handlePriceInfo(symbol, product, priceInfo, setSymbolMap);
+
+            subscription_ids.push(
+              connection.onAccountChange(priceAccountKey, (accountInfo) => {
+                handlePriceInfo(symbol, product, accountInfo, setSymbolMap);
+              })
+            );
+          }
         }
-      })
-      .catch((e) => {
+      } catch (e) {
         setError(e);
         setIsLoading(false);
         console.warn(
           `Failed to fetch mapping info for ${publicKey.toString()}`
         );
-      });
+      }
+    })();
     return () => {
       for (const subscription_id of subscription_ids) {
         connection.removeAccountChangeListener(subscription_id).catch(() => {

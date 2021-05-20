@@ -377,6 +377,7 @@ name = "bpf-program-template"
 version = "0.1.0"
 dependencies = [
  "assert_matches",
+ "pyth-client",
  "solana-program",
  "solana-program-test",
  "solana-sdk",
@@ -2872,6 +2873,12 @@ dependencies = [
  "bytes 1.0.1",
  "prost",
 ]
+
+[[package]]
+name = "pyth-client"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b7ba5bd380b4035ac54ca201f241b66507c296b164bad3f7c7f5ca6f4ecdbcf"
 
 [[package]]
 name = "qstring"

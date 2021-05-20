@@ -15,6 +15,10 @@ export let SWAP_PROGRAM_ID = new PublicKey(
   "SwaPpA9LAaLfeLi3a68M4DjnLqgtticKg6CnyNwgAC8"
 );
 
+export let PYTH_HELLO_WORLD = new PublicKey(
+  "5pdWfGU6XorjgL29sejRAU9gvxD8N8Pv2efR3ZEvCpQ5"
+);
+
 export const PROGRAM_IDS = [
   {
     name: "mainnet-beta",
