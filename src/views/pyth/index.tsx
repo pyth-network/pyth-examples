@@ -19,6 +19,11 @@ const columns = [
     render: (value: number) => PriceStatus[value],
   },
   {
+    title: "Valid Slot",
+    dataIndex: ["price", "validSlot"],
+    render: (value: BigInt) => value.toString(),
+  },
+  {
     title: "Price",
     dataIndex: ["price", "price"],
     align: "right" as "right",
@@ -38,39 +43,49 @@ export const PythView = () => {
   const connection = useConnection();
 
   const executeTest = () => {
-    if(!wallet) {
+    if (!wallet) {
       return;
     }
 
     const instructions: TransactionInstruction[] = [];
     const signers: Account[] = [];
-    instructions.push(new TransactionInstruction({
-      keys: [
-        { 
-          // GOOG - product
-          pubkey: new PublicKey('6XK34harsnbkgfYqzReZfk2aaaKGdu1cp75Urx8uMqzf'),
-          isSigner: false,
-          isWritable: false,
-        },
-        {
-          // GOOG - price
-          pubkey: new PublicKey('AMGjTwxFPUVRz62E3SG1jUxyugW87jZLJ8AyNnNfcJz5'),
-          isSigner: false,
-          isWritable: false,
-        }
-      ],
-      programId: PYTH_HELLO_WORLD,
-    }));
+    instructions.push(
+      new TransactionInstruction({
+        keys: [
+          {
+            // GOOG - product
+            pubkey: new PublicKey(
+              "6XK34harsnbkgfYqzReZfk2aaaKGdu1cp75Urx8uMqzf"
+            ),
+            isSigner: false,
+            isWritable: false,
+          },
+          {
+            // GOOG - price
+            pubkey: new PublicKey(
+              "AMGjTwxFPUVRz62E3SG1jUxyugW87jZLJ8AyNnNfcJz5"
+            ),
+            isSigner: false,
+            isWritable: false,
+          },
+        ],
+        programId: PYTH_HELLO_WORLD,
+      })
+    );
 
-    sendTransaction(connection, wallet, instructions, signers).then(txid => {
+    sendTransaction(connection, wallet, instructions, signers).then((txid) => {
       notify({
-        message: 'Transaction executed on Solana',
+        message: "Transaction executed on Solana",
         description: (
-          <a href={`https://explorer.solana.com/tx/${txid}?cluster=devnet`} target="_blank">
+          <a
+            href={`https://explorer.solana.com/tx/${txid}?cluster=devnet`}
+            // eslint-disable-next-line react/jsx-no-target-blank
+            target="_blank"
+          >
             Explorer Link
           </a>
         ),
-        type: 'success',
+        type: "success",
       });
     });
   };
@@ -88,7 +103,9 @@ export const PythView = () => {
         <Table dataSource={products} columns={columns} />
       </Col>
       <Col span={24}>
-        <Button onClick={connected ? executeTest : connect}>{connected ? 'Execute Test Transaction' : 'Connect Wallet'}</Button>
+        <Button onClick={connected ? executeTest : connect}>
+          {connected ? "Execute Test Transaction" : "Connect Wallet"}
+        </Button>
       </Col>
       <Col span={24}>
         <Link to="/">
