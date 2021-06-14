@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { getMultipleAccounts } from "../contexts/accounts";
 import { useConnection } from "../contexts/connection";
 
-const oraclePublicKey = "ArppEFcsybCLE8CRtQJLQ9tLv2peGmQoKWFuiUWm4KBP";
+const oraclePublicKey = "BmA9Z6FjioHJPpjT39QazZyhDRUdZy2ezwx4GiDdE2u2";
 
 const BAD_SYMBOLS = ["BCH/USD", "LTC/USD"];
 

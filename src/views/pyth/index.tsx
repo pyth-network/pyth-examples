@@ -55,7 +55,7 @@ export const PythView = () => {
           {
             // GOOG - product
             pubkey: new PublicKey(
-              "6XK34harsnbkgfYqzReZfk2aaaKGdu1cp75Urx8uMqzf"
+              "CpPmHbFqkfejPcF8cvxyDogm32Sqo3YGMFBgv3kR1UtG"
             ),
             isSigner: false,
             isWritable: false,
@@ -63,7 +63,7 @@ export const PythView = () => {
           {
             // GOOG - price
             pubkey: new PublicKey(
-              "AMGjTwxFPUVRz62E3SG1jUxyugW87jZLJ8AyNnNfcJz5"
+              "CZDpZ7KeMansnszdEGZ55C4HjGsMSQBzxPu6jqRm6ZrU"
             ),
             isSigner: false,
             isWritable: false,
