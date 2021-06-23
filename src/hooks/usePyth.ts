@@ -51,21 +51,50 @@ const usePyth = (symbolFilter?: Array<String>) => {
   const [numProducts, setNumProducts] = useState(0);
   const [symbolMap, setSymbolMap] = useState<ISymbolMap>({});
   useEffect(() => {
+    let cancelled = false;
     const subscription_ids: number[] = [];
     (async () => {
       // read mapping account
       const publicKey = new PublicKey(oraclePublicKey);
       try {
         const accountInfo = await connection.getAccountInfo(publicKey);
+        if (cancelled) return;
+        if (!accountInfo || !accountInfo.data) {
+          setIsLoading(false);
+          return;
+        }
+        const {
+          productAccountKeys,
+          nextMappingAccount,
+        } = parseMappingData(accountInfo.data);
+        let allProductAccountKeys = [...productAccountKeys];
+        let anotherMappingAccount = nextMappingAccount;
+        while (anotherMappingAccount) {
+          const accountInfo = await connection.getAccountInfo(
+            anotherMappingAccount
+          );
+          if (cancelled) return;
+          if (!accountInfo || !accountInfo.data) {
+            anotherMappingAccount = null;
+          } else {
+            const { productAccountKeys, nextMappingAccount } = parseMappingData(
+              accountInfo.data
+            );
+            allProductAccountKeys = [
+              ...allProductAccountKeys,
+              ...productAccountKeys,
+            ];
+            anotherMappingAccount = nextMappingAccount;
+          }
+        }
         setIsLoading(false);
-        if (!accountInfo || !accountInfo.data) return;
-        const { productAccountKeys } = parseMappingData(accountInfo.data);
         setNumProducts(productAccountKeys.length);
         const productsInfos = await getMultipleAccounts(
           connection,
           productAccountKeys.map((p) => p.toBase58()),
           "confirmed"
         );
+        if (cancelled) return;
         const productsData = productsInfos.array.map((p) =>
           parseProductData(p.data)
         );
@@ -74,7 +103,7 @@ const usePyth = (symbolFilter?: Array<String>) => {
           productsData.map((p) => p.priceAccountKey.toBase58()),
           "confirmed"
         );
-
+        if (cancelled) return;
         for (let i = 0; i < productsInfos.keys.length; i++) {
           const key = productsInfos.keys[i];
 
@@ -102,6 +131,7 @@ const usePyth = (symbolFilter?: Array<String>) => {
           }
         }
       } catch (e) {
+        if (cancelled) return;
         setError(e);
         setIsLoading(false);
         console.warn(
@@ -110,6 +140,7 @@ const usePyth = (symbolFilter?: Array<String>) => {
       }
     })();
     return () => {
+      cancelled = true;
       for (const subscription_id of subscription_ids) {
         connection.removeAccountChangeListener(subscription_id).catch(() => {
           console.warn(
