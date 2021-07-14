@@ -4,9 +4,9 @@ Scaffolding for a dapp built on Solana
 # Quickstart
 
 ```bash
-git clone https://github.com/solana-labs/dapp-scaffold.git
+git clone https://github.com/pyth-network/pyth-examples.git
 
-cd dapp-scaffold
+cd pyth-examples
 ```
 
 ```bash
@@ -52,6 +52,9 @@ Setup here actions that will interact with Solana programs using sendTransaction
 React context objects that are used propagate state of accounts across the application
 
 ## src/hooks
+
+Pyth hook
+* usePyth - hook for fetching products and prices
 
 Generic react hooks to interact with token program:
 * useUserBalance - query for balance of any user token by mint, returns:
