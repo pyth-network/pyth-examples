@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 solana-program = "1.6.7"
-pyth-client = "0.1.1"
+pyth-client = "0.2.2"
 
 [features]
 test-bpf = []

@@ -2876,9 +2876,9 @@ dependencies = [
 
 [[package]]
 name = "pyth-client"
-version = "0.1.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b7ba5bd380b4035ac54ca201f241b66507c296b164bad3f7c7f5ca6f4ecdbcf"
+checksum = "44de48029c54ec1ca570786b5baeb906b0fc2409c8e0145585e287ee7a526c72"
 
 [[package]]
 name = "qstring"
