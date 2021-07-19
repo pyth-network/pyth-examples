@@ -31,7 +31,7 @@ fn process_instruction(
         msg!("Pyth product account provided is not a valid Pyth product account");
         return Err(ProgramError::InvalidArgument.into());
     }
-    if pyth_product.ver != pyth_client::VERSION_1 {
+    if pyth_product.ver != pyth_client::VERSION_2 {
         msg!("Pyth product account provided has a different version than the Pyth client");
         return Err(ProgramError::InvalidArgument.into());
     }
@@ -69,8 +69,6 @@ fn get_price_type(ptype: &PriceType) -> &'static str {
     match ptype {
         PriceType::Unknown => "unknown",
         PriceType::Price => "price",
-        PriceType::TWAP => "twap",
-        PriceType::Volatility => "volatility",
     }
 }
 
