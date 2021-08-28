@@ -1,10 +1,10 @@
 import { PriceStatus } from "@pythnetwork/client";
-import { Account, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Account, Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
 import { Button, Col, Row, Table } from "antd";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { sendTransaction, useConnection } from "../../contexts/connection";
-import { useWallet } from "../../contexts/wallet";
 import usePyth from "../../hooks/usePyth";
 import { PYTH_HELLO_WORLD } from "../../utils/ids";
 import { notify } from "../../utils/notifications";
@@ -48,7 +48,7 @@ export const PythView = () => {
     }
 
     const instructions: TransactionInstruction[] = [];
-    const signers: Account[] = [];
+    const signers: Keypair[] = [];
     instructions.push(
       new TransactionInstruction({
         keys: [
@@ -73,7 +73,7 @@ export const PythView = () => {
       })
     );
 
-    sendTransaction(connection, wallet, instructions, signers).then((txid) => {
+    sendTransaction(connection, wallet.adapter(), instructions, signers).then((txid) => {
       notify({
         message: "Transaction executed on Solana",
         description: (

@@ -11,8 +11,8 @@ use solana_program::{
 solana_program::declare_id!("BpfProgram1111111111111111111111111111111111");
 
 entrypoint!(process_instruction);
-fn process_instruction(
-    _program_id: &Pubkey,
+pub fn process_instruction(
+    program_id: &Pubkey,
     accounts: &[AccountInfo],
     _instruction_data: &[u8],
 ) -> ProgramResult {
