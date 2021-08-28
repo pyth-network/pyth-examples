@@ -6,9 +6,7 @@ import {
 import { AccountInfo, PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { getMultipleAccounts } from "../contexts/accounts";
-import { useConnection } from "../contexts/connection";
-
-const oraclePublicKey = "BmA9Z6FjioHJPpjT39QazZyhDRUdZy2ezwx4GiDdE2u2";
+import { useConnection, useConnectionConfig, ENV } from "../contexts/connection";
 
 const BAD_SYMBOLS = ["BCH/USD", "LTC/USD"];
 
@@ -46,6 +44,7 @@ interface ISymbolMap {
 
 const usePyth = (symbolFilter?: Array<String>) => {
   const connection = useConnection();
+  const { env } = useConnectionConfig();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState();
   const [numProducts, setNumProducts] = useState(0);
@@ -53,6 +52,14 @@ const usePyth = (symbolFilter?: Array<String>) => {
   useEffect(() => {
     let cancelled = false;
     const subscription_ids: number[] = [];
+
+    let oraclePublicKey = "BmA9Z6FjioHJPpjT39QazZyhDRUdZy2ezwx4GiDdE2u2";
+    if(env === 'mainnet-beta') {
+      oraclePublicKey = "AHtgzX45WTKfkPG53L6WYhGEXwQkN1BVknET3sVsLL8J";
+    } else if (env === 'testnet') {
+      oraclePublicKey = "AFmdnt9ng1uVxqCmqwQJDAYC5cKTkw8gJKSM5PnzuF6z";
+    }
+
     (async () => {
       // read mapping account
       const publicKey = new PublicKey(oraclePublicKey);
@@ -149,7 +156,7 @@ const usePyth = (symbolFilter?: Array<String>) => {
         });
       }
     };
-  }, [connection, symbolFilter]);
+  }, [connection, env, symbolFilter]);
   return { isLoading, error, numProducts, symbolMap };
 };
 
