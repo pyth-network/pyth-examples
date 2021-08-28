@@ -1,6 +1,11 @@
 import { PriceStatus } from "@pythnetwork/client";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { Account, Keypair, PublicKey, TransactionInstruction } from "@solana/web3.js";
+import {
+  Account,
+  Keypair,
+  PublicKey,
+  TransactionInstruction,
+} from "@solana/web3.js";
 import { Button, Col, Row, Table } from "antd";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -73,21 +78,23 @@ export const PythView = () => {
       })
     );
 
-    sendTransaction(connection, wallet.adapter(), instructions, signers).then((txid) => {
-      notify({
-        message: "Transaction executed on Solana",
-        description: (
-          <a
-            href={`https://explorer.solana.com/tx/${txid}?cluster=devnet`}
-            // eslint-disable-next-line react/jsx-no-target-blank
-            target="_blank"
-          >
-            Explorer Link
-          </a>
-        ),
-        type: "success",
-      });
-    });
+    sendTransaction(connection, wallet.adapter(), instructions, signers).then(
+      (txid) => {
+        notify({
+          message: "Transaction executed on Solana",
+          description: (
+            <a
+              href={`https://explorer.solana.com/tx/${txid}?cluster=devnet`}
+              // eslint-disable-next-line react/jsx-no-target-blank
+              target="_blank"
+            >
+              Explorer Link
+            </a>
+          ),
+          type: "success",
+        });
+      }
+    );
   };
 
   const products: object[] = useMemo(

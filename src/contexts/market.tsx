@@ -54,10 +54,11 @@ export function MarketProvider({ children = null as any }) {
       );
 
       const marketAddress = MINT_TO_MARKET[mintAddress];
-      const marketInfo = MARKETS.filter(m => !m.deprecated).find(
-        (m) => m.name === `${SERUM_TOKEN?.name}/USDC` || 
-               m.name === `${SERUM_TOKEN?.name}/USDT` || 
-               m.address.toBase58() === marketAddress
+      const marketInfo = MARKETS.filter((m) => !m.deprecated).find(
+        (m) =>
+          m.name === `${SERUM_TOKEN?.name}/USDC` ||
+          m.name === `${SERUM_TOKEN?.name}/USDT` ||
+          m.address.toBase58() === marketAddress
       );
 
       if (marketInfo) {
@@ -207,7 +208,7 @@ export function MarketProvider({ children = null as any }) {
   );
 
   useEffect(() => {
-    precacheMarkets(userAccounts.map(a => a.info.mint.toBase58()));
+    precacheMarkets(userAccounts.map((a) => a.info.mint.toBase58()));
   }, [userAccounts, precacheMarkets]);
 
   return (

@@ -17,11 +17,13 @@ export function useUserTotalBalance() {
         const mintAddress = account.info.mint.toBase58();
         const mint = cache.get(mintAddress);
         if (mint) {
-          const balance = fromLamports(account.info.amount.toNumber(), mint.info);
+          const balance = fromLamports(
+            account.info.amount.toNumber(),
+            mint.info
+          );
           total += balance * midPriceInUSD(mintAddress);
         }
       }
-
 
       setBalanceInUSD(total);
     };

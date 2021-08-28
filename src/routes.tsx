@@ -42,17 +42,17 @@ export function Routes() {
       <HashRouter basename={"/"}>
         <ConnectionProvider>
           <WalletProvider wallets={wallets} autoConnect>
-              <AccountsProvider>
-                <MarketProvider>
-                  <AppLayout>
-                    <Switch>
-                      <Route exact path="/" component={() => <HomeView />} />
-                      <Route exact path="/faucet" children={<FaucetView />} />
-                      <Route exact path="/pyth" children={<PythView />} />
-                    </Switch>
-                  </AppLayout>
-                  </MarketProvider>
-              </AccountsProvider>
+            <AccountsProvider>
+              <MarketProvider>
+                <AppLayout>
+                  <Switch>
+                    <Route exact path="/" component={() => <HomeView />} />
+                    <Route exact path="/faucet" children={<FaucetView />} />
+                    <Route exact path="/pyth" children={<PythView />} />
+                  </Switch>
+                </AppLayout>
+              </MarketProvider>
+            </AccountsProvider>
           </WalletProvider>
         </ConnectionProvider>
       </HashRouter>

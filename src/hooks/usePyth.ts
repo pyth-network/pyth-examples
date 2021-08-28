@@ -6,7 +6,11 @@ import {
 import { AccountInfo, PublicKey } from "@solana/web3.js";
 import { useEffect, useState } from "react";
 import { getMultipleAccounts } from "../contexts/accounts";
-import { useConnection, useConnectionConfig, ENV } from "../contexts/connection";
+import {
+  useConnection,
+  useConnectionConfig,
+  ENV,
+} from "../contexts/connection";
 
 const BAD_SYMBOLS = ["BCH/USD", "LTC/USD"];
 
@@ -54,9 +58,9 @@ const usePyth = (symbolFilter?: Array<String>) => {
     const subscription_ids: number[] = [];
 
     let oraclePublicKey = "BmA9Z6FjioHJPpjT39QazZyhDRUdZy2ezwx4GiDdE2u2";
-    if(env === 'mainnet-beta') {
+    if (env === "mainnet-beta") {
       oraclePublicKey = "AHtgzX45WTKfkPG53L6WYhGEXwQkN1BVknET3sVsLL8J";
-    } else if (env === 'testnet') {
+    } else if (env === "testnet") {
       oraclePublicKey = "AFmdnt9ng1uVxqCmqwQJDAYC5cKTkw8gJKSM5PnzuF6z";
     }
 
@@ -70,10 +74,9 @@ const usePyth = (symbolFilter?: Array<String>) => {
           setIsLoading(false);
           return;
         }
-        const {
-          productAccountKeys,
-          nextMappingAccount,
-        } = parseMappingData(accountInfo.data);
+        const { productAccountKeys, nextMappingAccount } = parseMappingData(
+          accountInfo.data
+        );
         let allProductAccountKeys = [...productAccountKeys];
         let anotherMappingAccount = nextMappingAccount;
         while (anotherMappingAccount) {
