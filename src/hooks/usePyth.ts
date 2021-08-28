@@ -9,7 +9,6 @@ import { getMultipleAccounts } from "../contexts/accounts";
 import {
   useConnection,
   useConnectionConfig,
-  ENV,
 } from "../contexts/connection";
 
 const BAD_SYMBOLS = ["BCH/USD", "LTC/USD"];

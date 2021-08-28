@@ -1,7 +1,6 @@
 import { PriceStatus } from "@pythnetwork/client";
 import { useWallet } from "@solana/wallet-adapter-react";
 import {
-  Account,
   Keypair,
   PublicKey,
   TransactionInstruction,
