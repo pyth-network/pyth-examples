@@ -1,0 +1,18 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@pythnetwork/pyth-evm-js": "^1.40.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "viem": "^2.9.18"
+  }
+}
