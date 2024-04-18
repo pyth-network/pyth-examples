@@ -114,9 +114,9 @@ forge inspect OracleSwap abi > ../app/src/abi/OracleSwapAbi.json
 
 ## Frontend Application
 
-By default, the frontend is configured to use the already deployed version of the oracle AMM
+By default, the frontend is configured to use the already deployed version of the Oracle AMM
 at address [`0x15F9ccA28688F5E6Cbc8B00A8f33e8cE73eD7B02`](https://mumbai.polygonscan.com/address/0x15F9ccA28688F5E6Cbc8B00A8f33e8cE73eD7B02) on Polygon Mumbai.
-This means you can start playing with the application without going through the steps above (Remember to switch your wallet to Mumbai and to claim funds from a faucet to pay for the gas).
+This means you can start playing with the application without going through the steps above (Remember to switch your wallet to Mumbai and claim funds from a faucet to pay for the gas).
 
 ### Build
 
