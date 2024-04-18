@@ -41,66 +41,35 @@ tests located in the [`contract/test`](./contract/test) directory.
 To deploy the contract, you first need to configure the target network and the tokens in the AMM pool.
 You will also need the private key of a wallet with some gas tokens for your chosen network. 
 
+Make sure your wallet has some ERC20 tokens to add to the pool.
+Check the [Price feed IDs](https://pyth.network/developers/price-feed-ids) for tokens you want to use in the pool.
+
+Check the [Pyth Contract Addresses](https://docs.pyth.network/price-feeds/contract-addresses/evm) for the network you want to deploy on.
+
 ```bash
 export RPC_URL=<RPC_URL>
 export PRIVATE_KEY=<PRIVATE_KEY>
+export PYTH_CONTRACT_ADDRESS=<PYTH_CONTRACT_ADDRESS>
+export BASE_FEED_ID=<BASE_FEED_ID>
+export QUOTE_FEED_ID=<QUOTE_FEED_ID>
+export BASE_ERC20_ADDRESS=<BASE_ERC20_ADDRESS>
+export QUOTE_ERC20_ADDRESS=<QUOTE_ERC20_ADDRESS>
 ```
 
+To deploy the contract, run the following command by passing constructor arguments:
 
-Before deploying the Oracle AMM contract, you need to have ERC-20 tokens to test with.
-
-
-```bash
-TOKEN_NAME="My test token"
-TOKEN_SYMBOL="TEST"
-INITIAL_MINT=<Your Wallet address>
+``` bash
+forge create src/OracleSwap.sol:OracleSwap \
+  --private-key $PRIVATE_KEY \
+  --rpc-url $RPC_URL \
+  --constructor-args \
+  $PYTH_CONTRACT_ADDRESS \
+  $BASE_FEED_ID \
+  $QUOTE_FEED_ID \
+  $BASE_ERC20_ADDRESS \
+  $QUOTE_ERC20_ADDRESS
 ```
 
-You can run the following command to deploy the token contract:
-
-```bash
-forge create ERC20Mock --rpc-url $RPC_URL --private-key $PRIVATE_KEY --constructor-args "$TOKEN_NAME" "$TOKEN_SYMBOL" "$INITIAL_MINT" "0"
-```
-Copy the `DEPLOYED TO` address from the output and store it in the environment variable `ERC20_CONTRACT_ADDRESS`.
-
-```bash
-export ERC20_CONTRACT_ADDRESS=<ERC20_CONTRACT_ADDRESS>
-```
-
-```
-cast send --rpc-url <RPC_URL> -l <ERC20_CONTRACT_ADDRESS> "mint(address,uint256)" <YOUR_WALLET_ADDRESS> <QUANTITY_IN_WEI>
-```
-
-
-Edit the configuration parameters in there before running to set the network and token name.
-This will deploy a new mock token and print out a contract address.
-Once you have this address, you can mint the token anytime using the following command:
-
-Add the following parameters to the [deploy script](./contract/scripts/deploy.sh) based on the network you are deploying to:
-```
-PYTH_CONTRACT_ADDRESS=<PYTH_CONTRACT_ADDRESS>
-BASE_FEED_ID=<BASE_FEED_ID>
-QUOTE_FEED_ID=<QUOTE_FEED_ID>
-BASE_ERC20_ADDRESS=<BASE_ERC20_ADDRESS>
-QUOTE_ERC20_ADDRESS=<QUOTE_ERC20_ADDRESS>
-```
-
-
-After updating the parameters, run this script using `./scripts/deploy.sh`.
-
-
-
-
-
-
-
-When the contract is deployed, the token pools are initially empty.
-You will need to send some funds to the pool for testing purposes.
-You can use the following command to transfer ERC-20 tokens from your wallet to the contract:
-
-```
-cast send --rpc-url <RPC_URL> -l <ERC20_CONTRACT_ADDRESS> "transfer(address,uint256)" <DESTINATION_ADDRESS> <QUANTITY_IN_WEI>
-```
 
 ### Create ABI
 
@@ -120,15 +89,15 @@ This means you can start playing with the application without going through the 
 
 ### Build
 
-From the root of the pyth-crosschain repository, run:
+Switch to [app](./app/) directory and run:
 
 ```
-npm ci
-npx lerna run build
+npm i
+npm run build
+npm run start
 ```
 
-This command will install dependencies for all packages within the typescript monorepo, and also build some
-typescript SDKs that this example depends on.
+This command will install dependencies and build the project for the demo.
 
 ### Run
 
