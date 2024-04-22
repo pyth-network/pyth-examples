@@ -16,11 +16,9 @@ import { getBalance } from "./erc20";
 import { env } from "process";
 
 // Configuration for the app.
-
-// Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
-// You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
-
 const CONFIG = {
+  // Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
+  // You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
   baseToken: {
     name: "BRL",
     erc20Address: "0xB3a2EDFEFC35afE110F983E32Eb67E671501de1f",
