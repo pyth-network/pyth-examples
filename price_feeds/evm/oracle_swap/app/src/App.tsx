@@ -13,7 +13,12 @@ import { OrderEntry } from "./OrderEntry";
 import { PriceText } from "./PriceText";
 import { MintButton } from "./MintButton";
 import { getBalance } from "./erc20";
+import * as dotenv from "dotenv";
 
+// Configuration for the app.
+
+// Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
+// You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
 const CONFIG = {
   baseToken: {
     name: "BRL",

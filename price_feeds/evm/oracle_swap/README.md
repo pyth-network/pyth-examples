@@ -101,11 +101,21 @@ forge script scripts/OracleDeployment.s.sol --rpc-url $RPC_URL --broadcast
 This script will deploy 2 ERC20 tokens, the OracleSwap contract, and initialize the pool with the Pyth price feed.
 It also transfers some of the tokens to the pool for testing purposes.
 
+After deploying the contract, you will see the address of the deployed contract in the output.
+You can use this address to interact with the contract.
+
+Copy the contract address of both ERC20 tokens and the OracleSwap contract and set the env variables as follows:
+
+``` bash
+export BASE_TOKEN_ADDRESS=<BASE_TOKEN_ADDRESS from the output>
+export QUOTE_TOKEN_ADDRESS=<QUOTE_TOKEN_ADDRESS from the output>
+export ORACLE_SWAP_ADDRESS=<ORACLE_SWAP_ADDRESS from the output>
+```
 
 ### Create ABI
 
 If you change the contract, you will need to create a new ABI.
-The front-end uses this ABI to create transactions.
+The frontend uses this ABI to create transactions.
 You can overwrite the existing ABI by running the following command:
 
 ```
@@ -114,7 +124,7 @@ forge inspect OracleSwap abi > ../app/src/abi/OracleSwapAbi.json
 
 ## Frontend Application
 
-By default, the frontend is configured to use the already deployed version of the oracle AMM
+By default, the frontend is configured to use the already deployed version of the Oracle AMM
 at address [`0x15F9ccA28688F5E6Cbc8B00A8f33e8cE73eD7B02`](https://mumbai.polygonscan.com/address/0x15F9ccA28688F5E6Cbc8B00A8f33e8cE73eD7B02) on Polygon Mumbai.
 This means you can start playing with the application without going through the steps above (Remember to switch your wallet to Mumbai and claim funds from a faucet to pay for the gas).
 

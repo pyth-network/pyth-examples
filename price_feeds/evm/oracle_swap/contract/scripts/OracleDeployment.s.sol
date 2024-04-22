@@ -22,6 +22,9 @@ contract OracleDeployment is Script {
         ERC20Mock token1 = new ERC20Mock(token1Name, token1Symbol, deployerAddress,1000 * 10 ** 18);
         ERC20Mock token2 = new ERC20Mock(token2Name, token2Symbol, deployerAddress,1000 * 10 ** 18);
 
+        console2.log("Base Token deployed at address: ", address(token1));
+        console2.log("Quote Token deployed at address: ", address(token2));
+
         address pythPriceFeedContract = vm.envAddress("PYTH_ADDRESS");
         bytes32 basePriceId = vm.envBytes32("BASE_PRICE_ID");
         bytes32 quotePriceId = vm.envBytes32("QUOTE_PRICE_ID");

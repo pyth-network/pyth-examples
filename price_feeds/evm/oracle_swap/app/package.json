@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "craco": "^0.0.3"
+    "craco": "^0.0.3",
+    "dotenv": "^16.4.5"
   }
 }
