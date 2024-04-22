@@ -15,12 +15,6 @@ import { MintButton } from "./MintButton";
 import { getBalance } from "./erc20";
 
 const CONFIG = {
-  // Each token is configured with its ERC20 contract address and Pyth Price Feed ID.
-  // You can find the list of price feed ids at https://pyth.network/developers/price-feed-ids
-  // Note that feeds have different ids on stable / beta.
-  //
-  // TODO: This example uses an old testnet contract that uses Beta feeds. We should update it
-  // to use the new contract that serves stable feeds.
   baseToken: {
     name: "BRL",
     erc20Address: "0xB3a2EDFEFC35afE110F983E32Eb67E671501de1f",
@@ -37,7 +31,7 @@ const CONFIG = {
   },
   swapContractAddress: "0x15F9ccA28688F5E6Cbc8B00A8f33e8cE73eD7B02",
   pythContractAddress: "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
-  hermesUrl: "https://hermes-beta.pyth.network",
+  hermesUrl: "https://hermes.pyth.network",
   mintQty: 100,
 };
 
