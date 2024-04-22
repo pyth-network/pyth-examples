@@ -24,8 +24,8 @@
     "web3": "^1.8.0"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "start": "GENERATE_SOURCEMAP=false craco start",
+    "build": "GENERATE_SOURCEMAP=false craco build",
     "eject": "craco eject",
     "format": "prettier --write src/"
   },

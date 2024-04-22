@@ -104,14 +104,6 @@ It also transfers some of the tokens to the pool for testing purposes.
 After deploying the contract, you will see the address of the deployed contract in the output.
 You can use this address to interact with the contract.
 
-Copy the contract address of both ERC20 tokens and the OracleSwap contract and set the env variables as follows:
-
-``` bash
-export BASE_TOKEN_ADDRESS=<BASE_TOKEN_ADDRESS from the output>
-export QUOTE_TOKEN_ADDRESS=<QUOTE_TOKEN_ADDRESS from the output>
-export ORACLE_SWAP_ADDRESS=<ORACLE_SWAP_ADDRESS from the output>
-```
-
 ### Create ABI
 
 If you change the contract, you will need to create a new ABI.
