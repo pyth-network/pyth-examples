@@ -22,7 +22,7 @@ import { env } from "process";
 
 const CONFIG = {
   baseToken: {
-    name: env.TOKEN_SYMBOL_1 || "BTC",
+    name: "BRL",
     erc20Address: "0xB3a2EDFEFC35afE110F983E32Eb67E671501de1f",
     pythPriceFeedId:
       "08f781a893bc9340140c5f89c8a96f438bcfae4d1474cc0f688e3a52892c7318",
@@ -42,7 +42,6 @@ const CONFIG = {
 };
 
 function App() {
-  console.log("CONFIG", env.NODE_ENV);
   const { status, connect, account, ethereum } = useMetaMask();
 
   const [web3, setWeb3] = useState<Web3 | undefined>(undefined);
