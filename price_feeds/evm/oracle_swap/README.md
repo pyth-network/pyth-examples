@@ -1,7 +1,7 @@
 # Pyth Oracle AMM
 
-This directory contains an example of AMM application using Pyth price oracle.
-This AMM manages a pool of two tokens and allows a user to trade with the pool at the current Pyth price.
+This directory contains an example of an AMM application using Pyth Price Oracle.
+This AMM application manages a pool of two tokens and allows a user to trade with the pool at the current Pyth price.
 
 This application has two components. The first component is a smart contract (in the `contract` directory) that manages the pool and implements the trading functionality.
 The second is a frontend application (in the `app` directory) that communicates with the smart contract.
@@ -55,9 +55,9 @@ export BASE_PRICE_ID=<BASE_PRICE_ID>
 export QUOTE_PRICE_ID=<QUOTE_PRICE_ID>
 ```
 
-Here, `RPC_URL` is the URL of the Ethereum node you want to use, `PRIVATE_KEY` is the private key of the account you want to deploy from, and `WALLET_ADDRESS` is the address of the account associated with the private key. Make sure the account has enough funds to pay for the gas.
+Here, `RPC_URL` is the URL of the EVM chain you want to use, `PRIVATE_KEY` is the private key of the account you want to deploy from, and `WALLET_ADDRESS` is the address of the account associated with the private key. Make sure the account has enough funds to pay for the gas.
 
-`TOKEN_NAME_1` and `TOKEN_SYMBOL_1` are the name and symbol of the first token in the pool, and `TOKEN_NAME_2` and `TOKEN_SYMBOL_2` are the name and symbol of the second token in the pool. 
+`TOKEN_NAME_1` and `TOKEN_SYMBOL_1` are the name and symbol of the base token in the pool, and `TOKEN_NAME_2` and `TOKEN_SYMBOL_2` are the name and symbol of the quote token in the pool.
 
 Check [Pyth Contract Address](https://docs.pyth.network/price-feeds/contract-addresses/evm) to get the `PYTH_ADDRESS` for your respective network.
 
@@ -75,7 +75,7 @@ QUOTE_PRICE_ID=0xef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56
 Check [Pyth Price Feed Ids](https://pyth.network/developers/price-feed-ids) for the complete list of supported feeds.
 
 
-If you wish to deploy on Ethereum Sepolia testnet for `ETH/SOL` pair, you can use the following values:
+If you wish to deploy on the Ethereum Sepolia testnet for `ETH/SOL` pair, you can use the following values:
 
 ``` bash
 export RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
