@@ -16,7 +16,7 @@ contract ChainlinkApp {
     solOracle = AggregatorV3Interface(solAggregator);
   }
 
-  function getEthSolPrice() external returns (int256 price) {
+  function getEthSolPrice() external view returns (int256 price) {
     int256 ethAnswer;
     int256 solAnswer;
     (, ethAnswer, , , ) = ethOracle.latestRoundData();

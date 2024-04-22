@@ -2,7 +2,7 @@
 
 This example demonstrates how to deploy a Chainlink-compatible application to Pyth Network price feeds.
 The application `src/ChainlinkApp.sol` is designed to use Chainlink price feeds.
-The script `script/PythAggregatorV3Deployment.sol` deploys this application with the `PythAggregatorV3` adapter contract, such that it uses Pyth price feeds.
+The script `script/PythAggregatorV3Deployment.sol` deploys this application with the [`PythAggregatorV3`](https://github.com/pyth-network/pyth-crosschain/blob/main/target_chains/ethereum/sdk/solidity/PythAggregatorV3.sol) adapter contract, such that it uses Pyth price feeds.
 
 ## Installation
 
@@ -13,6 +13,7 @@ Install the solidity dependencies by running:
 
 ```bash copy
 npm install
+forge install foundry-rs/forge-std@v1.8.0 --no-git --no-commit
 ```
 
 ## Deploy 

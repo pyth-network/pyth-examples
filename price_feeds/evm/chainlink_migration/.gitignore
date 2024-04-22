@@ -11,7 +11,8 @@ docs/
 # Dotenv file
 .env
 
-lib/
+lib/*
+!lib/README.md
 
 *~
 
