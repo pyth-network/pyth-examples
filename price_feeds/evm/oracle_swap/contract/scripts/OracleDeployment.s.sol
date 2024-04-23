@@ -8,9 +8,9 @@ import {OracleSwap} from "../src/OracleSwap.sol";
 contract OracleDeployment is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address deployerAddress = vm.envAddress("WALLET_ADDRESS");
+        address deployerAddress = vm.addr(deployerPrivateKey);
         vm.startBroadcast(deployerPrivateKey);
-
+        
         string memory token1Name = vm.envString("TOKEN_NAME_1");
         string memory token1Symbol = vm.envString("TOKEN_SYMBOL_1");
 
