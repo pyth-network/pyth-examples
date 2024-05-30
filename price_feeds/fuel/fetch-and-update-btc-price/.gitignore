@@ -42,3 +42,6 @@ src/sway-api/index.ts
 
 sway-programs/**/out
 .turbo
+
+# MacOS
+.DS_Store
