@@ -1,0 +1,39 @@
+[[package]]
+name = "core"
+source = "path+from-root-148AAAB4460F1A9D"
+
+[[package]]
+name = "pyth_interface"
+source = "git+https://github.com/pyth-network/pyth-crosschain?tag=pyth-fuel-contract-v0.1.0#587a4a7eb25742b1cd83876f2f627f3c415655c0"
+dependencies = [
+    "standards",
+    "std",
+]
+
+[[package]]
+name = "standards"
+source = "git+https://github.com/FuelLabs/sway-standards?tag=v0.4.4#a001d3c248595112aae67e5633a06ef9bc0536ae"
+dependencies = ["std"]
+
+[[package]]
+name = "std"
+source = "git+https://github.com/fuellabs/sway?tag=v0.59.0#d9985d8111f94235edba9a08fc71a9513ec2a95c"
+dependencies = ["core"]
+
+[[package]]
+name = "test-contract"
+source = "member"
+dependencies = [
+    "pyth_interface",
+    "std",
+]
+
+[[package]]
+name = "test-predicate"
+source = "member"
+dependencies = ["std"]
+
+[[package]]
+name = "test-script"
+source = "member"
+dependencies = ["std"]
