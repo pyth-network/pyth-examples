@@ -10,11 +10,14 @@ import toast from "react-hot-toast";
 import { useActiveWallet } from "@/hooks/useActiveWallet";
 import useAsync from "react-use/lib/useAsync";
 import { CURRENT_ENVIRONMENT } from "@/lib";
+import { PriceOutput } from "@/sway-api/contracts/TestContractAbi";
 
 const contractId =
   CURRENT_ENVIRONMENT === "local"
     ? contractIds.testContract
     : (process.env.NEXT_PUBLIC_TESTNET_CONTRACT_ID as string); // Testnet Contract ID
+
+const hermesBtcUrl = process.env.NEXT_PUBLIC_HERMES_BTC_URL as string;
 
 const hasContract = process.env.NEXT_PUBLIC_HAS_CONTRACT === "true";
 const hasPredicate = process.env.NEXT_PUBLIC_HAS_PREDICATE === "true";
@@ -23,7 +26,18 @@ const hasScript = process.env.NEXT_PUBLIC_HAS_SCRIPT === "true";
 export default function Home() {
   const { wallet, walletBalance, refreshWalletBalance } = useActiveWallet();
   const [contract, setContract] = useState<TestContractAbi>();
-  const [counter, setCounter] = useState<number>();
+  const [price, setPrice] = useState<PriceOutput>();
+
+  const fetchBtcPriceUpdateData = async () => {
+    const response = await fetch(hermesBtcUrl);
+    if (!response.ok) {
+      throw new Error("Failed to fetch BTC price");
+    }
+    const data = await response.json();
+    const binaryData = data.binary.data[0];
+    const buffer = Buffer.from(binaryData, "hex");
+    return buffer;
+  };
 
   /**
    * useAsync is a wrapper around useEffect that allows us to run asynchronous code
@@ -33,27 +47,37 @@ export default function Home() {
     if (hasContract && wallet) {
       const testContract = TestContractAbi__factory.connect(contractId, wallet);
       setContract(testContract);
-      const { value } = await testContract.functions.get_count().get();
-      setCounter(value.toNumber());
+      const { value } = await testContract.functions.get_price().get();
+      setPrice(value);
     }
   }, [wallet]);
 
   // eslint-disable-next-line consistent-return
-  const onIncrementPressed = async () => {
+  const onUpdatePricePressed = async () => {
     if (!contract) {
       return toast.error("Contract not loaded");
     }
 
     if (walletBalance?.eq(0)) {
       return toast.error(
-        "Your wallet does not have enough funds. Please click the 'Top-up Wallet' button in the top right corner, or use the local faucet.",
+        "Your wallet does not have enough funds. Please click the 'Top-up Wallet' button in the top right corner, or use the local faucet."
       );
     }
 
-    const { value } = await contract.functions.increment_counter(bn(1)).call();
-    setCounter(value.toNumber());
+    try {
+      const updateData = await fetchBtcPriceUpdateData();
+      await contract.functions.update_price_feeds(updateData).call();
+      const { value } = await contract.functions.get_price().get();
+      setPrice(value);
 
-    await refreshWalletBalance?.();
+      await refreshWalletBalance?.();
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(`Error updating price: ${error.message}`);
+      } else {
+        toast.error("An unexpected error occurred");
+      }
+    }
   };
 
   return (
@@ -80,14 +104,14 @@ export default function Home() {
 
       {hasContract && (
         <>
-          <h3 className="text-xl font-semibold">Counter</h3>
+          <h3 className="text-xl font-semibold">Price</h3>
 
-          <span data-testid="counter" className="text-gray-400 text-6xl">
-            {counter}
+          <span data-testid="price" className="text-gray-400 text-6xl">
+            {price?.price}
           </span>
 
-          <Button onClick={onIncrementPressed} className="mt-6">
-            Increment Counter
+          <Button onClick={onUpdatePricePressed} className="mt-6">
+            Update Price
           </Button>
         </>
       )}

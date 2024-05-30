@@ -4,7 +4,7 @@ source = "path+from-root-148AAAB4460F1A9D"
 
 [[package]]
 name = "pyth_interface"
-source = "git+https://github.com/pyth-network/pyth-crosschain?tag=pyth-fuel-contract-v0.1.0#587a4a7eb25742b1cd83876f2f627f3c415655c0"
+source = "git+https://github.com/pyth-network/pyth-crosschain?tag=pyth-fuel-contract-v0.2.0#6d7160585ea0766433eaaf450b24a6ec4c5bd22a"
 dependencies = [
     "standards",
     "std",
