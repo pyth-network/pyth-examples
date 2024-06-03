@@ -50,3 +50,9 @@ typings/
 
 # vuepress build output
 .vuepress/dist
+
+# MacOS specific
+.DS_Store
+
+# Cargo build output
+target/
