@@ -1,0 +1,85 @@
+[
+  {
+    "type": "impl",
+    "name": "SendUsd",
+    "interface_name": "send_usd::ISendUsd"
+  },
+  {
+    "type": "struct",
+    "name": "core::integer::u256",
+    "members": [
+      {
+        "name": "low",
+        "type": "core::integer::u128"
+      },
+      {
+        "name": "high",
+        "type": "core::integer::u128"
+      }
+    ]
+  },
+  {
+    "type": "struct",
+    "name": "pyth::byte_buffer::ByteBuffer",
+    "members": [
+      {
+        "name": "num_last_bytes",
+        "type": "core::integer::u8"
+      },
+      {
+        "name": "data",
+        "type": "core::array::Array::<core::felt252>"
+      }
+    ]
+  },
+  {
+    "type": "interface",
+    "name": "send_usd::ISendUsd",
+    "items": [
+      {
+        "type": "function",
+        "name": "send_usd",
+        "inputs": [
+          {
+            "name": "destination",
+            "type": "core::starknet::contract_address::ContractAddress"
+          },
+          {
+            "name": "amount_in_usd",
+            "type": "core::integer::u256"
+          },
+          {
+            "name": "price_update",
+            "type": "pyth::byte_buffer::ByteBuffer"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "external"
+      }
+    ]
+  },
+  {
+    "type": "constructor",
+    "name": "constructor",
+    "inputs": [
+      {
+        "name": "pyth_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "eth_erc20_address",
+        "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "eth_usd_price_id",
+        "type": "core::integer::u256"
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "name": "send_usd::send_usd::Event",
+    "kind": "enum",
+    "variants": []
+  }
+]
