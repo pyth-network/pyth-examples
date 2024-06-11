@@ -8,7 +8,6 @@
   },
   "scripts": {
     "start": "ts-node src/index.ts",
-    "pyth_usage": "ts-node src/pyth_usage.ts",
     "lint": "gts lint",
     "format": "prettier --write \"src/**/*.ts\"",
     "clean": "gts clean",
