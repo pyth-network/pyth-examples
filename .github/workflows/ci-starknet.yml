@@ -1,0 +1,42 @@
+name: Starknet tests
+on:
+  pull_request:
+    paths:
+      - price_feeds/starknet/**
+  push:
+    branches:
+      - main
+    paths:
+      - price_feeds/starknet/**
+jobs:
+  check:
+    name: Starknet contract tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: price_feeds/starknet/send_usd/contract
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          tool-versions: price_feeds/starknet/send_usd/contract/.tool-versions
+      - name: Install Starknet Foundry
+        uses: foundry-rs/setup-snfoundry@v3
+        with:
+          tool-versions: price_feeds/starknet/send_usd/contract/.tool-versions
+      - name: Install Starkli
+        run: curl https://get.starkli.sh | sh && . ~/.config/.starkli/env && starkliup -v $(awk '/starkli/{print $2}' .tool-versions)
+      - name: Install Katana
+        run: curl -L https://install.dojoengine.org | bash && PATH="$PATH:$HOME/.config/.dojo/bin" dojoup -v $(awk '/dojo/{print $2}' .tool-versions)
+      - name: Check formatting
+        run: scarb fmt --check
+      - name: Build contract
+        run: scarb build
+      - name: Check ABI files
+        run: |
+          cat target/dev/send_usd_send_usd.contract_class.json | jq .abi > /tmp/send_usd.json
+          if ! cmp --silent /tmp/send_usd.json ../client/src/abi/send_usd.json ; then
+            >&2 echo ABI file mismatch for client/src/abi/send_usd.json
+            exit 1
+          fi
