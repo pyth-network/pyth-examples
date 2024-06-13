@@ -1,8 +1,8 @@
-import type { TestContractAbi } from "@/sway-api";
 import { TestContractAbi__factory } from "@/sway-api";
+import PYTH_CONTRACT_ABI from "../abi/pyth-contract-abi.json";
 import contractIds from "@/sway-api/contract-ids.json";
 import { FuelLogo } from "@/components/FuelLogo";
-import { bn } from "fuels";
+import { bn, arrayify, Contract, hexlify } from "fuels";
 import { useState } from "react";
 import { Link } from "@/components/Link";
 import { Button } from "@/components/Button";
@@ -12,10 +12,17 @@ import useAsync from "react-use/lib/useAsync";
 import { CURRENT_ENVIRONMENT } from "@/lib";
 import { PriceOutput } from "@/sway-api/contracts/TestContractAbi";
 
+const FUEL_ETH_BASE_ASSET_ID =
+  "0xf8f8b6283d7fa5b672b530cbb84fcccb4ff8dc40f8176ef4544ddb1f1952ad07";
+const PRICE_FEED_ID =
+  "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace"; // ETH/USD
+
 const contractId =
   CURRENT_ENVIRONMENT === "local"
     ? contractIds.testContract
     : (process.env.NEXT_PUBLIC_TESTNET_CONTRACT_ID as string); // Testnet Contract ID
+const pythContractId = process.env
+  .NEXT_PUBLIC_PYTH_TESTNET_CONTRACT_ID as string; // Testnet Contract ID
 
 const hermesBtcUrl = process.env.NEXT_PUBLIC_HERMES_BTC_URL as string;
 
@@ -25,7 +32,8 @@ const hasScript = process.env.NEXT_PUBLIC_HAS_SCRIPT === "true";
 
 export default function Home() {
   const { wallet, walletBalance, refreshWalletBalance } = useActiveWallet();
-  const [contract, setContract] = useState<TestContractAbi>();
+  const [contract, setContract] = useState<Contract>();
+  const [pythContract, setPythContract] = useState<Contract>();
   const [price, setPrice] = useState<PriceOutput>();
 
   const fetchBtcPriceUpdateData = async () => {
@@ -45,16 +53,29 @@ export default function Home() {
    */
   useAsync(async () => {
     if (hasContract && wallet) {
-      const testContract = TestContractAbi__factory.connect(contractId, wallet);
+      console.log(contractId);
+      const testContractAbiInterface = TestContractAbi__factory.connect(
+        contractId,
+        wallet
+      ).interface;
+      const testContract = new Contract(
+        contractId,
+        testContractAbiInterface,
+        wallet
+      );
       setContract(testContract);
-      const { value } = await testContract.functions.get_price().get();
-      setPrice(value);
+      const pythContract = new Contract(
+        pythContractId,
+        PYTH_CONTRACT_ABI,
+        wallet
+      );
+      setPythContract(pythContract);
     }
   }, [wallet]);
 
   // eslint-disable-next-line consistent-return
   const onUpdatePricePressed = async () => {
-    if (!contract) {
+    if (!contract || !pythContract) {
       return toast.error("Contract not loaded");
     }
 
@@ -66,7 +87,19 @@ export default function Home() {
 
     try {
       const updateData = await fetchBtcPriceUpdateData();
-      await contract.functions.update_price_feeds(updateData).call();
+      const fee = (
+        await contract.functions
+          .update_fee([arrayify(updateData)])
+          .addContracts([pythContract])
+          .call()
+      ).value;
+      await contract.functions
+        .update_price_feeds(fee, [arrayify(updateData)])
+        .addContracts([pythContract])
+        .callParams({
+          forward: [fee, hexlify(FUEL_ETH_BASE_ASSET_ID)],
+        })
+        .call();
       const { value } = await contract.functions.get_price().get();
       setPrice(value);
 
@@ -105,9 +138,8 @@ export default function Home() {
       {hasContract && (
         <>
           <h3 className="text-xl font-semibold">Price</h3>
-
           <span data-testid="price" className="text-gray-400 text-6xl">
-            {price?.price}
+            {price?.price?.toString()}
           </span>
 
           <Button onClick={onUpdatePricePressed} className="mt-6">
