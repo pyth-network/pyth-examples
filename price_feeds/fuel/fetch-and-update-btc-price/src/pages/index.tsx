@@ -24,7 +24,7 @@ const contractId =
 const pythContractId = process.env
   .NEXT_PUBLIC_PYTH_TESTNET_CONTRACT_ID as string; // Testnet Contract ID
 
-const hermesBtcUrl = process.env.NEXT_PUBLIC_HERMES_BTC_URL as string;
+const hermesUrl = process.env.NEXT_PUBLIC_HERMES_URL as string;
 
 const hasContract = process.env.NEXT_PUBLIC_HAS_CONTRACT === "true";
 const hasPredicate = process.env.NEXT_PUBLIC_HAS_PREDICATE === "true";
@@ -36,10 +36,10 @@ export default function Home() {
   const [pythContract, setPythContract] = useState<Contract>();
   const [price, setPrice] = useState<PriceOutput>();
 
-  const fetchBtcPriceUpdateData = async () => {
-    const response = await fetch(hermesBtcUrl);
+  const fetchPriceUpdateData = async () => {
+    const response = await fetch(hermesUrl + PRICE_FEED_ID);
     if (!response.ok) {
-      throw new Error("Failed to fetch BTC price");
+      throw new Error("Failed to fetch price");
     }
     const data = await response.json();
     const binaryData = data.binary.data[0];
@@ -53,7 +53,6 @@ export default function Home() {
    */
   useAsync(async () => {
     if (hasContract && wallet) {
-      console.log(contractId);
       const testContractAbiInterface = TestContractAbi__factory.connect(
         contractId,
         wallet
@@ -86,7 +85,7 @@ export default function Home() {
     }
 
     try {
-      const updateData = await fetchBtcPriceUpdateData();
+      const updateData = await fetchPriceUpdateData();
       const fee = (
         await contract.functions
           .update_fee([arrayify(updateData)])

@@ -30,7 +30,7 @@ impl UpdatePrice for Contract {
     }
 
     #[payable]
-    fn update_price_feeds(update_fee: u64,update_data: Vec<Bytes>) {
+    fn update_price_feeds(update_fee: u64, update_data: Vec<Bytes>) {
         let x = abi(PythCore, PYTH_CONTRACT_ID);
         x.update_price_feeds {
             asset_id: FUEL_ETH_BASE_ASSET_ID, coins: update_fee
