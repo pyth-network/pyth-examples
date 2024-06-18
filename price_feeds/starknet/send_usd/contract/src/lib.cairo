@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-use pyth::ByteArray;
+use pyth::ByteBuffer;
 
 #[starknet::interface]
 pub trait ISendUsd<T> {
@@ -8,7 +8,7 @@ pub trait ISendUsd<T> {
     /// `price_update` should be the latest available price update for the ETH/USD price feed.
     /// The caller needs to set up sufficient allowance for this contract.
     fn send_usd(
-        ref self: T, destination: ContractAddress, amount_in_usd: u256, price_update: ByteArray
+        ref self: T, destination: ContractAddress, amount_in_usd: u256, price_update: ByteBuffer
     );
 }
 
@@ -16,7 +16,7 @@ pub trait ISendUsd<T> {
 mod send_usd {
     use core::panic_with_felt252;
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
-    use pyth::{ByteArray, IPythDispatcher, IPythDispatcherTrait, exp10, UnwrapWithFelt252};
+    use pyth::{ByteBuffer, IPythDispatcher, IPythDispatcherTrait, exp10, UnwrapWithFelt252};
     use openzeppelin::token::erc20::interface::{IERC20CamelDispatcherTrait, IERC20CamelDispatcher};
 
     const MAX_PRICE_AGE: u64 = 3600; // 1 hour
@@ -51,7 +51,7 @@ mod send_usd {
             ref self: ContractState,
             destination: ContractAddress,
             amount_in_usd: u256,
-            price_update: ByteArray
+            price_update: ByteBuffer
         ) {
             let pyth = IPythDispatcher { contract_address: self.pyth_address.read() };
             let eth_erc20 = IERC20CamelDispatcher {
@@ -60,7 +60,7 @@ mod send_usd {
             let caller = get_caller_address();
             let contract = get_contract_address();
 
-            let pyth_fee = pyth.get_update_fee(price_update.clone());
+            let pyth_fee = pyth.get_update_fee(price_update.clone(), eth_erc20.contract_address);
             if !eth_erc20.transferFrom(caller, contract, pyth_fee) {
                 panic_with_felt252('insufficient allowance for fee');
             }

@@ -8,6 +8,6 @@ starknet = ">=2.5.4"
 openzeppelin = { git = "https://github.com/OpenZeppelin/cairo-contracts.git", tag = "v0.10.0" }
 
 # TODO: replace with tag after release
-pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", rev = "ecc3a2f1" }
+pyth = { git = "https://github.com/pyth-network/pyth-crosschain.git", tag = "pyth-starknet-contract-v0.1.0" }
 
 [[target.starknet-contract]]

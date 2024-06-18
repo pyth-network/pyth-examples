@@ -9,7 +9,7 @@ source = "git+https://github.com/OpenZeppelin/cairo-contracts.git?tag=v0.10.0#d7
 [[package]]
 name = "pyth"
 version = "0.1.0"
-source = "git+https://github.com/pyth-network/pyth-crosschain.git?rev=ecc3a2f1#ecc3a2f17d470c8d59586ecd4897c4a63ece282a"
+source = "git+https://github.com/pyth-network/pyth-crosschain.git?tag=pyth-starknet-contract-v0.1.0#0f7141ef2b31665338a7aa1321785d81399de99d"
 dependencies = [
  "openzeppelin",
  "snforge_std",
