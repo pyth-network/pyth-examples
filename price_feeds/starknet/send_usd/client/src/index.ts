@@ -58,7 +58,7 @@ async function main() {
   });
 
   const priceId =
-    '0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace'; // ETH/USD
+    '0x6a182399ff70ccf3e06024898942028204125a819e519a335ffa4579e66cd870'; // STRK/USD
 
   console.log('querying pyth update');
   // Get the latest values of the price feeds as json objects.

@@ -67,12 +67,8 @@
         "type": "core::starknet::contract_address::ContractAddress"
       },
       {
-        "name": "eth_erc20_address",
+        "name": "strk_erc20_address",
         "type": "core::starknet::contract_address::ContractAddress"
-      },
-      {
-        "name": "eth_usd_price_id",
-        "type": "core::integer::u256"
       }
     ]
   },

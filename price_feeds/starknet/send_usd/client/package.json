@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@pythnetwork/price-service-client": "^1.9.0",
-    "@pythnetwork/pyth-starknet-js": "file:../../../../../pyth-crosschain/target_chains/starknet/sdk/js",
+    "@pythnetwork/pyth-starknet-js": "^0.1.0",
     "starknet": "^6.9.0"
   }
 }
