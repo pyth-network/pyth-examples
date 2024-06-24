@@ -73,7 +73,7 @@ async function main() {
   }
 
   // Convert the price update to Starknet format.
-  const pythUpdate = ByteBuffer.fromHex(currentPrices[0].vaa);
+  const pythUpdate = ByteBuffer.fromBase64(currentPrices[0].vaa);
 
   // Allow send_usd contract to withdraw ETH.
   console.log('approving transfer');
