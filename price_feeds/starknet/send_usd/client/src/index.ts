@@ -18,9 +18,9 @@ async function main() {
 
   const destination = '0x42';
 
-  const sendUsdAddress = process.env.SEND_USD_ADDRESS;
+  const sendUsdAddress = process.env.SEND_USD_CONTRACT_ADDRESS;
   if (sendUsdAddress === undefined) {
-    throw new Error('missing sendUsdAddress');
+    throw new Error('missing SEND_USD_CONTRACT_ADDRESS env var');
   }
 
   // Create a `Contract` instance to interact with ETH token contract on Starknet.
