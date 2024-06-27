@@ -5,60 +5,33 @@ set -o nounset
 set -o pipefail
 set -x
 
-starkli --version
-scarb --version
+starkli --version 1>&2
+scarb --version 1>&2
 
 export STARKNET_ACCOUNT=katana-0
 export STARKNET_RPC=http://0.0.0.0:5050
-sleep="sleep 0.3"
 
 cd "$(dirname "$0")/.."
-scarb build
+scarb build 1>&2
 
 # predeployed fee token contract in katana
 fee_token_address=0x49d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7
 
-if [ -z ${PYTH_ADDRESS+x} ]; then
-    echo "Missing PYTH_ADDRESS env var"
+if [ -z ${PYTH_CONTRACT_ADDRESS+x} ]; then
+    >&2 echo "Missing PYTH_CONTRACT_ADDRESS env var"
     exit 1
 fi
 
 send_usd_hash=$(starkli declare --watch target/dev/send_usd_send_usd.contract_class.json)
-${sleep}
 
 # STRK/USD
 price_feed_id=0x6a182399ff70ccf3e06024898942028204125a819e519a335ffa4579e66cd870
 
 send_usd_address=$(starkli deploy --watch "${send_usd_hash}" \
-    "${PYTH_ADDRESS}" \
+    "${PYTH_CONTRACT_ADDRESS}" \
     "${fee_token_address}" \
 )
-${sleep}
 
-update_data=$(
-    curl --request "GET" \
-        "https://hermes.pyth.network/v2/updates/price/latest?ids%5B%5D=${price_feed_id}" \
-        --header "accept: application/json" \
-    | jq --raw-output '.binary.data[0]' \
-    | cargo run --manifest-path "../../../../../pyth-crosschain/target_chains/starknet/tools/test_vaas/Cargo.toml" --bin hex_to_cairo_calldata
-)
+>&2 echo send_usd contract has been successfully deployed at "${send_usd_address}"
 
-starkli invoke --watch "${fee_token_address}" approve "${send_usd_address}" 1000000000000000000000 0
-${sleep}
-
-destination=0x1001
-
-echo "Old destination balance:"
-starkli balance "${destination}"
-
-starkli invoke --watch --log-traffic "${send_usd_address}" send_usd \
-    "${destination}" \
-    10 0 `# amount_in_usd` \
-    ${update_data} \
-
-${sleep}
-
-echo "New destination balance:"
-starkli balance "${destination}"
-
-echo send_usd contract has been successfully deployed at "${send_usd_address}"
+echo "SEND_USD_CONTRACT_ADDRESS=${send_usd_address}"
