@@ -1,0 +1,50 @@
+{
+  "name": "easylend",
+  "version": "0.1.0",
+  "description": "Example lending protocol with express relay integration",
+  "private": true,
+  "files": [
+    "tslib/**/*"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src/",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "monitor": "pnpm run build && node tslib/monitor.js",
+    "install-forge-deps": "forge install foundry-rs/forge-std@v1.7.6 --no-git --no-commit"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pyth-network/pyth-crosschain.git"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.5.0",
+    "@pythnetwork/express-relay-evm-js": "^0.8.1",
+    "@pythnetwork/express-relay-sdk-solidity": "^0.2.0",
+    "@pythnetwork/price-service-client": "^1.9.0",
+    "@pythnetwork/pyth-evm-js": "^1.56.1",
+    "@pythnetwork/pyth-sdk-solidity": "^3.1.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.3.3",
+    "viem": "^2.7.6"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.10",
+    "eslint": "^8.56.0",
+    "prettier": "^2.6.2",
+    "typedoc": "^0.25.7",
+    "typescript": "^5.1",
+    "yargs": "^17.4.1"
+  },
+  "bugs": {
+    "url": "https://github.com/pyth-network/pyth-crosschain/issues"
+  },
+  "homepage": "https://github.com/pyth-network/pyth-crosschain#readme",
+  "main": ".eslintrc.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "keywords": []
+}
