@@ -44,8 +44,9 @@ async function main() {
   const balanceInitial = await ethErc0Contract.balanceOf(account0Address);
   console.log('account0 balance:', balanceInitial);
 
-  const initialDestinationBalance =
-    await ethErc0Contract.balanceOf(destination);
+  const initialDestinationBalance = await ethErc0Contract.balanceOf(
+    destination
+  );
   console.log('destination balance:', initialDestinationBalance);
 
   // Create a client for pulling price updates from Hermes.

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@pythnetwork/price-service-client": "^1.9.0",
-    "@pythnetwork/pyth-starknet-js": "^0.2.0",
+    "@pythnetwork/pyth-starknet-js": "^0.2.1",
     "starknet": "^6.9.0"
   }
 }
