@@ -13,8 +13,10 @@ abi UpdatePrice {
     fn update_price_feeds(update_fee: u64, update_data: Vec<Bytes>);
 }
 
-const PYTH_CONTRACT_ID = 0xcda57a8ab59090ab2b75d10e093af41a2ad9b7951a2805ab39100995c69f9b2a; // Testnet Contract
-const FUEL_ETH_BASE_ASSET_ID = 0xf8f8b6283d7fa5b672b530cbb84fcccb4ff8dc40f8176ef4544ddb1f1952ad07;
+configurable {
+    PYTH_CONTRACT_ID: b256 = 0xcda57a8ab59090ab2b75d10e093af41a2ad9b7951a2805ab39100995c69f9b2a, // testnet contract
+    FUEL_ETH_BASE_ASSET_ID: b256 = 0xf8f8b6283d7fa5b672b530cbb84fcccb4ff8dc40f8176ef4544ddb1f1952ad07,
+}
 
 impl UpdatePrice for Contract {
     fn get_price(price_feed_id: PriceFeedId) -> Price {
