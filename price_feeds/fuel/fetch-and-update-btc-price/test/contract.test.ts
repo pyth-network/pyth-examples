@@ -49,7 +49,7 @@ describe('Contract', () => {
     catch (error: unknown) {
       expect(error).toBeInstanceOf(FuelError);
       if (error instanceof FuelError) {
-        expect(error.message).toBe('The transaction reverted because a "require" statement has thrown "PriceFeedNotFound"');
+        expect(error.message).toBe(`The transaction reverted because a "require" statement has thrown "PriceFeedNotFound".`);
       }
     }
   });
