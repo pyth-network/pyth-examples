@@ -44,7 +44,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
     if (CURRENT_ENVIRONMENT === "testnet") {
       return window.open(
         `${TESTNET_FAUCET_LINK}?address=${wallet.address.toAddress()}`,
-        "_blank",
+        "_blank"
       );
     }
   };
@@ -58,7 +58,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
   const tryToAddNetwork = () => {
     return alert(
-      `Please add the network ${NODE_URL} to your Fuel wallet, or swtich to it if you have it already, and refresh the page.`,
+      `Please add the network ${NODE_URL} to your Fuel wallet, or swtich to it if you have it already, and refresh the page.`
     );
   };
 

@@ -92,6 +92,7 @@ export default function Home() {
         .addContracts([pythContract])
         .call();
       const { value: fee } = await waitForResultFee();
+
       await contract.functions
         .update_price_feeds(fee, [arrayify(updateData)])
         .addContracts([pythContract])
@@ -99,8 +100,13 @@ export default function Home() {
           forward: [fee, hexlify(FUEL_ETH_BASE_ASSET_ID)],
         })
         .call();
-      const { value } = await contract.functions.get_price().get();
-      setPrice(value);
+
+      const { value: price } = await contract.functions
+        .get_price(hexlify(PRICE_FEED_ID))
+        .addContracts([pythContract])
+        .get();
+
+      setPrice(price);
 
       await refreshWalletBalance?.();
     } catch (error) {

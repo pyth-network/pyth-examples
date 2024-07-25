@@ -1,16 +1,14 @@
 import { createConfig } from 'fuels';
 import dotenv from 'dotenv';
-import { NODE_URL } from '@/lib';
 
 dotenv.config({
   path: ['.env.local', '.env'],
 });
 
-const fuelCorePort = +(process.env.NEXT_PUBLIC_FUEL_NODE_PORT as string) || 4000;
-
 export default createConfig({
-  workspace: './sway-programs',
+  contracts: ['./sway-programs/contract'],
   output: './src/sway-api',
-  fuelCorePort,
-  providerUrl: NODE_URL,
+  providerUrl: 'https://testnet.fuel.network/v1/graphql',
+  privateKey: process.env.PRIVATE_KEY,
+  forcBuildFlags: ['--release'],
 });
