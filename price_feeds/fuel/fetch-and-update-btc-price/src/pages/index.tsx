@@ -2,7 +2,7 @@ import { TestContractAbi__factory } from "@/sway-api";
 import PYTH_CONTRACT_ABI from "../abi/pyth-contract-abi.json";
 import contractIds from "@/sway-api/contract-ids.json";
 import { FuelLogo } from "@/components/FuelLogo";
-import { bn, arrayify, Contract, hexlify } from "fuels";
+import { arrayify, Contract, hexlify } from "fuels";
 import { useState } from "react";
 import { Link } from "@/components/Link";
 import { Button } from "@/components/Button";
@@ -86,12 +86,12 @@ export default function Home() {
 
     try {
       const updateData = await fetchPriceUpdateData();
-      const fee = (
-        await contract.functions
-          .update_fee([arrayify(updateData)])
-          .addContracts([pythContract])
-          .call()
-      ).value;
+
+      const { waitForResult: waitForResultFee } = await contract.functions
+        .update_fee([arrayify(updateData)])
+        .addContracts([pythContract])
+        .call();
+      const { value: fee } = await waitForResultFee();
       await contract.functions
         .update_price_feeds(fee, [arrayify(updateData)])
         .addContracts([pythContract])
