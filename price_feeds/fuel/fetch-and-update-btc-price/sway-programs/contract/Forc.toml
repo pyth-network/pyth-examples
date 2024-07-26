@@ -5,4 +5,4 @@ license = "Apache-2.0"
 name = "test-contract"
 
 [dependencies]
-pyth_interface = { git = "https://github.com/pyth-network/pyth-crosschain", tag = "pyth-fuel-contract-v0.4.0" }
+pyth_interface = { git = "https://github.com/pyth-network/pyth-crosschain", tag = "pyth-fuel-contract-v0.5.0" }
