@@ -13,9 +13,10 @@
   "dependencies": {
     "@fuels/connectors": "^0.2.2",
     "@fuels/react": "^0.18.1",
-    "fuels": "^0.92.1",
+    "@pythnetwork/hermes-client": "^1.0.4",
     "@tanstack/react-query": "^5.29.2",
     "dotenv": "^16.4.5",
+    "fuels": "^0.92.1",
     "next": "14.2.2",
     "react": "^18.2",
     "react-dom": "^18.2",

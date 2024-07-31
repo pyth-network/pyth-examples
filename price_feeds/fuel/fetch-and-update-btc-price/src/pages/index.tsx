@@ -11,6 +11,7 @@ import { useActiveWallet } from "@/hooks/useActiveWallet";
 import useAsync from "react-use/lib/useAsync";
 import { CURRENT_ENVIRONMENT } from "@/lib";
 import { PriceOutput } from "@/sway-api/contracts/TestContractAbi";
+import { HermesClient } from "@pythnetwork/hermes-client";
 
 const FUEL_ETH_BASE_ASSET_ID =
   "0xf8f8b6283d7fa5b672b530cbb84fcccb4ff8dc40f8176ef4544ddb1f1952ad07";
@@ -37,13 +38,14 @@ export default function Home() {
   const [price, setPrice] = useState<PriceOutput>();
 
   const fetchPriceUpdateData = async () => {
-    const response = await fetch(hermesUrl + PRICE_FEED_ID);
-    if (!response.ok) {
-      throw new Error("Failed to fetch price");
-    }
-    const data = await response.json();
-    const binaryData = data.binary.data[0];
-    const buffer = Buffer.from(binaryData, "hex");
+    const connection = new HermesClient(hermesUrl);
+
+    // Latest price updates
+    const priceUpdates = await connection.getLatestPriceUpdates([
+      PRICE_FEED_ID,
+    ]);
+
+    const buffer = Buffer.from(priceUpdates.binary.data[0], "hex");
     return buffer;
   };
 
