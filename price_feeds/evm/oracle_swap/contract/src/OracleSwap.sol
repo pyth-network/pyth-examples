@@ -65,11 +65,14 @@ contract OracleSwap {
         uint256 updateFee = pyth.getUpdateFee(pythUpdateData);
         pyth.updatePriceFeeds{value: updateFee}(pythUpdateData);
 
-        PythStructs.Price memory currentBasePrice = pyth.getPrice(
-            baseTokenPriceId
+        // Get the prices if they are not older than 60 seconds.
+        PythStructs.Price memory currentBasePrice = pyth.getPriceNoOlderThan(
+            baseTokenPriceId,
+            60
         );
-        PythStructs.Price memory currentQuotePrice = pyth.getPrice(
-            quoteTokenPriceId
+        PythStructs.Price memory currentQuotePrice = pyth.getPriceNoOlderThan(
+            quoteTokenPriceId,
+            60
         );
 
         // Note: this code does all arithmetic with 18 decimal points. This approach should be fine for most

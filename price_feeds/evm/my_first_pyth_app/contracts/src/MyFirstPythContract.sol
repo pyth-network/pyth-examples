@@ -14,7 +14,8 @@ contract MyFirstPythContract {
   }
 
   function mint() public payable {
-    PythStructs.Price memory price = pyth.getPrice(ethUsdPriceId);
+    // Get the price if it is not older than 60 seconds.
+    PythStructs.Price memory price = pyth.getPriceNoOlderThan(ethUsdPriceId, 60);
  
     uint ethPrice18Decimals = (uint(uint64(price.price)) * (10 ** 18)) /
       (10 ** uint8(uint32(-1 * price.expo)));
