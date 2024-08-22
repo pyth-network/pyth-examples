@@ -1,36 +1,34 @@
 # Coin Flip Example application
 
-The coin flip example demonstrates how to use Pyth Entropy to flip a fair coin.
+This directory contains an example application that demonstrates how to use Pyth Entropy to flip a fair coin.
+The example consists of a Solidity contract that implements a coin flip and a Typescript script that interacts with the contract.
+
+Please note that this example is for demonstration purposes only and should not be used in production.
+
+Please see the Pyth Entropy [documentation](https://docs.pyth.network/entropy) for more information.
 
 ## Try it out
 
-To try the example, first run the following commands from the root of the `pyth-crosschain` repository:
-
-```shell
-npm install
-npx lerna run build
-```
-
-These commands will build dependencies for the typescript project.
-
-Next, choose a network to run the example on.
+First, you have to choose a network to run the example on.
 The example has been deployed on the following networks:
 
 ```
-| Chain Name       | Address                                    | RPC                                        |
-|------------------|--------------------------------------------|--------------------------------------------|
-| optimism-sepolia | 0x2eE67fF5d8548fF544f2c178a0FcAFe503A634Be | https://sepolia.optimism.io/               |
-| arbitrum-sepolia | 0xCd76c50c3210C5AaA9c39D53A4f95BFd8b1a3a19 | https://sepolia-rollup.arbitrum.io/rpc     |
+| Chain Name       | Address                                    | 
+|------------------|--------------------------------------------|
+| optimism-sepolia | 0x2eE67fF5d8548fF544f2c178a0FcAFe503A634Be |
+| arbitrum-sepolia | 0xCd76c50c3210C5AaA9c39D53A4f95BFd8b1a3a19 |
 ```
 
 You will also need the private key of a wallet with some gas tokens for your chosen network.
 Then, from the `coin_flip/app` directory, run the following command:
 
 ```
+npm i
+
 npm run flip-coin -- \
   --private-key <hexadecimal evm private key> \
   --address <address> \
-  --rpc-url <rpc url>
+  --chain-name <chain name>
 ```
 
 You can populate the arguments to this command from the table above.
