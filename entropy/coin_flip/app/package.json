@@ -9,6 +9,7 @@
     "@types/jest": "^27.5.2",
     "@types/node": "^16.11.64",
     "buffer": "^6.0.3",
+    "crypto": "^1.0.1",
     "ethers": "^5.7.2",
     "prettier": "^2.7.1",
     "typescript": "^5.5.4",
