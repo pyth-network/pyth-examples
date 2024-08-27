@@ -5,12 +5,11 @@ import { hideBin } from "yargs/helpers";
 import { ICoinFlipAbi } from "./coin_flip_abi";
 
 import {
-  Chain,
   createWalletClient,
   getContract,
-  Hex,
   http,
   publicActions,
+  Hex,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -32,8 +31,7 @@ const parser = yargs(hideBin(process.argv))
     required: true,
   })
   .option("rpc-url", {
-    description:
-      "The RPC URL to use for the CoinFlip contract",
+    description: "The RPC URL to use for the CoinFlip contract",
     type: "string",
     required: true,
   })
@@ -50,28 +48,36 @@ async function main() {
     throw new Error("Invalid chain name");
   }
 
-  let chain: Chain;
-  if (chainName === "optimism-sepolia") {
-    chain = optimismSepolia;
-  } else {
-    chain = arbitrumSepolia;
+  if (argv.privateKey.length !== 64) {
+    throw new Error("Private key must be 64 characters long");
+  }
+
+  const privateKey = argv.privateKey as Hex;
+
+  if (argv.address.length !== 42) {
+    throw new Error("Address must be 42 characters long");
+  }
+  const address = argv.address as Hex;
+
+  if (!argv.rpcUrl.startsWith("http")) {
+    throw new Error("RPC URL must start with http");
   }
 
   const client = createWalletClient({
-    chain: chain,
-    account: privateKeyToAccount(argv.privateKey as Hex),
+    chain: chainName === "optimism-sepolia" ? optimismSepolia : arbitrumSepolia,
+    account: privateKeyToAccount(privateKey),
     transport: http(argv.rpcUrl),
   }).extend(publicActions);
 
   const coinFlipContract = getContract({
-    address: argv.address as Hex,
+    address,
     abi: ICoinFlipAbi,
-    client: client,
+    client,
   });
 
   console.log("1. Generating user's random number...");
 
-  const randomNumber = `0x${crypto.randomBytes(32).toString("hex")}`;
+  const randomNumber: `0x${string}` = `0x${crypto.randomBytes(32).toString("hex")}`;
   console.log(`User Generated Random number: ${randomNumber}`);
 
   console.log("\n2. Requesting coin flip...");
@@ -83,32 +89,44 @@ async function main() {
 
   let sequenceNumber: bigint;
   coinFlipContract.watchEvent.FlipRequest({
-    onLogs: (logs) =>
-      logs.forEach((log) => {
-        console.log(`Flip Request Number/ Sequence Number: ${log.args.sequenceNumber}`);
-        sequenceNumber = log.args.sequenceNumber as bigint;
-      }),
+    onLogs: (logs) => {
+      for (const log of logs) {
+        console.log(
+          `Flip Request Number/ Sequence Number: ${log.args.sequenceNumber}`
+        );
+        if (typeof log.args.sequenceNumber === "bigint") {
+          sequenceNumber = log.args.sequenceNumber;
+        } else {
+          throw new Error(
+            `Sequence number is not a bigint: ${log.args.sequenceNumber}`
+          );
+        }
+      }
+    },
   });
 
- await client.watchBlocks({
+  await client.watchBlocks({
     onBlock: (block) => {
       console.log(`\nPolling Block: ${block.number}`);
       coinFlipContract.watchEvent.FlipResult({
-        onLogs: (logs) =>
-          logs.forEach((log) => {
+        onLogs: (logs) => {
+          for (const log of logs) {
             if (log.args.sequenceNumber === sequenceNumber) {
               console.log(
                 `\nFlip Result: ${log.args.isHeads ? "Heads" : "Tails"}`
               );
               process.exit(0);
             }
-          }),
+          }
+        },
       });
     },
   });
 
+  
+
   const flipTxHash = await coinFlipContract.write.requestFlip(
-    [randomNumber as `0x${string}`],
+    [randomNumber],
     { value: flipFee }
   );
   console.log(`\nTransaction Hash: ${flipTxHash}`);
@@ -117,7 +135,7 @@ async function main() {
     hash: flipTxHash,
   });
 
-  let receiptBlockNumber = receipt.blockNumber;
+  const receiptBlockNumber = receipt.blockNumber;
   console.log(`\nReceipt Block Number: ${receiptBlockNumber}`);
 }
 
