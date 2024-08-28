@@ -113,8 +113,8 @@ async function main() {
     onLogs: (logs) => {
         for (const log of logs) {
           if (log.args.sequenceNumber === sequenceNumber) {
-            resolve(log.args.isHeads ? "Heads" : "Tails");
             unwatch();
+            resolve(log.args.isHeads ? "Heads" : "Tails");
           }
         }
       },
