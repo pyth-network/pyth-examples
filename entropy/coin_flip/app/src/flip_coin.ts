@@ -12,6 +12,7 @@ import {
   Hex,
   isHex,
   isAddress,
+  parseEventLogs,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -86,49 +87,41 @@ async function main() {
 
   console.log("\n3. Sending request to flip coin...");
 
-  let sequenceNumber: bigint;
-  const unwatch = coinFlipContract.watchEvent.FlipRequest({
-    onLogs: (logs) => {
-      for (const log of logs) {
-        console.log(
-          `Flip Request Number/ Sequence Number: ${log.args}`
-        );
-        if (typeof log.args.sequenceNumber === "bigint") {
-          sequenceNumber = log.args.sequenceNumber;
-          unwatch();
-        } else {
-          throw new Error(
-            `Sequence number is not a bigint: ${log.args.sequenceNumber}`
-          );
-        }
-      }
-    },
-  });
-  
-  const unwatchFlipResult = coinFlipContract.watchEvent.FlipResult({
-    onLogs: (logs) => {
-      for (const log of logs) {
-        if (log.args.sequenceNumber === sequenceNumber) {
-          console.log(
-            `\nFlip Result: ${log.args.isHeads ? "Heads" : "Tails"}`
-          );
-          unwatchFlipResult();
-        }
-      }
-    },
-  });
-
   const flipTxHash = await coinFlipContract.write.requestFlip([randomNumber], {
     value: flipFee,
   });
-  console.log(`\nTransaction Hash: ${flipTxHash}`);
+  console.log(`Transaction Hash: ${flipTxHash}`);
 
   const receipt = await client.waitForTransactionReceipt({
     hash: flipTxHash,
   });
 
-  const receiptBlockNumber = receipt.blockNumber;
-  console.log(`\nReceipt Block Number: ${receiptBlockNumber}`);
+  const logs = parseEventLogs({
+    abi: ICoinFlipAbi,
+    eventName: "FlipRequest",
+    logs: receipt.logs,
+  });
+
+  const sequenceNumber = logs[0].args.sequenceNumber;
+
+  console.log(`\nSequence Number: ${sequenceNumber}`);
+
+  console.log("\n4. Waiting for flip result...");
+  const result = await new Promise((resolve, reject) => {
+  const unwatch = coinFlipContract.watchEvent.FlipResult({
+    fromBlock: receipt.blockNumber - 1n,
+    onLogs: (logs) => {
+        for (const log of logs) {
+          if (log.args.sequenceNumber === sequenceNumber) {
+            resolve(log.args.isHeads ? "Heads" : "Tails");
+            unwatch();
+          }
+        }
+      },
+    });
+  });
+
+  console.log(`\nFlip Result: ${result}`);
 }
 
 main();
