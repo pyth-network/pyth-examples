@@ -1,8 +1,20 @@
-import Web3 from "web3";
+import crypto from "crypto";
+import { arbitrumSepolia, optimismSepolia } from "viem/chains";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import HDWalletProvider from "@truffle/hdwallet-provider";
-import CoinFlipAbi from "./CoinFlipAbi.json";
+import { ICoinFlipAbi } from "./coin_flip_abi";
+
+import {
+  createWalletClient,
+  getContract,
+  http,
+  publicActions,
+  Hex,
+  isHex,
+  isAddress,
+  parseEventLogs,
+} from "viem";
+import { privateKeyToAccount } from "viem/accounts";
 
 const parser = yargs(hideBin(process.argv))
   .option("private-key", {
@@ -15,9 +27,14 @@ const parser = yargs(hideBin(process.argv))
     type: "string",
     required: true,
   })
-  .option("rpc-url", {
+  .option("chain-name", {
     description:
-      "The URL of an ETH RPC service for reading/writing to the blockchain",
+      "The chain on which you want to test the CoinFlip contract (e.g., 'optimism-sepolia', 'arbitrum-sepolia')",
+    type: "string",
+    required: true,
+  })
+  .option("rpc-url", {
+    description: "The RPC URL to use for the CoinFlip contract",
     type: "string",
     required: true,
   })
@@ -29,75 +46,82 @@ const parser = yargs(hideBin(process.argv))
 
 async function main() {
   const argv = await parser.argv;
+  const chainName = argv.chainName;
 
-  const coinFlipContractAddress = argv.address;
-  const rpc = argv.rpcUrl;
-  const privateKey = argv.privateKey;
+  if (chainName !== "optimism-sepolia" && chainName !== "arbitrum-sepolia") {
+    throw new Error("Invalid chain name");
+  }
+  if (!isHex(argv.privateKey, { strict: true })) {
+    throw new Error("Private key must be a hexadecimal string");
+  }
+  if (!isAddress(argv.address, { strict: true })) {
+    throw new Error("Invalid address");
+  }
+  if (!argv.rpcUrl.startsWith("http")) {
+    throw new Error("RPC URL must start with http");
+  }
 
-  const provider = new HDWalletProvider({
-    privateKeys: [privateKey],
-    providerOrUrl: rpc,
+  const client = createWalletClient({
+    chain: chainName === "optimism-sepolia" ? optimismSepolia : arbitrumSepolia,
+    account: privateKeyToAccount(argv.privateKey),
+    transport: http(argv.rpcUrl),
+  }).extend(publicActions);
+
+  const coinFlipContract = getContract({
+    address: argv.address,
+    abi: ICoinFlipAbi,
+    client,
   });
 
-  const web3 = new Web3(provider as any);
-
-  const coinFlipContract = new web3.eth.Contract(
-    CoinFlipAbi as any,
-    coinFlipContractAddress
-  );
-
-  console.log(`Running coin flip prototcol.`);
-
   console.log("1. Generating user's random number...");
-  const randomNumber = web3.utils.randomHex(32);
-  console.log(`   number    : ${randomNumber}`);
 
-  console.log("2. Requesting coin flip...");
-  const flipFee = await coinFlipContract.methods.getFlipFee().call();
-  console.log(`   fee       : ${flipFee} wei`);
+  const randomNumber: `0x${string}` = `0x${crypto
+    .randomBytes(32)
+    .toString("hex")}`;
+  console.log(`User Generated Random number: ${randomNumber}`);
 
-  const receipt = await coinFlipContract.methods
-    .requestFlip(randomNumber)
-    .send({ value: flipFee, from: provider.getAddress(0) });
+  console.log("\n2. Requesting coin flip...");
 
-  console.log(`   tx        : ${receipt.transactionHash}`);
-  const sequenceNumber = receipt.events.FlipRequest.returnValues.sequenceNumber;
-  console.log(`   sequence  : ${sequenceNumber}`);
+  const flipFee = await coinFlipContract.read.getFlipFee();
+  console.log(`Flip Fee: ${flipFee} wei`);
 
-  console.log("3. Waiting for result...");
-  // Poll for new FlipResult events emitted by the CoinFlip contract. It checks if the event
-  // has the same sequenceNumber as the request. If it does,
-  // it logs the result and stops polling.
-  let fromBlock = receipt.blockNumber;
-  const intervalId = setInterval(async () => {
-    const currentBlock = await web3.eth.getBlockNumber();
+  console.log("\n3. Sending request to flip coin...");
 
-    if (fromBlock > currentBlock) {
-      return;
-    }
+  const flipTxHash = await coinFlipContract.write.requestFlip([randomNumber], {
+    value: flipFee,
+  });
+  console.log(`Transaction Hash: ${flipTxHash}`);
 
-    // Get 'FlipResult' events emitted by the CoinFlip contract for given block range.
-    const events = await coinFlipContract.getPastEvents("FlipResult", {
-      fromBlock: fromBlock,
-      toBlock: currentBlock,
+  const receipt = await client.waitForTransactionReceipt({
+    hash: flipTxHash,
+  });
+
+  const logs = parseEventLogs({
+    abi: ICoinFlipAbi,
+    eventName: "FlipRequest",
+    logs: receipt.logs,
+  });
+
+  const sequenceNumber = logs[0].args.sequenceNumber;
+
+  console.log(`\nSequence Number: ${sequenceNumber}`);
+
+  console.log("\n4. Waiting for flip result...");
+  const result = await new Promise((resolve, reject) => {
+  const unwatch = coinFlipContract.watchEvent.FlipResult({
+    fromBlock: receipt.blockNumber - 1n,
+    onLogs: (logs) => {
+        for (const log of logs) {
+          if (log.args.sequenceNumber === sequenceNumber) {
+            unwatch();
+            resolve(log.args.isHeads ? "Heads" : "Tails");
+          }
+        }
+      },
     });
-    fromBlock = currentBlock + 1;
+  });
 
-    // Find the event with the same sequence number as the request.
-    const event = events.find(
-      (event) => event.returnValues.sequenceNumber === sequenceNumber
-    );
-
-    // If the event is found, log the result and stop polling.
-    if (event !== undefined) {
-      console.log(
-        `   result    : ${event.returnValues.isHeads ? "Heads" : "Tails"}`
-      );
-      clearInterval(intervalId);
-    }
-  }, 1000);
-
-  provider.engine.stop();
+  console.log(`\nFlip Result: ${result}`);
 }
 
 main();

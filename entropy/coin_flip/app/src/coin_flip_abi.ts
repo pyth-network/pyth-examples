@@ -1,4 +1,4 @@
-[
+export const ICoinFlipAbi = [
   {
     "type": "constructor",
     "inputs": [
@@ -78,4 +78,4 @@
     "anonymous": false
   },
   { "type": "error", "name": "InsufficientFee", "inputs": [] }
-]
+] as const;
