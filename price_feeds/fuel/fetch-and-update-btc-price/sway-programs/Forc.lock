@@ -1,10 +1,10 @@
 [[package]]
 name = "core"
-source = "path+from-root-2AB5BCE55EAAEFF4"
+source = "path+from-root-4BB20845430AF9CF"
 
 [[package]]
 name = "pyth_interface"
-source = "git+https://github.com/pyth-network/pyth-crosschain?tag=pyth-fuel-contract-v0.5.0#8bec01505fafd7b53df7858a6a87ede20dc5e730"
+source = "git+https://github.com/pyth-network/pyth-crosschain?tag=pyth-fuel-contract-v0.6.0#661feaf6c8d9199996659b595cea2c7595e3759c"
 dependencies = [
     "standards",
     "std",
@@ -17,7 +17,7 @@ dependencies = ["std"]
 
 [[package]]
 name = "std"
-source = "git+https://github.com/fuellabs/sway?tag=v0.62.0#efda0397c7bee77de73bd726ec0b732d57614973"
+source = "git+https://github.com/fuellabs/sway?tag=v0.63.5#31a1d6f98395f571cd3674b492d9bf4773c55f65"
 dependencies = ["core"]
 
 [[package]]
