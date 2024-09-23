@@ -1,5 +1,4 @@
 import { TestContractAbi__factory } from "@/sway-api";
-import PYTH_CONTRACT_ABI from "../abi/pyth-contract-abi.json";
 import contractIds from "@/sway-api/contract-ids.json";
 import { FuelLogo } from "@/components/FuelLogo";
 import { arrayify, Contract, hexlify } from "fuels";
@@ -12,18 +11,19 @@ import useAsync from "react-use/lib/useAsync";
 import { CURRENT_ENVIRONMENT } from "@/lib";
 import { PriceOutput } from "@/sway-api/contracts/TestContractAbi";
 import { HermesClient } from "@pythnetwork/hermes-client";
+import {
+  PYTH_CONTRACT_ADDRESS_SEPOLIA,
+  PYTH_CONTRACT_ABI,
+  FUEL_ETH_ASSET_ID,
+} from "@pythnetwork/pyth-fuel-js";
 
-const FUEL_ETH_BASE_ASSET_ID =
-  "0xf8f8b6283d7fa5b672b530cbb84fcccb4ff8dc40f8176ef4544ddb1f1952ad07";
 const PRICE_FEED_ID =
   "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace"; // ETH/USD
 
 const contractId =
   CURRENT_ENVIRONMENT === "local"
     ? contractIds.testContract
-    : (process.env.NEXT_PUBLIC_TESTNET_CONTRACT_ID as string); // Testnet Contract ID
-const pythContractId = process.env
-  .NEXT_PUBLIC_PYTH_TESTNET_CONTRACT_ID as string; // Testnet Contract ID
+    : PYTH_CONTRACT_ADDRESS_SEPOLIA; // Testnet Contract ID
 
 const hermesUrl = process.env.NEXT_PUBLIC_HERMES_URL as string;
 
@@ -66,7 +66,7 @@ export default function Home() {
       );
       setContract(testContract);
       const pythContract = new Contract(
-        pythContractId,
+        PYTH_CONTRACT_ADDRESS_SEPOLIA,
         PYTH_CONTRACT_ABI,
         wallet
       );
@@ -88,18 +88,21 @@ export default function Home() {
 
     try {
       const updateData = await fetchPriceUpdateData();
+      console.log("updateData", updateData);
+      console.log("pythContract", pythContract);
 
       const { waitForResult: waitForResultFee } = await contract.functions
         .update_fee([arrayify(updateData)])
         .addContracts([pythContract])
         .call();
       const { value: fee } = await waitForResultFee();
+      console.log("fee", fee);
 
       await contract.functions
         .update_price_feeds(fee, [arrayify(updateData)])
         .addContracts([pythContract])
         .callParams({
-          forward: [fee, hexlify(FUEL_ETH_BASE_ASSET_ID)],
+          forward: [fee, hexlify(FUEL_ETH_ASSET_ID)],
         })
         .call();
 
