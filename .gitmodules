@@ -1,0 +1,3 @@
+[submodule "price_feeds/evm/LendingPool/lib/forge-std"]
+	path = price_feeds/evm/LendingPool/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
