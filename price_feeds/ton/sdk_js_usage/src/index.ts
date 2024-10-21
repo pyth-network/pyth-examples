@@ -5,15 +5,23 @@ import {
   PythContract,
   PYTH_CONTRACT_ADDRESS_TESTNET,
 } from '@pythnetwork/pyth-ton-js';
+import {getHttpEndpoint} from '@orbs-network/ton-access';
 
 const BTC_PRICE_FEED_ID =
   '0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43';
 
 async function main() {
-  const client = new TonClient({
-    endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
-    apiKey: 'your-api-key-here', // Optional, but note that without api-key you need to send requests once per second
+  const endpoint = await getHttpEndpoint({
+    network: 'testnet',
   });
+  const client = new TonClient({
+    endpoint,
+  });
+  // You can also try to create a client with an API key with Toncenter if the previous one fails
+  // const client = new TonClient({
+  //   endpoint: 'https://testnet.toncenter.com/api/v2/jsonRPC',
+  //   apiKey: 'your-api-key-here', // Optional, but note that without api-key you need to send requests once per second
+  // });
 
   const contractAddress = Address.parse(PYTH_CONTRACT_ADDRESS_TESTNET);
   const contract = client.open(PythContract.createFromAddress(contractAddress));
@@ -50,6 +58,11 @@ async function main() {
   });
   const provider = client.open(wallet);
 
+  // If this fails, check that you have enough TON on your wallet
+  // - parse the BoC to get the dest_address
+  // - console.log(loadMessage(Cell.fromBase64("your-boc-here").beginParse()
+  // - check the balance of the dest_address
+  // - get testnet TON from Testgiver TON Bot: https://t.me/testgiver_ton_bot
   await contract.sendUpdatePriceFeeds(
     provider.sender(key.secretKey),
     updateData,
