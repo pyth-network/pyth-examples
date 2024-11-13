@@ -4,6 +4,7 @@ import {HermesClient} from '@pythnetwork/hermes-client';
 import {
   PythContract,
   PYTH_CONTRACT_ADDRESS_TESTNET,
+  calculateUpdatePriceFeedsFee,
 } from '@pythnetwork/pyth-ton-js';
 import {getHttpEndpoint} from '@orbs-network/ton-access';
 
@@ -49,6 +50,8 @@ async function main() {
 
   const updateFee = await contract.getUpdateFee(updateData);
   console.log('Update fee:', updateFee);
+  const totalFee =
+    calculateUpdatePriceFeedsFee(BigInt(updateFee)) + BigInt(updateFee);
 
   const mnemonic = 'your mnemonic here';
   const key = await mnemonicToPrivateKey(mnemonic.split(' '));
@@ -66,7 +69,7 @@ async function main() {
   await contract.sendUpdatePriceFeeds(
     provider.sender(key.secretKey),
     updateData,
-    BigInt(156000000) + BigInt(updateFee) // 156000000 = 390000 (estimated gas used for the transaction, this is defined in contracts/common/gas.fc as UPDATE_PRICE_FEEDS_GAS) * 400 (current settings in basechain are as follows: 1 unit of gas costs 400 nanotons)
+    totalFee
   );
   console.log('Price feeds updated successfully.');
 
