@@ -1,3 +1,6 @@
 [submodule "lazer/evm/lib/forge-std"]
 	path = lazer/evm/lib/forge-std
 	url = https://github.com/foundry-rs/forge-std
+[submodule "lazer/evm/lib/pyth-crosschain"]
+	path = lazer/evm/lib/pyth-crosschain
+	url = https://github.com/pyth-network/pyth-crosschain
