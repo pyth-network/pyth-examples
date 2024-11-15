@@ -1,15 +1,7 @@
 use {
     anchor_lang::InstructionData,
     bytemuck::{bytes_of, from_bytes},
-    ed25519_dalek::{ed25519::signature::rand_core::OsRng, SigningKey},
-    pyth_lazer_router::signature::solana::SolanaMessage,
-    pyth_lazer_sdk::{
-        ed25519_program_args,
-        protocol::{
-            payload::{AggregatedPriceFeedData, PayloadData},
-            router::{Channel, Price, PriceFeedId, PriceFeedProperty, TimestampUs},
-        },
-    },
+    pyth_lazer_sdk::ed25519_program_args,
     pyth_lazer_solana_example::{
         process_instruction, InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
     },
@@ -27,11 +19,19 @@ async fn test1() {
         env::set_var(
             "SBF_OUT_DIR",
             format!(
-                "{}/../../target/sbf-solana-solana/release",
+                "{}/target/sbf-solana-solana/release",
                 env::var("CARGO_MANIFEST_DIR").unwrap()
             ),
         );
     }
+    std::fs::copy(
+        "tests/pyth_lazer_solana_contract.so",
+        format!(
+            "{}/target/sbf-solana-solana/release/pyth_lazer_solana_contract.so",
+            env::var("CARGO_MANIFEST_DIR").unwrap()
+        ),
+    )
+    .unwrap();
     println!("if add_program fails, run `cargo build-sbf` first.");
     let mut program_test = ProgramTest::new(
         "pyth_lazer_solana_example",
@@ -66,14 +66,20 @@ async fn test1() {
         .await
         .unwrap();
 
-    let signing_key = SigningKey::generate(&mut OsRng);
-    let verifying_key = *signing_key.verifying_key().as_bytes();
+    let verifying_key =
+        hex::decode("74313a6525edf99936aa1477e94c72bc5cc617b21745f5f03296f3154461f214").unwrap();
+    let message = hex::decode(
+        "b9011a82e5cddee2c1bd364c8c57e1c98a6a28d194afcad410ff412226c8b2ae931ff59a57147cb47c7307\
+        afc2a0a1abec4dd7e835a5b7113cf5aeac13a745c6bed6c60074313a6525edf99936aa1477e94c72bc5cc61\
+        7b21745f5f03296f3154461f2141c0075d3c7931c9773f30a240600010102000000010000e1f50500000000",
+    )
+    .unwrap();
 
     let mut transaction_set_trusted = Transaction::new_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
             &pyth_lazer_solana_contract::instruction::Update {
-                trusted_signer: verifying_key.into(),
+                trusted_signer: verifying_key.try_into().unwrap(),
                 expires_at: i64::MAX,
             }
             .data(),
@@ -126,24 +132,7 @@ async fn test1() {
 
     let mut update_data = vec![ExampleInstruction::Update as u8];
     update_data.extend_from_slice(bytes_of(&UpdateArgs { hello: 42 }));
-    SolanaMessage::new(
-        &PayloadData::new(
-            TimestampUs(1728479312975644),
-            Channel::RealTime.id(),
-            &[(
-                PriceFeedId(2),
-                AggregatedPriceFeedData {
-                    price: Some(Price::from_integer(1, 8).unwrap()),
-                    best_bid_price: None,
-                    best_ask_price: None,
-                },
-            )],
-            &[PriceFeedProperty::Price],
-        ),
-        &signing_key,
-    )
-    .serialize(&mut update_data)
-    .unwrap();
+    update_data.extend_from_slice(&message);
 
     // Instruction #0 will be ed25519 instruction;
     // Instruction #1 will be our contract instruction.
