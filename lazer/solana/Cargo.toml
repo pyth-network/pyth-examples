@@ -1,0 +1,27 @@
+[package]
+name = "pyth-lazer-solana-example"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "pyth_lazer_solana_example"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+pyth-lazer-sdk = { path = "../../sdk/solana" }
+
+solana-program = "1.18.26"
+bytemuck = { version = "1.18.0", features = ["derive"] }
+num-traits = "0.2.19"
+num-derive = "0.4.2"
+
+[dev-dependencies]
+hex = "0.4.3"
+solana-program-test = "1.18.26"
+solana-sdk = "1.18.26"
+tokio = { version = "1.40.0", features = ["full"] }
+byteorder = "1.5.0"
+ed25519-dalek = { version = "2.1.1", features = ["rand_core"] }
+pyth-lazer-router = { path = "../../router" }
+pyth-lazer-solana-contract = { path = "../../contracts/solana/programs/pyth-lazer-solana-contract" }
+anchor-lang = "0.30.1"
