@@ -1,0 +1,32 @@
+name: "Lazer Publisher Test"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lazer-publisher-test:
+    name: Lazer Publisher Test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: lazer/publisher
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          toolchain: 1.81.0
+          components: clippy, rustfmt
+      - name: install extra tools
+        run: |
+          cargo install --locked taplo-cli@0.9.3
+          sudo apt-get install -y protobuf-compiler
+      - name: check Cargo.toml formatting
+        run: find . -name Cargo.toml -exec taplo fmt --check --diff {} \;
+      - name: check Rust formatting
+        run: cargo +1.81.0 fmt --all
+      - name: check Rust clippy
+        run: cargo +1.81.0 clippy --all-targets -- --deny warnings
+      - name: test
+        run: cargo test
