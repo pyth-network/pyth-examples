@@ -1,76 +1,37 @@
 use {
-    anyhow::bail,
+    futures::{SinkExt, StreamExt},
     pyth_lazer_protocol::{
         publisher::PriceFeedData,
         router::{Price, PriceFeedId, TimestampUs},
     },
-    soketto::{
-        handshake::{client::Header, Client, ServerResponse},
-        Sender,
-    },
     std::time::Duration,
-    tokio::{net::TcpStream, time::sleep},
-    tokio_util::compat::{Compat, TokioAsyncReadCompatExt},
-    tracing::info,
-    tracing::level_filters::LevelFilter,
+    tokio::time::sleep,
+    tokio_tungstenite::{
+        connect_async_with_config,
+        tungstenite::{client::IntoClientRequest, http::HeaderValue, Message},
+    },
+    tracing::{info, level_filters::LevelFilter, warn},
     tracing_subscriber::EnvFilter,
 };
 
-async fn try_connect() -> anyhow::Result<Sender<Compat<TcpStream>>> {
-    // The address is set to work in tilt. TODO: make it configurable
-    let socket = tokio::net::TcpStream::connect("router:1234").await?;
-    socket.set_nodelay(true)?;
-    let mut client = Client::new(socket.compat(), "...", "/v1/publisher");
-    client.set_headers(&[Header {
-        name: "Authorization",
-        value: b"Bearer token1",
-    }]);
-    let (sender, _receiver) = match client.handshake().await? {
-        ServerResponse::Accepted { .. } => client.into_builder().finish(),
-        ServerResponse::Redirect { .. } => bail!("unexpected redirect"),
-        ServerResponse::Rejected { status_code } => bail!("rejected: {status_code:?}"),
-    };
+const RETRY_DELAY: Duration = Duration::from_millis(300);
+const URL: &str = "ws://127.0.0.1:1234/v1/publisher";
+const TOKEN: &str = "token1";
 
-    Ok(sender)
-}
+async fn run() -> anyhow::Result<()> {
+    let url = url::Url::parse(URL)?;
+    let mut req = url.into_client_request()?;
 
-async fn try_connect_with_retry() -> anyhow::Result<Sender<Compat<TcpStream>>> {
-    let max_retries = 5;
-    let retry_delay = Duration::from_secs(2);
+    let headers = req.headers_mut();
+    headers.insert(
+        "Authorization",
+        HeaderValue::from_str(&format!("Bearer {}", TOKEN))?,
+    );
 
-    for attempt in 1..=max_retries {
-        info!("connecting (attempt {}/{})", attempt, max_retries);
+    let (ws_stream, _) = connect_async_with_config(req, None, true).await?;
+    info!("connected to {}", URL);
+    let (mut ws_sender, _) = ws_stream.split();
 
-        match try_connect().await {
-            Ok(sender) => return Ok(sender),
-            Err(err) => {
-                info!("failed to connect: {err}");
-                sleep(Duration::from_secs(5)).await;
-            }
-        }
-
-        info!("retrying in {} seconds...", retry_delay.as_secs());
-        sleep(retry_delay).await;
-    }
-
-    bail!("failed to connect after {} attempts", max_retries);
-}
-
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::INFO.into())
-                .from_env()
-                .expect("invalid RUST_LOG env var"),
-        )
-        .json()
-        .init();
-
-    let mut sender = try_connect_with_retry().await?;
-
-    let mut buf = Vec::new();
     let mut i = 0;
     loop {
         i += 1;
@@ -93,11 +54,30 @@ async fn main() -> anyhow::Result<()> {
                     Price::TMP_EXPONENT,
                 )?),
             };
-            buf.clear();
+            let mut buf = Vec::new();
             bincode::serialize_into(&mut buf, &data)?;
-            sender.send_binary(&buf).await?;
+            ws_sender.send(Message::Binary(buf)).await?;
         }
-        sender.flush().await?;
+        ws_sender.flush().await?;
         info!("sent data {i}");
+    }
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            EnvFilter::builder()
+                .with_default_directive(LevelFilter::INFO.into())
+                .from_env()
+                .expect("invalid RUST_LOG env var"),
+        )
+        .json()
+        .init();
+    loop {
+        if let Err(err) = run().await {
+            warn!("error: {err:?}");
+            sleep(RETRY_DELAY).await;
+        }
     }
 }
