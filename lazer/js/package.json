@@ -1,0 +1,21 @@
+{
+  "name": "pyth-lazer-js-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ts-node/esm src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@pythnetwork/pyth-lazer-sdk": "^0.1.1"
+  },
+  "devDependencies": {
+    "@cprussin/tsconfig": "^3.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
