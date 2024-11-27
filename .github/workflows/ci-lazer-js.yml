@@ -1,0 +1,22 @@
+name: "Lazer JS Test Suite"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lazer-js-test-suite:
+    name: Lazer JS Test Suite
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: lazer/js
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - run: npm install --global pnpm@9.2.0
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm run test
