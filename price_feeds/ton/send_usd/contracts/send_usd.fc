@@ -104,8 +104,7 @@ const ERROR_UNAUTHORIZED = 401;
 
     if (op == PYTH_OP_PARSE_PRICE_FEED_UPDATES) {
         ;; Check if sender is the official Pyth contract
-        slice pyth_contract = "EQB4ZnrI5qsP_IUJgVJNwEGKLzZWsQOFhiaqDbD7pTt_f9oU"a;
-        throw_unless(ERROR_UNAUTHORIZED, equal_slices_bits(sender_address, pyth_contract));
+        throw_unless(ERROR_UNAUTHORIZED, equal_slices_bits(sender_address, ctx_pyth_address));
         
         int num_price_feeds = in_msg_body~load_uint(8);
         
@@ -139,7 +138,7 @@ const ERROR_UNAUTHORIZED = 401;
         ;; Calculate: (1e9 * decimals * usd_amount) / price
         int ton_amount = ((1000000000 * decimals * usd_amount) / price);
         
-        ;; Send TON to recipient
+        ;; Send TON to recipient, please note that extra transferred TON will be stored in this contract
         send_ton(recipient, ton_amount);
         
         return ();

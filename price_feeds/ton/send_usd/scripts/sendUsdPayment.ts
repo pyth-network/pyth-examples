@@ -30,13 +30,13 @@ export async function run(provider: NetworkProvider, args: string[]) {
 
     // Calculate TON needed for USD amount
     // If TON price is $5.70, then 1 USD = 1/5.70 TON ≈ 0.1754385965 TON
-    const priceDecimals = Math.abs(expo);
+    const priceDecimals = -expo;
     const priceInUsd = Number(price) / 10 ** priceDecimals; // Convert price to actual USD value
     const tonAmount = (usdAmountNum / priceInUsd) * 1e9; // Convert to nanoTON
     const tonNeeded = BigInt(Math.floor(tonAmount));
 
     // Add base fee (0.2 TON)
-    const totalValue = toNano('0.2') + tonNeeded;
+    const totalValue = toNano('0.4') + tonNeeded;
 
     const updateData = Buffer.from(latestPriceUpdates.binary.data[0], 'hex');
     console.log('Update data:', updateData.toString('hex'));
