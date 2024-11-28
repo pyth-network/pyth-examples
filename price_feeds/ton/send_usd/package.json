@@ -1,0 +1,28 @@
+{
+    "name": "send_usd",
+    "version": "0.0.1",
+    "scripts": {
+        "start": "blueprint run",
+        "build": "blueprint build",
+        "test": "jest --verbose"
+    },
+    "devDependencies": {
+        "@ton/blueprint": "^0.25.0",
+        "@ton/sandbox": "^0.22.0",
+        "@ton/test-utils": "^0.4.2",
+        "@types/jest": "^29.5.14",
+        "@types/node": "^22.8.7",
+        "jest": "^29.7.0",
+        "prettier": "^3.3.3",
+        "@ton/ton": "^15.1.0",
+        "@ton/core": "~0",
+        "@ton/crypto": "^3.3.0",
+        "ts-jest": "^29.2.5",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.6.3"
+    },
+    "dependencies": {
+        "@pythnetwork/hermes-client": "^1.2.0",
+        "@pythnetwork/pyth-ton-js": "^0.1.1"
+    }
+}
