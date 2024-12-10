@@ -1,8 +1,11 @@
 use {
+    anchor_lang::AccountDeserialize,
     anyhow::Context,
-    bytemuck::bytes_of,
-    pyth_lazer_sdk::ed25519_program_args,
-    pyth_lazer_solana_example::{InitializeArgs, Instruction as ExampleInstruction, UpdateArgs},
+    bytemuck::{bytes_of, from_bytes},
+    pyth_lazer_solana_contract::ed25519_program_args,
+    pyth_lazer_solana_example::{
+        InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
+    },
     solana_client::rpc_client::RpcClient,
     solana_sdk::{
         instruction::{AccountMeta, Instruction},
@@ -49,6 +52,14 @@ fn main() -> anyhow::Result<()> {
         let signature = client.send_and_confirm_transaction(&tx)?;
         println!("OK {signature:?}");
     } else if cmd == "update" {
+        let state_data = client.get_account_data(&data_pda_key)?;
+        let state = from_bytes::<State>(&state_data);
+        println!("state: {state:?}");
+
+        let pyth_storage_data = client.get_account_data(&pyth_lazer_solana_contract::STORAGE_ID)?;
+        let pyth_storage =
+            pyth_lazer_solana_contract::Storage::try_deserialize(&mut &*pyth_storage_data)?;
+
         let message = hex::decode(env::var("LAZER_UPDATE_HEX")?)?;
         let mut update_data = vec![ExampleInstruction::Update as u8];
         update_data.extend_from_slice(bytes_of(&UpdateArgs { hello: 42 }));
@@ -60,8 +71,11 @@ fn main() -> anyhow::Result<()> {
         // Total offset of Pyth Lazer update within the instruction data;
         // 1 byte is the instruction type.
         let message_offset = (size_of::<UpdateArgs>() + 1).try_into().unwrap();
-        let ed25519_args =
-            pyth_lazer_sdk::signature_offsets(&update_data, instruction_index, message_offset);
+        let ed25519_args = pyth_lazer_solana_contract::Ed25519SignatureOffsets::new(
+            &message,
+            instruction_index,
+            message_offset,
+        );
         let tx = Transaction::new(
             &[&keypair],
             Message::new(
@@ -75,12 +89,16 @@ fn main() -> anyhow::Result<()> {
                         program_id,
                         &update_data,
                         vec![
-                            AccountMeta::new_readonly(sysvar::instructions::ID, false),
+                            AccountMeta::new(keypair.pubkey(), true),
                             AccountMeta::new(data_pda_key, false),
+                            AccountMeta::new(pyth_lazer_solana_contract::ID, false),
                             AccountMeta::new_readonly(
-                                pyth_lazer_solana_contract::storage::ID,
+                                pyth_lazer_solana_contract::STORAGE_ID,
                                 false,
                             ),
+                            AccountMeta::new(pyth_storage.treasury, false),
+                            AccountMeta::new_readonly(system_program::ID, false),
+                            AccountMeta::new_readonly(sysvar::instructions::ID, false),
                         ],
                     ),
                 ],

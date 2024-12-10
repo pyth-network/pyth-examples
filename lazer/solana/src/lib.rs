@@ -1,15 +1,27 @@
 use {
+    anchor_lang::{prelude::AccountMeta, InstructionData},
     bytemuck::{bytes_of, try_from_bytes, try_from_bytes_mut, Pod, Zeroable},
     num_derive::FromPrimitive,
     num_traits::FromPrimitive,
-    pyth_lazer_sdk::protocol::{
-        payload::{PayloadData, PayloadPropertyValue},
-        router::Channel,
+    pyth_lazer_solana_contract::{
+        instruction::VerifyMessage,
+        protocol::{
+            message::SolanaMessage,
+            payload::{PayloadData, PayloadPropertyValue},
+            router::Channel,
+        },
     },
     solana_program::{
-        account_info::AccountInfo, declare_id, entrypoint::ProgramResult, program::invoke_signed,
-        program_error::ProgramError, pubkey::Pubkey, rent::Rent,
-        system_instruction::create_account, sysvar::Sysvar,
+        account_info::AccountInfo,
+        declare_id,
+        entrypoint::ProgramResult,
+        instruction::Instruction as ProgramInstruction,
+        program::{invoke, invoke_signed},
+        program_error::ProgramError,
+        pubkey::Pubkey,
+        rent::Rent,
+        system_instruction::create_account,
+        sysvar::Sysvar,
     },
     std::mem::size_of,
 };
@@ -28,16 +40,20 @@ pub enum Instruction {
     /// Initialize the data PDA.
     /// Data: `InitializeArgs`
     /// Accounts:
-    /// 1. payer account
-    /// 2. data account
-    /// 3. system program
+    /// 1. payer account [writable]
+    /// 2. example data account [writable, non-existing]
+    /// 3. system program [readonly]
     Initialize = 0,
     /// Update price.
     /// Data: `UpdateArgs` followed by a signed Pyth Lazer update.
     /// Accounts:
-    /// 1. sysvar account [readonly] - required for Pyth Lazer
-    /// 2. data account [writable] - needed by our example contract
-    /// 3. pyth storage account [readonly] - required for Pyth Lazer
+    /// 1. payer account
+    /// 2. example data account [writable]
+    /// 3. pyth program account [readonly]
+    /// 4. pyth storage account [readonly]
+    /// 5. pyth treasury account [writable]
+    /// 6. system program [readonly]
+    /// 7. instructions sysvar sysvar account [readonly]
     Update = 1,
 }
 
@@ -149,14 +165,19 @@ pub fn process_update_instruction(
     instruction_args: &[u8],
 ) -> ProgramResult {
     // Verify accounts passed to the instruction.
-    if accounts.len() != 3 {
+    if accounts.len() != 7 {
         return Err(ProgramError::NotEnoughAccountKeys);
     }
-    let sysvar_account = &accounts[0];
+    let payer_account = &accounts[0];
     let data_account = &accounts[1];
-    let pyth_storage_account = &accounts[2];
+    let _pyth_program_account = &accounts[2];
+    let pyth_storage_account = &accounts[3];
+    let pyth_treasury_account = &accounts[4];
+    let system_program_account = &accounts[5];
+    let instructions_sysvar_account = &accounts[6];
 
-    let (data_pda_key, _) = Pubkey::find_program_address(&[DATA_PDA_SEED], program_id);
+    let (data_pda_key, _data_pda_bump_seed) =
+        Pubkey::find_program_address(&[DATA_PDA_SEED], program_id);
     if data_account.key != &data_pda_key {
         return Err(ProgramError::InvalidAccountData);
     }
@@ -180,18 +201,40 @@ pub fn process_update_instruction(
     // We expect our signature to be the first (and only) signature to be checked
     // by the built-in ed25519 program within the transaction.
     let signature_index = 0;
+
     // Check signature verification.
-    let verified = pyth_lazer_sdk::verify_message(
-        pyth_storage_account,
-        sysvar_account,
-        pyth_message,
-        ed25519_instruction_index,
-        signature_index,
-        pyth_message_total_offset.try_into().unwrap(),
+    invoke(
+        &ProgramInstruction::new_with_bytes(
+            pyth_lazer_solana_contract::ID,
+            &VerifyMessage {
+                message_data: pyth_message.to_vec(),
+                ed25519_instruction_index,
+                signature_index,
+                message_offset: pyth_message_total_offset.try_into().unwrap(),
+            }
+            .data(),
+            vec![
+                AccountMeta::new(*payer_account.key, true),
+                AccountMeta::new_readonly(*pyth_storage_account.key, false),
+                AccountMeta::new(*pyth_treasury_account.key, false),
+                AccountMeta::new_readonly(*system_program_account.key, false),
+                AccountMeta::new_readonly(*instructions_sysvar_account.key, false),
+            ],
+        ),
+        &[
+            payer_account.clone(),
+            pyth_storage_account.clone(),
+            pyth_treasury_account.clone(),
+            system_program_account.clone(),
+            instructions_sysvar_account.clone(),
+        ],
     )?;
 
+    let pyth_message = SolanaMessage::deserialize_slice(pyth_message)
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+
     // Deserialize and use the payload.
-    let data = PayloadData::deserialize_slice_le(verified.payload)
+    let data = PayloadData::deserialize_slice_le(&pyth_message.payload)
         .map_err(|_| ProgramError::InvalidInstructionData)?;
 
     if data.feeds.is_empty() || data.feeds[0].properties.is_empty() {
