@@ -1,14 +1,15 @@
 use {
     anchor_lang::InstructionData,
     bytemuck::{bytes_of, from_bytes},
-    pyth_lazer_sdk::ed25519_program_args,
+    pyth_lazer_solana_contract::ed25519_program_args,
     pyth_lazer_solana_example::{
         process_instruction, InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
     },
     solana_program::instruction::{AccountMeta, Instruction},
     solana_program_test::{processor, ProgramTest},
     solana_sdk::{
-        pubkey::Pubkey, signer::Signer, system_program, sysvar, transaction::Transaction,
+        pubkey::Pubkey, signer::Signer, system_instruction, system_program, sysvar,
+        transaction::Transaction,
     },
     std::env,
 };
@@ -45,16 +46,38 @@ async fn test1() {
     );
     let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
 
+    let treasury =
+        Pubkey::create_with_seed(&payer.pubkey(), "treasury", &system_program::ID).unwrap();
+
+    let mut transaction_create_treasury = Transaction::new_with_payer(
+        &[system_instruction::create_account_with_seed(
+            &payer.pubkey(),
+            &treasury,
+            &payer.pubkey(),
+            "treasury",
+            10_000_000,
+            0,
+            &system_program::ID,
+        )],
+        Some(&payer.pubkey()),
+    );
+    transaction_create_treasury.sign(&[&payer], recent_blockhash);
+    banks_client
+        .process_transaction(transaction_create_treasury)
+        .await
+        .unwrap();
+
     let mut transaction_init_contract = Transaction::new_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
             &pyth_lazer_solana_contract::instruction::Initialize {
                 top_authority: payer.pubkey(),
+                treasury,
             }
             .data(),
             vec![
                 AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(pyth_lazer_solana_contract::storage::ID, false),
+                AccountMeta::new(pyth_lazer_solana_contract::STORAGE_ID, false),
                 AccountMeta::new_readonly(system_program::ID, false),
             ],
         )],
@@ -85,7 +108,7 @@ async fn test1() {
             .data(),
             vec![
                 AccountMeta::new(payer.pubkey(), true),
-                AccountMeta::new(pyth_lazer_solana_contract::storage::ID, false),
+                AccountMeta::new(pyth_lazer_solana_contract::STORAGE_ID, false),
             ],
         )],
         Some(&payer.pubkey()),
@@ -140,8 +163,11 @@ async fn test1() {
     // Total offset of Pyth Lazer update within the instruction data;
     // 1 byte is the instruction type.
     let message_offset = (size_of::<UpdateArgs>() + 1).try_into().unwrap();
-    let ed25519_args =
-        pyth_lazer_sdk::signature_offsets(&update_data, instruction_index, message_offset);
+    let ed25519_args = pyth_lazer_solana_contract::Ed25519SignatureOffsets::new(
+        &message,
+        instruction_index,
+        message_offset,
+    );
     let mut transaction_update = Transaction::new_with_payer(
         &[
             Instruction::new_with_bytes(
@@ -153,9 +179,13 @@ async fn test1() {
                 pyth_lazer_solana_example::ID,
                 &update_data,
                 vec![
-                    AccountMeta::new_readonly(sysvar::instructions::ID, false),
+                    AccountMeta::new(payer.pubkey(), true),
                     AccountMeta::new(data_pda_key, false),
-                    AccountMeta::new_readonly(pyth_lazer_solana_contract::storage::ID, false),
+                    AccountMeta::new(pyth_lazer_solana_contract::ID, false),
+                    AccountMeta::new_readonly(pyth_lazer_solana_contract::STORAGE_ID, false),
+                    AccountMeta::new(treasury, false),
+                    AccountMeta::new_readonly(system_program::ID, false),
+                    AccountMeta::new_readonly(sysvar::instructions::ID, false),
                 ],
             ),
         ],
