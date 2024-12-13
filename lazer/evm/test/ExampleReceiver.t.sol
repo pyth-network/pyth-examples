@@ -15,21 +15,27 @@ contract ExampleReceiverTest is Test {
         address lazer = makeAddr("lazer");
         PythLazer pythLazer = new PythLazer();
         pythLazer.initialize(lazer);
+
         vm.prank(lazer);
         pythLazer.updateTrustedSigner(trustedSigner, 3000000000000000);
+        uint256 fee = pythLazer.verification_fee();
 
         address consumer = makeAddr("consumer");
+        vm.deal(consumer, 10 wei);
+
         ExampleReceiver receiver = new ExampleReceiver(address(pythLazer));
         bytes memory update =
             hex"2a22999a577d3cc0202197939d736bc0dcf71b9dde7b9470e4d16fa8e2120c0787a1c0d744d0c39cc372af4d1ecf2d09e84160ca905f3f597d20e2eec144a446a0459ad600001c93c7d3750006240af373971c01010000000201000000000005f5e100";
         console.logBytes(update);
 
-        vm.deal(consumer, 1 ether);
         vm.prank(consumer);
-        receiver.updatePrice{value: pythLazer.verification_fee()}(update);
+        receiver.updatePrice{value: 5 * fee}(update);
+
         assertEq(receiver.price(), 100000000);
         assertEq(receiver.timestamp(), 1728479312975644);
-        assertEq(address(pythLazer).balance, pythLazer.verification_fee());
-        assertEq(consumer.balance, 1 ether - pythLazer.verification_fee());
+
+        assertEq(address(pythLazer).balance, fee);
+        assertEq(address(receiver).balance, 0);
+        assertEq(consumer.balance, 10 wei - fee);
     }
 }

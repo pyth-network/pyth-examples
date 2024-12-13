@@ -7,17 +7,20 @@ import {PythLazerLib} from "pyth-lazer/PythLazerLib.sol";
 
 contract ExampleReceiver {
     PythLazer pythLazer;
+    uint256 verification_fee;
     uint64 public price;
     uint64 public timestamp;
 
     constructor(address pythLazerAddress) {
         pythLazer = PythLazer(pythLazerAddress);
+        verification_fee = pythLazer.verification_fee();
     }
 
     function updatePrice(bytes calldata update) payable public {
-        (bytes memory payload,) = pythLazer.verifyUpdate{value: pythLazer.verification_fee()}(update);
-        if (msg.value > pythLazer.verification_fee()) {
-            payable(msg.sender).transfer(msg.value - pythLazer.verification_fee());
+        require(msg.value >= verification_fee, "Insufficient fee provided");
+        (bytes memory payload,) = pythLazer.verifyUpdate{value: verification_fee}(update);
+        if (msg.value > verification_fee) {
+            payable(msg.sender).transfer(msg.value - verification_fee);
         }
 
         (uint64 _timestamp, PythLazerLib.Channel channel, uint8 feedsLen, uint16 pos) =
