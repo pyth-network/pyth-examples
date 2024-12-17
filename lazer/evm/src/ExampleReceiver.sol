@@ -14,8 +14,14 @@ contract ExampleReceiver {
         pythLazer = PythLazer(pythLazerAddress);
     }
 
-    function updatePrice(bytes calldata update) public {
-        (bytes memory payload,) = pythLazer.verifyUpdate(update);
+    function updatePrice(bytes calldata update) public payable {
+        uint256 verification_fee = pythLazer.verification_fee();
+        require(msg.value >= verification_fee, "Insufficient fee provided");
+        (bytes memory payload,) = pythLazer.verifyUpdate{value: verification_fee}(update);
+        if (msg.value > verification_fee) {
+            payable(msg.sender).transfer(msg.value - verification_fee);
+        }
+
         (uint64 _timestamp, PythLazerLib.Channel channel, uint8 feedsLen, uint16 pos) =
             PythLazerLib.parsePayloadHeader(payload);
         console.log("timestamp %d", _timestamp);
