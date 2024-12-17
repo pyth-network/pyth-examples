@@ -79,7 +79,7 @@ client.addMessageListener(async (message) => {
   console.log("rawData:", rawData);
 
   // Decode the base64 encoded data
-  const instructionMessage = Buffer.from(rawData!, "base64");
+  const instructionMessage = Buffer.from(rawData!, "hex");
   console.log("instructionMessage:", instructionMessage);
 
   // Create the ed25519 instruction
@@ -170,6 +170,6 @@ client.ws.addEventListener("open", () => {
     chains: ["solana"],
     deliveryFormat: "json",
     channel: "real_time",
-    jsonBinaryEncoding: "base64",
+    jsonBinaryEncoding: "hex",
   });
 });
