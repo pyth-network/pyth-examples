@@ -26,7 +26,7 @@ use {
     std::mem::size_of,
 };
 
-// rustfmt's unstable import merging feature breaks complilation.
+// rustfmt's unstable import merging feature breaks compilation.
 #[rustfmt::skip]
 use solana_program::entrypoint;
 
