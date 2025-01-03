@@ -5,9 +5,7 @@ use {
             native_token::LAMPORTS_PER_SOL, system_instruction, sysvar::instructions,
         },
     },
-    pyth_solana_receiver_sdk::
-        price_update::{get_feed_id_from_hex, PriceUpdateV2},
-    
+    pyth_solana_receiver_sdk::price_update::{get_feed_id_from_hex, PriceUpdateV2},
 };
 
 mod compute_budget;
@@ -16,7 +14,8 @@ declare_id!("A36p4i3fmZZgEFCRimUyBT8disdfLWfZaY4hPwYJahsV");
 
 pub const MAXIMUM_AGE: u64 = 1;
 pub const FEED_ID: &str = "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d";
-pub const SOL_USD_PRICE_FEED_ADDRESS: Pubkey = pubkey!("7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE");
+pub const SOL_USD_PRICE_FEED_ADDRESS: Pubkey =
+    pubkey!("7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE");
 
 #[program]
 pub mod send_usd {
@@ -37,11 +36,11 @@ pub mod send_usd {
         )?;
 
         let amount_in_lamports = LAMPORTS_PER_SOL
+            .checked_div(10_u64.pow(price.exponent.abs().try_into().unwrap()))
+            .unwrap()
             .checked_mul(amount_in_usd)
             .unwrap()
             .checked_mul(price.price.try_into().unwrap())
-            .unwrap()
-            .checked_div(10_u64.pow(price.exponent.abs().try_into().unwrap()))
             .unwrap();
 
         let transfer_instruction = system_instruction::transfer(
