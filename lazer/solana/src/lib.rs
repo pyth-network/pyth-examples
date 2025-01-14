@@ -192,9 +192,6 @@ pub fn process_update_instruction(
     }
     let pyth_message = &instruction_args[size_of::<UpdateArgs>()..];
 
-    // Offset of pyth message within the original instruction_data.
-    // 1 byte is the instruction id.
-    let pyth_message_total_offset = size_of::<UpdateArgs>() + 1;
     // We expect the instruction to the built-in ed25519 program to be
     // the first instruction within the transaction.
     let ed25519_instruction_index = 0;
@@ -202,7 +199,7 @@ pub fn process_update_instruction(
     // by the built-in ed25519 program within the transaction.
     let signature_index = 0;
 
-    // Check signature verification.
+    // Verify Lazer signature.
     invoke(
         &ProgramInstruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
@@ -210,7 +207,6 @@ pub fn process_update_instruction(
                 message_data: pyth_message.to_vec(),
                 ed25519_instruction_index,
                 signature_index,
-                message_offset: pyth_message_total_offset.try_into().unwrap(),
             }
             .data(),
             vec![
