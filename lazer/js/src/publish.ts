@@ -1,5 +1,7 @@
-import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
-import { createEd25519Instruction } from "./ed25519.js";
+import {
+  PythLazerClient,
+  createEd25519Instruction,
+} from "@pythnetwork/pyth-lazer-sdk";
 import fs from "fs";
 
 import {
@@ -15,7 +17,7 @@ import { SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
 
 const SOLANA_RPC_URL = "https://api.devnet.solana.com";
 const PAYER_SECRET_KEY = Uint8Array.from(
-  JSON.parse(fs.readFileSync("/path/to/secret/key.json", "utf8")) as number[]
+  JSON.parse(fs.readFileSync("/path/to/private-key.json", "utf8")) as number[]
 );
 // Program ID of the example contract on devnet
 const PROGRAM_ID = "HU64YGK66e1wdxD83D3snGuZEvfhM4YDdYShTfQvf6nm";
@@ -35,16 +37,17 @@ const connection = new Connection(SOLANA_RPC_URL, "confirmed");
 const payer = Keypair.fromSecretKey(PAYER_SECRET_KEY);
 
 /* eslint-disable no-console */
-const client = new PythLazerClient(
-  "wss://pyth-lazer-staging.dourolabs.app/v1/stream",
-  "{access_token}"
+const client = await PythLazerClient.create(
+  ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
+  "my_token"
 );
 
-let received = false;
+// data received from pyth lazer
+let rawData: string | undefined = undefined;
 
 client.addMessageListener(async (message) => {
   // avoid processing multiple messages
-  if (received) {
+  if (rawData) {
     return;
   }
 
@@ -64,7 +67,7 @@ client.addMessageListener(async (message) => {
 
   // close the ws connection
   // we only need 1 message
-  client.ws.close();
+  client.shutdown();
 
   // We are expecting a streamUpdated message
   if (message.value.type !== "streamUpdated") {
@@ -72,10 +75,8 @@ client.addMessageListener(async (message) => {
     return;
   }
 
-  received = true;
-
   // Extract the base64 encoded data
-  const rawData = message.value.solana?.data;
+  rawData = message.value.solana?.data;
   console.log("rawData:", rawData);
 
   // Decode the base64 encoded data
@@ -160,16 +161,14 @@ client.addMessageListener(async (message) => {
   console.log("Transaction confirmed with signature:", signature);
 });
 
-client.ws.addEventListener("open", () => {
-  client.send({
-    type: "subscribe",
-    subscriptionId: 1,
-    // Example contract receives ETH/USD price
-    priceFeedIds: [2],
-    properties: ["price"],
-    chains: ["solana"],
-    deliveryFormat: "json",
-    channel: "real_time",
-    jsonBinaryEncoding: "hex",
-  });
+client.subscribe({
+  type: "subscribe",
+  subscriptionId: 1,
+  // Example contract receives ETH/USD price
+  priceFeedIds: [2],
+  properties: ["price"],
+  chains: ["solana"],
+  deliveryFormat: "json",
+  channel: "real_time",
+  jsonBinaryEncoding: "hex",
 });

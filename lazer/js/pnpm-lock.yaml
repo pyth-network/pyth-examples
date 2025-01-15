@@ -9,11 +9,8 @@ importers:
   .:
     dependencies:
       '@pythnetwork/pyth-lazer-sdk':
-        specifier: ^0.1.1
-        version: 0.1.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
-      '@solana/buffer-layout':
-        specifier: ^4.0.1
-        version: 4.0.1
+        specifier: ^0.3.1
+        version: 0.3.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       '@solana/web3.js':
         specifier: ^1.98.0
         version: 1.98.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -47,6 +44,10 @@ packages:
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
 
+  '@isaacs/ttlcache@1.4.1':
+    resolution: {integrity: sha512-RQgQ4uQ+pLbqXfOmieB91ejmLwvSgv9nLx6sT6sD83s7umBypgg+OIBOBbEUiJXrfpnp9j0mRhYYdzp9uqq3lA==}
+    engines: {node: '>=12'}
+
   '@jridgewell/resolve-uri@3.1.2':
     resolution: {integrity: sha512-bRISgCIjP20/tbWSPWMEi54QVPRZExkuD9lJL+UIxUKtwVJA8wW1Trb1jMs1RFXo1CBTNZ/5hpC9QvmKWdopKw==}
     engines: {node: '>=6.0.0'}
@@ -69,8 +70,8 @@ packages:
     resolution: {integrity: sha512-pq5D8h10hHBjyqX+cfBm0i8JUXJ0UhczFc4r74zbuT9XgewFo2E3J1cOaGtdZynILNmQ685YWGzGE1Zv6io50w==}
     engines: {node: ^14.21.3 || >=16}
 
-  '@pythnetwork/pyth-lazer-sdk@0.1.1':
-    resolution: {integrity: sha512-/Zr9qbNi9YZb9Nl3ilkUKgeSQovevsXV57pIGrw04NFUmK4Ua92o2SyK8RRaqcw8zYtiDbseU1CgWHCfGYjRRQ==}
+  '@pythnetwork/pyth-lazer-sdk@0.3.1':
+    resolution: {integrity: sha512-Zfk/PnGt8d+L4kklR+4AalKrhvqMFw7uP2/wzvFmLXU9G/vRUJiGaqQM2tbMTxQDWevUqVF2p6kNg306kd1C9g==}
 
   '@solana/buffer-layout@4.0.1':
     resolution: {integrity: sha512-E1ImOIAD1tBZFRdjeM4/pzTiTApC0AOBGwyAMS4fwIodCWArzJ3DWdoh8cKxeFM2fElkxBh2Aqts1BPC373rHA==}
@@ -268,6 +269,9 @@ packages:
   tr46@0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
 
+  ts-log@2.2.7:
+    resolution: {integrity: sha512-320x5Ggei84AxzlXp91QkIGSw5wgaLT6GeAH0KsqDmRZdVWW2OiSeVvElVoatk3f7nicwXlElXsoFkARiGE2yg==}
+
   ts-node@10.9.2:
     resolution: {integrity: sha512-f0FFpIdcHgn8zcPSbf1dRevwt047YMnaiJM3u2w2RewrB+fob/zePZcrOyQoLMMO7aBIddLcQIEK5dYjkLnGrQ==}
     hasBin: true
@@ -350,6 +354,8 @@ snapshots:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
+  '@isaacs/ttlcache@1.4.1': {}
+
   '@jridgewell/resolve-uri@3.1.2': {}
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
@@ -367,12 +373,17 @@ snapshots:
 
   '@noble/hashes@1.6.1': {}
 
-  '@pythnetwork/pyth-lazer-sdk@0.1.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
+  '@pythnetwork/pyth-lazer-sdk@0.3.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)':
     dependencies:
+      '@isaacs/ttlcache': 1.4.1
+      '@solana/buffer-layout': 4.0.1
+      '@solana/web3.js': 1.98.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       isomorphic-ws: 5.0.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))
+      ts-log: 2.2.7
       ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
+      - encoding
       - utf-8-validate
 
   '@solana/buffer-layout@4.0.1':
@@ -581,6 +592,8 @@ snapshots:
   through@2.3.8: {}
 
   tr46@0.0.3: {}
+
+  ts-log@2.2.7: {}
 
   ts-node@10.9.2(@types/node@22.10.0)(typescript@5.7.2):
     dependencies:
