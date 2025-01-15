@@ -3,7 +3,7 @@ import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
 /* eslint-disable no-console */
 const client = await PythLazerClient.create(
   ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-  "my_token"
+  "my_token",
 );
 
 client.addMessageListener((message) => {
@@ -15,7 +15,7 @@ client.addMessageListener((message) => {
           "stream updated for subscription",
           message.value.subscriptionId,
           ":",
-          message.value.parsed?.priceFeeds
+          message.value.parsed?.priceFeeds,
         );
       }
       break;

@@ -17,7 +17,7 @@ import { SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
 
 const SOLANA_RPC_URL = "https://api.devnet.solana.com";
 const PAYER_SECRET_KEY = Uint8Array.from(
-  JSON.parse(fs.readFileSync("/path/to/private-key.json", "utf8")) as number[]
+  JSON.parse(fs.readFileSync("/path/to/private-key.json", "utf8")) as number[],
 );
 // Program ID of the example contract on devnet
 const PROGRAM_ID = "HU64YGK66e1wdxD83D3snGuZEvfhM4YDdYShTfQvf6nm";
@@ -39,7 +39,7 @@ const payer = Keypair.fromSecretKey(PAYER_SECRET_KEY);
 /* eslint-disable no-console */
 const client = await PythLazerClient.create(
   ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-  "my_token"
+  "my_token",
 );
 
 // data received from pyth lazer
@@ -155,7 +155,7 @@ client.addMessageListener(async (message) => {
     [payer],
     {
       skipPreflight: true,
-    }
+    },
   );
 
   console.log("Transaction confirmed with signature:", signature);
