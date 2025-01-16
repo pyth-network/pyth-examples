@@ -11,6 +11,9 @@ importers:
       '@pythnetwork/pyth-lazer-sdk':
         specifier: ^0.3.1
         version: 0.3.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@solana/web3.js':
+        specifier: ^1.98.0
+        version: 1.98.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     devDependencies:
       '@cprussin/tsconfig':
         specifier: ^3.0.1
