@@ -4,7 +4,7 @@ import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
 async function main() {
   const client = await PythLazerClient.create(
     ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-    "YOUR_ACCESS_TOKEN",
+    "YOUR_ACCESS_TOKEN", // replace with your access token
   );
   client.addMessageListener((message) => {
     console.log("got message:", message);
