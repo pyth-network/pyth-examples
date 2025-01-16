@@ -1,11 +1,11 @@
 import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
 
-const main = async () => {
+/* eslint-disable no-console */
+async function main() {
   const client = await PythLazerClient.create(
     ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-    "my_token",
+    "YOUR_ACCESS_TOKEN",
   );
-
   client.addMessageListener((message) => {
     console.log("got message:", message);
     switch (message.type) {
@@ -31,11 +31,6 @@ const main = async () => {
       }
     }
   });
-
-  client.addAllConnectionsDownListener(() => {
-    console.log("All connections are down");
-  });
-
   client.subscribe({
     type: "subscribe",
     subscriptionId: 1,
@@ -46,9 +41,6 @@ const main = async () => {
     channel: "fixed_rate@200ms",
     jsonBinaryEncoding: "hex",
   });
-
-  // shutdown client after 10 seconds
-  setTimeout(() => client.shutdown(), 10000);
-};
+}
 
 main();
