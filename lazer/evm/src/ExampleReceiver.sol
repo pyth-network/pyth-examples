@@ -55,6 +55,14 @@ contract ExampleReceiver {
                     uint64 _price;
                     (_price, pos) = PythLazerLib.parseFeedValueUint64(payload, pos);
                     console.log("best ask price %d", _price);
+                } else if (property == PythLazerLib.PriceFeedProperty.Exponent) {
+                    int16 _exponent;
+                    (_exponent, pos) = PythLazerLib.parseFeedValueInt16(payload, pos);
+                    console.log("exponent %d", _exponent);
+                } else if (property == PythLazerLib.PriceFeedProperty.PublisherCount) {
+                    int16 _publisher_count;
+                    (_publisher_count, pos) = PythLazerLib.parseFeedValueUint16(payload, pos);
+                    console.log("publisher count %d", _publisher_count);
                 } else {
                     revert("unknown property");
                 }

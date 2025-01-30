@@ -168,7 +168,7 @@ const main = async () => {
     properties: ["price"],
     chains: ["solana"],
     deliveryFormat: "json",
-    channel: "real_time",
+    channel: "fixed_rate@1ms",
     jsonBinaryEncoding: "hex",
   });
 };
