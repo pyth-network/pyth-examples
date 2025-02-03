@@ -9,7 +9,7 @@ contract ExampleReceiverTest is Test {
     function setUp() public {}
 
     function test_1() public {
-        address trustedSigner = 0xEfEf56cD66896f6799A90A4e4d512C330c094e44;
+        address trustedSigner = 0xb8d50f0bAE75BF6E03c104903d7C3aFc4a6596Da;
         console.log("trustedSigner %s", trustedSigner);
 
         address lazer = makeAddr("lazer");
@@ -25,14 +25,16 @@ contract ExampleReceiverTest is Test {
 
         ExampleReceiver receiver = new ExampleReceiver(address(pythLazer));
         bytes memory update =
-            hex"2a22999a577d3cc0202197939d736bc0dcf71b9dde7b9470e4d16fa8e2120c0787a1c0d744d0c39cc372af4d1ecf2d09e84160ca905f3f597d20e2eec144a446a0459ad600001c93c7d3750006240af373971c01010000000201000000000005f5e100";
+            hex"2a22999a9ee4e2a3df5affd0ad8c7c46c96d3b5ef197dd653bedd8f44a4b6b69b767fbc66341e80b80acb09ead98c60d169b9a99657ebada101f447378f227bffbc69d3d01003493c7d37500062cf28659c1e801010000000605000000000005f5e10002000000000000000001000000000000000003000104fff8";
         console.logBytes(update);
 
         vm.prank(consumer);
         receiver.updatePrice{value: 5 * fee}(update);
 
+        assertEq(receiver.timestamp(), 1738270008001000);
         assertEq(receiver.price(), 100000000);
-        assertEq(receiver.timestamp(), 1728479312975644);
+        assertEq(receiver.exponent(), -8);
+        assertEq(receiver.publisher_count(), 1);
 
         assertEq(address(pythLazer).balance, fee);
         assertEq(address(receiver).balance, 0);

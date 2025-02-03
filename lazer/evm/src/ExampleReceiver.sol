@@ -9,6 +9,8 @@ contract ExampleReceiver {
     PythLazer pythLazer;
     uint64 public price;
     uint64 public timestamp;
+    int16 public exponent;
+    uint16 public publisher_count;
 
     constructor(address pythLazerAddress) {
         pythLazer = PythLazer(pythLazerAddress);
@@ -43,7 +45,7 @@ contract ExampleReceiver {
                     uint64 _price;
                     (_price, pos) = PythLazerLib.parseFeedValueUint64(payload, pos);
                     console.log("price %d", _price);
-                    if (feedId == 2 && _timestamp > timestamp) {
+                    if (feedId == 6 && _timestamp > timestamp) {
                         price = _price;
                         timestamp = _timestamp;
                     }
@@ -55,6 +57,16 @@ contract ExampleReceiver {
                     uint64 _price;
                     (_price, pos) = PythLazerLib.parseFeedValueUint64(payload, pos);
                     console.log("best ask price %d", _price);
+                } else if (property == PythLazerLib.PriceFeedProperty.Exponent) {
+                    int16 _exponent;
+                    (_exponent, pos) = PythLazerLib.parseFeedValueInt16(payload, pos);
+                    console.log("exponent %d", _exponent);
+                    exponent = _exponent;
+                } else if (property == PythLazerLib.PriceFeedProperty.PublisherCount) {
+                    uint16 _publisher_count;
+                    (_publisher_count, pos) = PythLazerLib.parseFeedValueUint16(payload, pos);
+                    console.log("publisher count %d", _publisher_count);
+                    publisher_count = _publisher_count;
                 } else {
                     revert("unknown property");
                 }
