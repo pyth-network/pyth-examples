@@ -9,7 +9,7 @@ contract ExampleReceiverTest is Test {
     function setUp() public {}
 
     function test_1() public {
-        address trustedSigner = 0xEfEf56cD66896f6799A90A4e4d512C330c094e44;
+        address trustedSigner = 0xb8d50f0bAE75BF6E03c104903d7C3aFc4a6596Da;
         console.log("trustedSigner %s", trustedSigner);
 
         address lazer = makeAddr("lazer");
@@ -34,7 +34,7 @@ contract ExampleReceiverTest is Test {
         assertEq(receiver.timestamp(), 1738270008001000);
         assertEq(receiver.price(), 100000000);
         assertEq(receiver.exponent(), -8);
-        assertEq(receiver.publisherCount(), 1);
+        assertEq(receiver.publisher_count(), 1);
 
         assertEq(address(pythLazer).balance, fee);
         assertEq(address(receiver).balance, 0);
