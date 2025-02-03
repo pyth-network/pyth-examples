@@ -45,7 +45,7 @@ contract ExampleReceiver {
                     uint64 _price;
                     (_price, pos) = PythLazerLib.parseFeedValueUint64(payload, pos);
                     console.log("price %d", _price);
-                    if (feedId == 2 && _timestamp > timestamp) {
+                    if (feedId == 6 && _timestamp > timestamp) {
                         price = _price;
                         timestamp = _timestamp;
                     }
