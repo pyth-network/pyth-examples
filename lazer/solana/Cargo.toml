@@ -14,7 +14,7 @@ required-features = ["client"]
 [dependencies]
 solana-program = "1.18.26"
 anchor-lang = "0.30.1"
-pyth-lazer-solana-contract = { version = "0.2.0", features = ["no-entrypoint"] }
+pyth-lazer-solana-contract = { version = "0.3.0", features = ["no-entrypoint"] }
 bytemuck = { version = "1.18.0", features = ["derive"] }
 num-traits = "0.2.19"
 num-derive = "0.4.2"
