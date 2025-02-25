@@ -6,9 +6,9 @@ use {
     num_derive::FromPrimitive,
     num_traits::FromPrimitive,
     pyth_lazer_solana_contract::{
-        instruction::VerifyMessage,
+        instruction::{VerifyEcdsaMessage, VerifyMessage},
         protocol::{
-            message::SolanaMessage,
+            message::{LeEcdsaMessage, SolanaMessage},
             payload::{PayloadData, PayloadPropertyValue},
             router::{Channel, FixedRate},
         },
@@ -46,7 +46,7 @@ pub enum Instruction {
     /// 2. example data account [writable, non-existing]
     /// 3. system program [readonly]
     Initialize = 0,
-    /// Update price.
+    /// Update price using a native Solana signature.
     /// Data: `UpdateArgs` followed by a signed Pyth Lazer update.
     /// Accounts:
     /// 1. payer account
@@ -57,6 +57,16 @@ pub enum Instruction {
     /// 6. system program [readonly]
     /// 7. instructions sysvar sysvar account [readonly]
     Update = 1,
+    /// Update price using an ECDSA signature.
+    /// Data: `UpdateArgs` followed by a signed Pyth Lazer update.
+    /// Accounts:
+    /// 1. payer account
+    /// 2. example data account [writable]
+    /// 3. pyth program account [readonly]
+    /// 4. pyth storage account [readonly]
+    /// 5. pyth treasury account [writable]
+    /// 6. system program [readonly]
+    UpdateEcdsa = 2,
 }
 
 /// Inputs to the `Initialize` instruction.
@@ -108,6 +118,9 @@ pub fn process_instruction(
             process_initialize_instruction(program_id, accounts, instruction_args)
         }
         Instruction::Update => process_update_instruction(program_id, accounts, instruction_args),
+        Instruction::UpdateEcdsa => {
+            process_update_ecdsa_instruction(program_id, accounts, instruction_args)
+        }
     }
 }
 
@@ -235,15 +248,83 @@ pub fn process_update_instruction(
     let data = PayloadData::deserialize_slice_le(&pyth_message.payload)
         .map_err(|_| ProgramError::InvalidInstructionData)?;
 
-    if data.feeds.is_empty() || data.feeds[0].properties.is_empty() {
-        return Err(ProgramError::InvalidInstructionData);
+    apply_update(data_account, &data)
+}
+
+pub fn process_update_ecdsa_instruction(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+    instruction_args: &[u8],
+) -> ProgramResult {
+    // Verify accounts passed to the instruction.
+    if accounts.len() != 6 {
+        return Err(ProgramError::NotEnoughAccountKeys);
+    }
+    let payer_account = &accounts[0];
+    let data_account = &accounts[1];
+    let _pyth_program_account = &accounts[2];
+    let pyth_storage_account = &accounts[3];
+    let pyth_treasury_account = &accounts[4];
+    let system_program_account = &accounts[5];
+
+    let (data_pda_key, _data_pda_bump_seed) =
+        Pubkey::find_program_address(&[DATA_PDA_SEED], program_id);
+    if data_account.key != &data_pda_key {
+        return Err(ProgramError::InvalidAccountData);
     }
 
+    // Parse instruction data.
+    let update_args = instruction_args
+        .get(..size_of::<UpdateArgs>())
+        .and_then(|data| try_from_bytes::<UpdateArgs>(data).ok())
+        .ok_or(ProgramError::InvalidInstructionData)?;
+    if update_args.hello != 42 {
+        return Err(ProgramError::InvalidInstructionData);
+    }
+    let pyth_message = &instruction_args[size_of::<UpdateArgs>()..];
+
+    // Verify Lazer signature.
+    invoke(
+        &ProgramInstruction::new_with_bytes(
+            pyth_lazer_solana_contract::ID,
+            &VerifyEcdsaMessage {
+                message_data: pyth_message.to_vec(),
+            }
+            .data(),
+            vec![
+                AccountMeta::new(*payer_account.key, true),
+                AccountMeta::new_readonly(*pyth_storage_account.key, false),
+                AccountMeta::new(*pyth_treasury_account.key, false),
+                AccountMeta::new_readonly(*system_program_account.key, false),
+            ],
+        ),
+        &[
+            payer_account.clone(),
+            pyth_storage_account.clone(),
+            pyth_treasury_account.clone(),
+            system_program_account.clone(),
+        ],
+    )?;
+
+    let pyth_message = LeEcdsaMessage::deserialize_slice(pyth_message)
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+
+    // Deserialize and use the payload.
+    let data = PayloadData::deserialize_slice_le(&pyth_message.payload)
+        .map_err(|_| ProgramError::InvalidInstructionData)?;
+
+    apply_update(data_account, &data)
+}
+
+fn apply_update(data_account: &AccountInfo<'_>, data: &PayloadData) -> ProgramResult {
     // Read the data PDA of our example contract.
     let mut state_data = data_account.data.borrow_mut();
     let state =
         try_from_bytes_mut::<State>(*state_data).map_err(|_| ProgramError::InvalidAccountData)?;
 
+    if data.feeds.is_empty() || data.feeds[0].properties.is_empty() {
+        return Err(ProgramError::InvalidInstructionData);
+    }
     if state.price_feed != data.feeds[0].feed_id.0 {
         return Err(ProgramError::InvalidInstructionData);
     }
