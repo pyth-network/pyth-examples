@@ -1,0 +1,19 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+broadcast/
+
+# Docs
+docs/
+
+# Dotenv file
+.env
+
+lib/*
+!lib/README.md
+
+*~
+
+node_modules
