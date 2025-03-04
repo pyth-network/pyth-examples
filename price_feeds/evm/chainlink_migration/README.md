@@ -4,6 +4,8 @@ This example demonstrates how to deploy a Chainlink-compatible application to Py
 The application `src/ChainlinkApp.sol` is designed to use Chainlink price feeds.
 The script `script/PythAggregatorV3Deployment.sol` deploys this application with the [`PythAggregatorV3`](https://github.com/pyth-network/pyth-crosschain/blob/main/target_chains/ethereum/sdk/solidity/PythAggregatorV3.sol) adapter contract, such that it uses Pyth price feeds.
 
+This aggregator can be used to deploy Pyth Oracles for [Morpho vaults](https://docs.morpho.org/morpho/tutorials/deploy-an-oracle/#2-fill-all-attributes).
+
 ## Installation
 
 This example uses [Foundry](https://book.getfoundry.sh/getting-started/installation), `npm` and `jq`.
@@ -30,7 +32,15 @@ export PYTH_ADDRESS=0x0708325268dF9F66270F1401206434524814508b
 Then, deploy the contracts by running:
 
 ```bash copy
-forge script script/PythAggregatorV3Deployment.s.sol --rpc-url $RPC_URL --broadcast
+forge script script/PythAggregatorV3Deployment.s.sol --rpc-url $RPC_URL --broadcast --verify
+```
+
+This command will deploy the `PythAggregatorV3` contract.
+
+To test the Chainlink App, you can run the following command:
+
+```bash copy
+forge script script/ChainlinkApp.s.sol --rpc-url $RPC_URL --broadcast --verify
 ```
 
 This command will print something like:
