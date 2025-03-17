@@ -20,7 +20,7 @@ import { Connection, PublicKey } from "@solana/web3.js";
 import * as buffer from "buffer";
 import { AnchorProvider, BN, Program, Wallet } from "@coral-xyz/anchor";
 import { SendUSDApp, IDL } from "./idl/send_usd_app";
-import { PriceServiceConnection } from "@pythnetwork/price-service-client";
+import { HermesClient } from "@pythnetwork/hermes-client";
 import { useState } from "react";
 window.Buffer = buffer.Buffer;
 
@@ -43,17 +43,13 @@ async function postPriceUpdate(
   if (!(wallet && destination && amount)) {
     return;
   } else {
-    const priceServiceConnection = new PriceServiceConnection(HERMES_URL, {
-      priceFeedRequestConfig: { binary: true },
-    });
+    const hermesClient = new HermesClient(HERMES_URL);
     const pythSolanaReceiver = new PythSolanaReceiver({
       connection,
       wallet: wallet as Wallet,
     });
 
-    const priceUpdateData = await priceServiceConnection.getLatestVaas([
-      SOL_PRICE_FEED_ID,
-    ]);
+    const priceUpdateData = await hermesClient.getLatestPriceUpdates([SOL_PRICE_FEED_ID], { encoding: "base64" });
 
     const sendUsdApp = new Program<SendUSDApp>(
       IDL as SendUSDApp,
@@ -64,7 +60,7 @@ async function postPriceUpdate(
     const transactionBuilder = pythSolanaReceiver.newTransactionBuilder({
       closeUpdateAccounts: true,
     });
-    await transactionBuilder.addPostPriceUpdates([priceUpdateData[0]]);
+    await transactionBuilder.addPostPriceUpdates(priceUpdateData.binary.data);
 
     await transactionBuilder.addPriceConsumerInstructions(
       async (
@@ -94,26 +90,115 @@ async function postPriceUpdate(
   }
 }
 
-function Button(props: {
+async function postTwapPriceUpdate(
+  connection: Connection,
+  wallet: AnchorWallet | undefined,
+  destination: PublicKey | undefined,
+  amount: number | undefined,
+  twapWindowSeconds: number
+) {
+  if (!(wallet && destination && amount)) {
+    return;
+  } else {
+    const hermesClient = new HermesClient(HERMES_URL);
+    const pythSolanaReceiver = new PythSolanaReceiver({
+      connection,
+      wallet: wallet as Wallet,
+    });
+
+    const twapUpdateData = await hermesClient.getLatestTwaps([SOL_PRICE_FEED_ID], twapWindowSeconds, { encoding: "base64" });
+
+    const sendUsdApp = new Program<SendUSDApp>(
+      IDL as SendUSDApp,
+      SEND_USD_PROGRAM_ID,
+      new AnchorProvider(connection, wallet, AnchorProvider.defaultOptions())
+    );
+
+    const transactionBuilder = pythSolanaReceiver.newTransactionBuilder({
+      closeUpdateAccounts: true,
+    });
+    await transactionBuilder.addPostTwapUpdates(twapUpdateData.binary.data);
+
+    await transactionBuilder.addTwapConsumerInstructions(
+      async (
+        getTwapUpdateAccount: (priceFeedId: string) => PublicKey
+      ): Promise<InstructionWithEphemeralSigners[]> => {
+        return [
+          {
+            instruction: await sendUsdApp.methods
+              .sendUsingTwap(new BN(amount), new BN(twapWindowSeconds))
+              .accounts({
+                destination,
+                twapUpdate: getTwapUpdateAccount(SOL_PRICE_FEED_ID),
+              })
+              .instruction(),
+            signers: [],
+          },
+        ];
+      }
+    );
+
+    await pythSolanaReceiver.provider.sendAll(
+      await transactionBuilder.buildVersionedTransactions({
+        computeUnitPriceMicroLamports: 50000,
+      }),
+      { skipPreflight: true }
+    );
+  }
+}
+
+function Buttons(props: {
   destination: PublicKey | undefined;
   amount: number | undefined;
 }) {
   const connectionContext = useConnection();
   const wallet = useAnchorWallet();
-
+  const [twapWindowSeconds, setTwapWindowSeconds] = useState<number>(300);
   return (
-    <button
-      onClick={async () => {
-        await postPriceUpdate(
-          connectionContext.connection,
-          wallet,
-          props.destination,
-          props.amount
-        );
-      }}
-    >
-      Send
-    </button>
+    <>
+      <div style={{ display: "flex", marginBottom: "20px" }}>
+        <button
+          onClick={async () => {
+            await postPriceUpdate(
+              connectionContext.connection,
+              wallet,
+              props.destination,
+              props.amount
+            );
+          }}
+          className="wallet-adapter-button wallet-adapter-button-trigger"
+          style={{ flex: "1", marginRight: "20px", height: "48px", fontSize: "16px" }}
+        >
+          Send using Spot Price
+        </button>
+        <div style={{ flex: "1", display: "flex", flexDirection: "column" }}>
+          <button
+            onClick={async () => {
+              await postTwapPriceUpdate(
+                connectionContext.connection,
+                wallet,
+                props.destination,
+                props.amount,
+                twapWindowSeconds
+              );
+            }}
+            className="wallet-adapter-button wallet-adapter-button-trigger"
+            style={{ height: "48px", fontSize: "16px", marginBottom: "10px" }}
+          >
+            Send using TWAP Price
+          </button>
+          <p style={{ fontSize: "16px", margin: "5px 0" }}>TWAP Window (seconds): {twapWindowSeconds}</p>
+          <input
+            type="range"
+            min="0"
+            max="599"
+            value={twapWindowSeconds}
+            onChange={(e) => setTwapWindowSeconds(parseInt(e.target.value))}
+            style={{ width: "100%" }}
+          />
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -146,24 +231,26 @@ function App() {
               <WalletMultiButton />
               <WalletDisconnectButton />
               <p>Click to send the amount of USD in SOL</p>
-              <p style={{ fontSize: "16px" }}>
-                Destination (paste a Solana public key)
-              </p>
-              <input
-                type="text"
-                value={destination ? destination.toString() : ""}
-                onChange={handleSetDestination}
-                style={{ width: "100%", height: "40px", fontSize: "16px" }}
-              />
-              <p style={{ fontSize: "16px" }}>Amount (USD)</p>
-              <input
-                type="text"
-                value={amount ? amount.toString() : ""}
-                onChange={handleSetAmount}
-                style={{ width: "100%", height: "40px", fontSize: "16px" }}
-              />
+              <div style={{ width: "50%", margin: "0 auto" }}>
+                <p style={{ fontSize: "16px" }}>
+                  Destination (paste a Solana public key)
+                </p>
+                <input
+                  type="text"
+                  value={destination ? destination.toString() : ""}
+                  onChange={handleSetDestination}
+                  style={{ width: "100%", height: "40px", fontSize: "16px", marginBottom: "20px" }}
+                />
+                <p style={{ fontSize: "16px" }}>Amount (USD)</p>
+                <input
+                  type="text"
+                  value={amount ? amount.toString() : ""}
+                  onChange={handleSetAmount}
+                  style={{ width: "100%", height: "40px", fontSize: "16px", marginBottom: "20px" }}
+                />
 
-              <Button destination={destination} amount={amount} />
+                <Buttons destination={destination} amount={amount} />
+              </div>
             </header>
           </div>
         </WalletModalProvider>
