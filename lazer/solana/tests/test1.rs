@@ -12,6 +12,7 @@ use {
         transaction::Transaction,
     },
     std::env,
+    std::mem::size_of,
 };
 
 #[tokio::test]
@@ -206,4 +207,66 @@ async fn test1() {
     assert_eq!({ state.price_feed }, 2);
     assert_eq!({ state.latest_timestamp }, 1728479312975644);
     assert_eq!({ state.latest_price }, 100000000);
+
+    let verifying_key_ecdsa = hex::decode("b8d50f0bae75bf6e03c104903d7c3afc4a6596da").unwrap();
+    let message_ecdsa = hex::decode(
+        "e4bd474df2e5eaee8d9f99ee08f63f4268efa1ff89360767dfcd7677822891494ed32a5300d86440270aeabe9617c1924caad9486842c93bab6eaa7947cbea1a8599b4be011c0075d3c793e0511723f52e0600010102000000010000a11ec8720a0000",
+    )
+    .unwrap();
+
+    let mut transaction_set_ecdsa_trusted = Transaction::new_with_payer(
+        &[Instruction::new_with_bytes(
+            pyth_lazer_solana_contract::ID,
+            &pyth_lazer_solana_contract::instruction::UpdateEcdsaSigner {
+                trusted_signer: verifying_key_ecdsa.try_into().unwrap(),
+                expires_at: i64::MAX,
+            }
+            .data(),
+            vec![
+                AccountMeta::new(payer.pubkey(), true),
+                AccountMeta::new(pyth_lazer_solana_contract::STORAGE_ID, false),
+            ],
+        )],
+        Some(&payer.pubkey()),
+    );
+    transaction_set_ecdsa_trusted.sign(&[&payer], recent_blockhash);
+    banks_client
+        .process_transaction(transaction_set_ecdsa_trusted)
+        .await
+        .unwrap();
+
+    let mut update_ecdsa_data = vec![ExampleInstruction::UpdateEcdsa as u8];
+    update_ecdsa_data.extend_from_slice(bytes_of(&UpdateArgs { hello: 42 }));
+    update_ecdsa_data.extend_from_slice(&message_ecdsa);
+
+    let mut transaction_update = Transaction::new_with_payer(
+        &[Instruction::new_with_bytes(
+            pyth_lazer_solana_example::ID,
+            &update_ecdsa_data,
+            vec![
+                AccountMeta::new(payer.pubkey(), true),
+                AccountMeta::new(data_pda_key, false),
+                AccountMeta::new(pyth_lazer_solana_contract::ID, false),
+                AccountMeta::new_readonly(pyth_lazer_solana_contract::STORAGE_ID, false),
+                AccountMeta::new(treasury, false),
+                AccountMeta::new_readonly(system_program::ID, false),
+            ],
+        )],
+        Some(&payer.pubkey()),
+    );
+    transaction_update.sign(&[&payer], recent_blockhash);
+    banks_client
+        .process_transaction(transaction_update)
+        .await
+        .unwrap();
+
+    let state = banks_client
+        .get_account(data_pda_key)
+        .await
+        .unwrap()
+        .unwrap();
+    let state = from_bytes::<State>(&state.data);
+    assert_eq!({ state.price_feed }, 2);
+    assert_eq!({ state.latest_timestamp }, 1740480250860000);
+    assert_eq!({ state.latest_price }, 11488100000000);
 }

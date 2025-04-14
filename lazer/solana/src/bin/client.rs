@@ -17,6 +17,7 @@ use {
         transaction::Transaction,
     },
     std::env,
+    std::mem::size_of,
 };
 
 fn main() -> anyhow::Result<()> {
