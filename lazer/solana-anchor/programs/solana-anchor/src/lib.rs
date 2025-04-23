@@ -1,9 +1,9 @@
 use anchor_lang::prelude::*;
 use pyth_lazer_solana_contract::protocol::{
-        message::LeEcdsaMessage,
-        payload::{PayloadData, PayloadPropertyValue},
-        router::channel_ids::FIXED_RATE_200,
-    };
+    message::LeEcdsaMessage,
+    payload::{PayloadData, PayloadPropertyValue},
+    router::channel_ids::FIXED_RATE_200,
+};
 
 declare_id!("FpmpVrP57C6ADT8d4dQp9TkM1vmxohZJ5WEQQc9RGLPY");
 
@@ -28,11 +28,8 @@ pub mod solana_anchor {
             system_program: ctx.accounts.system_program.to_account_info(),
         };
 
-        let cpi_ctx = CpiContext::new(
-            ctx.accounts.pyth_program.clone(),
-            cpi_accounts,
-        );
-        
+        let cpi_ctx = CpiContext::new(ctx.accounts.pyth_program.clone(), cpi_accounts);
+
         pyth_lazer_solana_contract::cpi::verify_ecdsa_message(cpi_ctx, pyth_message.clone())?;
 
         // Deserialize and process the message
@@ -52,7 +49,7 @@ pub mod solana_anchor {
 pub struct Initialize<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    
+
     #[account(
         init,
         payer = payer,
@@ -61,7 +58,7 @@ pub struct Initialize<'info> {
         bump
     )]
     pub state: Account<'info, State>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -69,21 +66,21 @@ pub struct Initialize<'info> {
 pub struct UpdateEcdsa<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
-    
+
     #[account(mut, seeds = [b"data"], bump)]
     pub state: Account<'info, State>,
-    
+
     /// CHECK: This is the Pyth program
     #[account(address = pyth_lazer_solana_contract::ID)]
     pub pyth_program: AccountInfo<'info>,
-    
+
     #[account(address = pyth_lazer_solana_contract::STORAGE_ID)]
     pub pyth_storage: Account<'info, pyth_lazer_solana_contract::Storage>,
-    
+
     /// CHECK: This is the Pyth treasury account
     #[account(address = pyth_storage.treasury)]
     pub pyth_treasury: AccountInfo<'info>,
-    
+
     pub system_program: Program<'info, System>,
 }
 
@@ -105,7 +102,7 @@ pub enum ErrorCode {
     #[msg("Invalid payload feed id")]
     InvalidPayloadFeedId,
     #[msg("Invalid payload property")]
-    InvalidPayloadProperty, 
+    InvalidPayloadProperty,
     #[msg("Invalid payload timestamp")]
     InvalidPayloadTimestamp,
 }
