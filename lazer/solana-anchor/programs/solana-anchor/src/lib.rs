@@ -5,7 +5,7 @@ use pyth_lazer_solana_contract::protocol::{
         router::channel_ids::FIXED_RATE_200,
     };
 
-declare_id!("My11111111111111111111111111111111111111111");
+declare_id!("FpmpVrP57C6ADT8d4dQp9TkM1vmxohZJ5WEQQc9RGLPY");
 
 #[program]
 pub mod solana_anchor {

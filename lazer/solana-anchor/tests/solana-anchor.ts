@@ -10,7 +10,7 @@ describe("solana-anchor", () => {
 
   it("Is initialized!", async () => {
     // Add your test here.
-    const tx = await program.methods.initialize().rpc();
+    const tx = await program.methods.initialize(1).rpc();
     console.log("Your transaction signature", tx);
   });
 });
