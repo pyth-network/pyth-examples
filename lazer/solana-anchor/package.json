@@ -1,8 +1,9 @@
 {
-  "license": "ISC",  
+  "license": "ISC",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "test:anchor": "CARGO_TARGET_DIR=\"$PWD/target\" RUSTUP_TOOLCHAIN=nightly-2025-04-15 anchor test"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1"

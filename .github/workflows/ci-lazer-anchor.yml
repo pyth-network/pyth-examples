@@ -1,4 +1,4 @@
-name: "Lazer Solana contract test"
+name: "Lazer Anchor contract test"
 on:
   push:
     branches:
@@ -20,16 +20,13 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: 1.82.0
-      - name: install taplo
-        run: cargo install --locked taplo-cli@0.9.3
-      # Libusb is a build requirement for the node-hid package and so pnpm
-      # install will fail if this isn't in the build environment and if a
-      # precompiled binary isn't found.
-      - name: Install libusb
-        run: sudo apt-get update && sudo apt-get install -y libusb-1.0-0-dev libudev-dev
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
+          version: 10
           run_install: true
       - name: Install Solana Cli
         run: |
@@ -45,4 +42,4 @@ jobs:
           rustup install nightly-2025-04-15
           RUSTFLAGS= cargo +1.79.0 install --git https://github.com/coral-xyz/anchor --tag v0.30.1 --locked anchor-cli
       - name: Run anchor tests
-        run: anchor test
+        run: pnpm run anchor:test
