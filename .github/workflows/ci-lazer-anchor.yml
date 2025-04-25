@@ -27,7 +27,9 @@ jobs:
         name: Install pnpm
         with:
           version: 10
-          run_install: true
+          run_install: |
+            recursive: false
+            cwd: lazer/solana-anchor/
       - name: Install Solana Cli
         run: |
           sh -c "$(curl -sSfL https://release.anza.xyz/stable/install)"
