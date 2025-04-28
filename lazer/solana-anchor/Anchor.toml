@@ -14,3 +14,8 @@ wallet = "~/.config/solana/id.json"
 
 [scripts]
 test = "pnpm ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+
+[test]
+[[test.genesis]]
+address = "pytd2yyk641x7ak7mkaasSJVXh6YYZnC7wTmtgAyxPt"
+program = "fixtures/pyth_lazer_solana_contract.so"

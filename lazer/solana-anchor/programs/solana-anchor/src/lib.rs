@@ -77,8 +77,8 @@ pub struct UpdateEcdsa<'info> {
     #[account(address = pyth_lazer_solana_contract::STORAGE_ID)]
     pub pyth_storage: Account<'info, pyth_lazer_solana_contract::Storage>,
 
-    /// CHECK: This is the Pyth treasury account
-    #[account(address = pyth_storage.treasury)]
+    /// CHECK: This is the Pyth treasury account and the address is checked in the cpi
+    #[account(mut)]
     pub pyth_treasury: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
