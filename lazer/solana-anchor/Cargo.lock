@@ -1322,7 +1322,8 @@ dependencies = [
 [[package]]
 name = "pyth-lazer-protocol"
 version = "0.7.2"
-source = "git+https://github.com/pyth-network/pyth-crosschain.git?branch=lazer/add-writable-annotation-anchor#80cb2952611a2f7f906a16ee506e05cd050383e9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a9bdf4e2ba853a8b437309487542e742c7d094d8db189db194cb538f2be02ecd"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -1338,7 +1339,8 @@ dependencies = [
 [[package]]
 name = "pyth-lazer-solana-contract"
 version = "0.4.2"
-source = "git+https://github.com/pyth-network/pyth-crosschain.git?branch=lazer/add-writable-annotation-anchor#80cb2952611a2f7f906a16ee506e05cd050383e9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d341333b7763d0e6ba032f63acfc6d47e81d18b57e899e074a8409528b16226c"
 dependencies = [
  "anchor-lang",
  "bytemuck",
