@@ -189,7 +189,7 @@ pub fn process_update_instruction(
     let pyth_storage_account = &accounts[3];
     let pyth_treasury_account = &accounts[4];
     let system_program_account = &accounts[5];
-    let instructions_sysvar_account = &accounts[6];
+    let pyth_lazer_program_account = &accounts[6];
 
     let (data_pda_key, _data_pda_bump_seed) =
         Pubkey::find_program_address(&[DATA_PDA_SEED], program_id);
@@ -229,7 +229,7 @@ pub fn process_update_instruction(
                 AccountMeta::new_readonly(*pyth_storage_account.key, false),
                 AccountMeta::new(*pyth_treasury_account.key, false),
                 AccountMeta::new_readonly(*system_program_account.key, false),
-                AccountMeta::new_readonly(*instructions_sysvar_account.key, false),
+                AccountMeta::new_readonly(*pyth_lazer_program_account.key, false),
             ],
         ),
         &[
@@ -237,7 +237,7 @@ pub fn process_update_instruction(
             pyth_storage_account.clone(),
             pyth_treasury_account.clone(),
             system_program_account.clone(),
-            instructions_sysvar_account.clone(),
+            pyth_lazer_program_account.clone(),
         ],
     )?;
 
