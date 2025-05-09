@@ -1,7 +1,7 @@
 use {
     futures::{SinkExt, StreamExt},
     pyth_lazer_protocol::{
-        publisher::PriceFeedData,
+        publisher::PriceFeedDataV2,
         router::{Price, PriceFeedId, TimestampUs},
     },
     std::time::Duration,
@@ -37,22 +37,14 @@ async fn run() -> anyhow::Result<()> {
         i += 1;
         sleep(Duration::from_secs(1)).await;
         for feed_id in 1u32..=5 {
-            let data = PriceFeedData {
+            let data = PriceFeedDataV2 {
                 price_feed_id: PriceFeedId(feed_id),
                 source_timestamp_us: TimestampUs::now(),
                 publisher_timestamp_us: TimestampUs::now(),
-                price: Some(Price::from_integer(
-                    (feed_id * 10000 + i) as i64,
-                    Price::TMP_EXPONENT,
-                )?),
-                best_bid_price: Some(Price::from_integer(
-                    (feed_id * 10000 + i - 1) as i64,
-                    Price::TMP_EXPONENT,
-                )?),
-                best_ask_price: Some(Price::from_integer(
-                    (feed_id * 10000 + i + 1) as i64,
-                    Price::TMP_EXPONENT,
-                )?),
+                price: Some(Price::from_integer((feed_id * 10000 + i) as i64, 8)?),
+                best_bid_price: Some(Price::from_integer((feed_id * 10000 + i - 1) as i64, 8)?),
+                best_ask_price: Some(Price::from_integer((feed_id * 10000 + i + 1) as i64, 8)?),
+                funding_rate: None,
             };
             let mut buf = Vec::new();
             bincode::serialize_into(&mut buf, &data)?;
