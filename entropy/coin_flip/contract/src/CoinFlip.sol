@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 // Import the entropy SDK in order to interact with the entropy contracts
-import "entropy-sdk-solidity/IEntropy.sol";
+import "entropy-sdk-solidity/IEntropyV2.sol";
 import "entropy-sdk-solidity/IEntropyConsumer.sol";
 
 library CoinFlipErrors {
@@ -26,25 +26,20 @@ contract CoinFlip is IEntropyConsumer {
     // Event emitted when the result of the coin flip is known.
     event FlipResult(uint64 sequenceNumber, bool isHeads);
 
-    // Contracts using Pyth Entropy should import the solidity SDK and then store both the Entropy contract
-    // and a specific entropy provider to use for requests. Each provider commits to a sequence of random numbers.
-    // Providers are then responsible for fulfilling a request on chain by revealing their random number.
-    // Users should choose a reliable provider who they trust to uphold these commitments.
-    // (For the moment, the only available provider is 0x6CC14824Ea2918f5De5C2f75A9Da968ad4BD6344)
-    IEntropy private entropy;
-    address private entropyProvider;
+    // Contracts using Pyth Entropy should import the solidity SDK and then store the Entropy contract
+    // address in the constructor.
+    IEntropyV2 private entropy;
 
-    constructor(address _entropy, address _entropyProvider) {
+    constructor(address _entropy) {
         entropy = IEntropy(_entropy);
-        entropyProvider = _entropyProvider;
     }
 
-    // Request to flip a coin. The caller should generate and pass in a random number when calling this method.
-    function requestFlip(bytes32 userRandomNumber) external payable {
+    // Request to flip a coin.
+    function requestFlip() external payable {
         // The entropy protocol requires the caller to pay a fee (in native gas tokens) per requested random number.
         // This fee can either be paid by the contract itself or passed on to the end user.
         // This implementation of the requestFlip method passes on the fee to the end user.
-        uint256 fee = entropy.getFee(entropyProvider);
+        uint256 fee = entropy.getFeeV2();
         if (msg.value < fee) {
             revert CoinFlipErrors.InsufficientFee();
         }
@@ -52,17 +47,17 @@ contract CoinFlip is IEntropyConsumer {
         // Request the random number from the Entropy protocol. The call returns a sequence number that uniquely
         // identifies the generated random number. Callers can use this sequence number to match which request
         // is being revealed in the next stage of the protocol.
-        uint64 sequenceNumber = entropy.requestWithCallback{value: fee}(
-            entropyProvider,
-            userRandomNumber
-        );
+        // 
+        // Note that callers can also request a specific gas limit for the callback by passing a gasLimit parameter
+        // to this function. See the IEntropyV2 interface for details.
+        uint64 sequenceNumber = entropy.requestV2{value: fee}();
 
         emit FlipRequest(sequenceNumber);
     }
 
     // Get the fee to flip a coin. See the comment above about fees.
     function getFlipFee() public view returns (uint256 fee) {
-        fee = entropy.getFee(entropyProvider);
+        fee = entropy.getFeeV2();
     }
 
     // This method is required by the IEntropyConsumer interface.
