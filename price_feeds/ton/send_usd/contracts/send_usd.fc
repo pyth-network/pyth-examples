@@ -54,15 +54,11 @@ const ERROR_UNAUTHORIZED = 401;
         .store_uint(usd_amount, 16)
         .end_cell();
 
-
-    int compute_fee = get_compute_fee(WORKCHAIN, gas_consumed());
-    int forward_amount = msg_value - compute_fee;
-
     ;; Create message to Pyth contract according to schema
     cell msg = begin_cell()
         .store_uint(0x18, 6)                              ;; nobounce
         .store_slice(ctx_pyth_address)                    ;; pyth contract address
-        .store_coins(forward_amount)                      ;; forward amount minus fees
+        .store_coins(0)                                   ;; forward amount can be 0 with tx mode == 64 (carry all remainings)
         .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1 + 1)       ;; default message headers
         .store_uint(PYTH_OP_PARSE_PRICE_FEED_UPDATES, 32) ;; pyth opcode
         .store_ref(price_update_data)                     ;; update data
@@ -73,7 +69,7 @@ const ERROR_UNAUTHORIZED = 401;
         .store_ref(custom_payload)                        ;; custom payload with recipient and amount
         .end_cell();
 
-    send_raw_message(msg, 0);
+    send_raw_message(msg, 64);
 }
 
 ;; Main message handler
