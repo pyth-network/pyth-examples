@@ -47,16 +47,17 @@ contract LendingPool {
     ) external returns (uint positionId) {
         PythStructs.Price memory currentBasePrice = pyth.getPriceNoOlderThan(
             baseTokenPriceId,
-            1000
+            60
         );
         PythStructs.Price memory currentQuotePrice = pyth.getPriceNoOlderThan(
             quoteTokenPriceId,
-            1000
+            60
         );
 
         uint256 basePrice = PythUtils.convertToUint(currentBasePrice.price, currentBasePrice.expo, 18);
         uint256 quotePrice = PythUtils.convertToUint(currentQuotePrice.price, currentQuotePrice.expo, 18);
 
+        // Calculate collateral based on current price ratio and loan-to-value ratio (in basis points)
         uint256 collateral = (amount * basePrice * 10000) / (quotePrice * loanToValueBps) + 1;
 
         quoteToken.transferFrom(msg.sender, address(this), collateral);
