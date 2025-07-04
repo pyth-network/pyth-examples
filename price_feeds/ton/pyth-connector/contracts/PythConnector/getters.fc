@@ -1,0 +1,12 @@
+#include "configuration.fc";
+
+;; getter methods
+slice get_pyth_address() method_id {
+    (slice pyth_address, _) = load_configuration();
+    return pyth_address;
+}
+
+cell get_feeds_dict() method_id {
+    ( _, cell ids_map) = load_configuration();
+    return ids_map;
+}

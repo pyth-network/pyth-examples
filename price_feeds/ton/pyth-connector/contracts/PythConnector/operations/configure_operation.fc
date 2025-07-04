@@ -1,0 +1,27 @@
+#include "../configuration.fc";
+#include "../constants/constants.fc";
+#include "../constants/logs.fc";
+#include "../imports/stdlib.fc";
+#include "../utils/tx-utils.fc";
+
+(slice, cell) parse_configure_params(slice in_msg_body) impure {
+    slice pyth_address = in_msg_body~load_msg_addr();
+    cell ids_map = in_msg_body~load_dict();
+
+    in_msg_body.end_parse();
+
+    return (pyth_address, ids_map);
+}
+
+() process_configure(slice sender_address, slice pyth_address, cell ids_map) impure {
+    save_configuration(pyth_address, ids_map);
+
+    emit_log_simple(begin_cell()
+        .store_uint(LOG::CONFIGURE, 8)
+        .store_slice(pyth_address)
+        .store_dict(ids_map)
+        .end_cell()
+    );
+
+    return_excesses(sender_address, makeTextBody("Configure success"));
+}

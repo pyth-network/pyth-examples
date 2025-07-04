@@ -1,0 +1,117 @@
+#include "../utils/pyth.fc";
+#include "../configuration.fc";
+#include "../constants/constants.fc";
+#include "../constants/errors.fc";
+#include "../constants/logs.fc";
+#include "../constants/op_codes.fc";
+#include "../imports/basic_types.fc";
+#include "../imports/stdlib.fc";
+#include "../utils/tx-utils.fc";
+
+(slice, slice, int, cell) parse_onchain_getter_payload(cell payload) impure {
+    slice s = payload.begin_parse();
+    slice initial_sender = s~load_msg_addr();
+    slice my_jetton_wallet = s~load_msg_addr();
+    int jetton_amount = s~load_uint(64);
+    cell operation_payload = s~load_ref();
+
+    return (initial_sender, my_jetton_wallet, jetton_amount, operation_payload);
+}
+
+() handle_onchain_getter_failure(int query_id, int error_code, cell external_custom_payload) impure {
+    ;; return excesses and jettons to sender
+    (slice initial_sender, slice my_jetton_wallet, int jetton_amount, cell operation_payload) = parse_onchain_getter_payload(external_custom_payload);
+
+    respond_send_jetton(my_jetton_wallet, initial_sender, query_id, jetton_amount,
+        begin_cell()
+            .store_uint(ERROR::ONCHAIN_GETTER_FAILURE, 32)
+            .store_query_id(query_id)
+            .store_uint(error_code, 32)
+            .store_ref(operation_payload)
+            .store_ref(makeTextBody("onchain_getter failed"))
+            .end_cell(),
+        0
+    );
+}
+
+(int, int, cell, cell, cell) parse_onchain_getter_jetton_params(slice in_msg_body) impure {
+    int publish_gap = in_msg_body~load_uint(64);
+    int max_staleness = in_msg_body~load_uint(64);
+    cell price_update = in_msg_body~load_ref();
+    cell pyth_price_ids = in_msg_body~load_ref();
+    cell external_custom_payload = in_msg_body~load_ref();
+    in_msg_body.end_parse();
+
+    return (publish_gap, max_staleness, price_update, pyth_price_ids, external_custom_payload);
+}
+
+() onchain_getter_jetton_request(
+    slice in_msg_body, int msg_value,
+    slice sender_address, slice initial_sender, int query_id, int jetton_amount
+) impure {
+    try {
+        emit_log(LOG::PROCESS_ONCHAIN_GETTER_JETTON, begin_cell().store_ref(makeTextBody("process onchain_getter jetton")).end_cell());
+
+        (int publish_gap, int max_staleness, cell price_update, cell pyth_price_ids, cell operation_body) = parse_onchain_getter_jetton_params(in_msg_body);
+
+        ;; Create custom payload with unique query ID to identify response
+        cell custom_payload = begin_cell()
+            .store_op(OP::CONNECTOR_ONCHAIN_GETTER_PROCESS)
+            .store_query_id(query_id)
+            .store_ref(
+                begin_cell()
+                    .store_slice(initial_sender)
+                    .store_slice(sender_address)
+                    .store_amount(jetton_amount)
+                    .store_ref(operation_body)
+                .end_cell()
+            )
+            .end_cell();
+
+        request_price_feed(my_address(), publish_gap, max_staleness, price_update, pyth_price_ids, custom_payload);
+    } catch(_, error_code) {
+        respond_send_jetton(
+            sender_address, initial_sender, query_id, jetton_amount,
+            begin_cell()
+                .store_uint(ERROR::ONCHAIN_GETTER_FAILURE, 32)
+                .store_uint(error_code, 32)
+                .store_ref(makeTextBody("onchain_getter failure"))
+                .end_cell(),
+            0
+        );
+    }
+}
+
+() process_onchain_getter_operation(int query_id, slice initial_sender, slice jw_address, int jetton_amount, cell prices_dict, cell operation_body) impure {
+    ;; maybe do something
+
+    ;; return excesses
+    send_message(
+        initial_sender, 0,
+        begin_cell()
+            .store_query_id(query_id)
+            .store_ref(makeTextBody("Thank you!"))
+            .end_cell(),
+        SENDMODE::CARRY_ALL_REMAINING_MESSAGE_VALUE
+    );
+}
+
+() onchain_getter_process(cell prices_dict, int query_id, cell operation_payload) impure {
+
+    (slice initial_sender, slice jw_address, int jetton_amount, cell operation_body) = parse_onchain_getter_payload(operation_payload);
+
+    ;; parse operation body
+    emit_log(LOG::CUSTOM_OPERATION_PROCESSING,
+        begin_cell()
+            .store_query_id(query_id)
+            .store_op_code(OP::CONNECTOR_ONCHAIN_GETTER_PROCESS)
+            .store_slice(initial_sender)
+            .store_slice(jw_address)
+            .store_amount(jetton_amount)
+            .store_dict(prices_dict)
+            .store_ref(operation_body)
+            .end_cell()
+    );
+
+    process_onchain_getter_operation(query_id, initial_sender, jw_address, jetton_amount, prices_dict, operation_body);
+}
