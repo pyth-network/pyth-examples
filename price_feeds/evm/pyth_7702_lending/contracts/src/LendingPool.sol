@@ -9,13 +9,13 @@ import "openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 contract LendingPool {
     IPyth pyth;
 
-    bytes32 baseTokenPriceId;
-    bytes32 quoteTokenPriceId;
+    bytes32 public baseTokenPriceId;
+    bytes32 public quoteTokenPriceId;
 
     ERC20 public baseToken;
     ERC20 public quoteToken;
 
-    uint256 loanToValueBps;
+    uint256 public loanToValueBps;
 
     struct Position {
         address taker;
@@ -23,8 +23,8 @@ contract LendingPool {
         uint collateral;
     }
 
-    uint numPositions;
-    mapping (uint => Position) positions;
+    uint public numPositions;
+    mapping (uint => Position) public positions;
 
     constructor(
         address _pyth,

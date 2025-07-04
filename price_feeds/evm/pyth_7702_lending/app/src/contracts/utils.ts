@@ -1,8 +1,12 @@
-import type { Address } from "viem";
-import { createPublicClient, erc20Abi, getContract, http } from "viem";
-import { config } from "dotenv";
 import { resolve } from "path";
+
+import { config } from "dotenv";
+import type { Address, ByteArray } from "viem";
+import { createPublicClient, erc20Abi, getContract, http } from "viem";
+
 import { wagmiConfig } from "@/wagmi";
+
+import ipythAbi from "./abis/IPyth.json";
 import lendingPoolAbi from "./abis/LendingPool.json";
 
 // Load environment variables from contracts folder
@@ -28,6 +32,34 @@ const lendingPoolContract = getContract({
   client: publicClient,
 });
 
+const ipythContract = getContract({
+  address: process.env.NEXT_PUBLIC_PYTH_ADDRESS as Address,
+  abi: ipythAbi,
+  client: publicClient,
+});
+
+
+export type Price = {
+  price: bigint;
+  conf: bigint;
+  expo: number;
+  publishTime: bigint;
+}
+
+export async function getBaseTokenPriceId(): Promise<ByteArray> {
+  const baseTokenPriceId = await lendingPoolContract.read.baseTokenPriceId();
+  return baseTokenPriceId as ByteArray;
+}
+
+export async function getQuoteTokenPriceId(): Promise<ByteArray> {
+  const quoteTokenPriceId = await lendingPoolContract.read.quoteTokenPriceId();
+  return quoteTokenPriceId as ByteArray;
+}
+
+export async function getPrice(priceId: ByteArray): Promise<Price> {
+  const price = await ipythContract.read.getPriceUnsafe([priceId]);
+  return price as Price;
+}
 
 // Function to get baseToken address from contract
 export async function getBaseTokenData(): Promise<{address: `0x${string}`, symbol: string, decimals: number, poolBalance: bigint}> {
@@ -69,12 +101,20 @@ export async function getQuoteTokenData(): Promise<{address: `0x${string}`, symb
   }
 }
 
+export async function getNumberOfPositions(): Promise<number> {
+  const numPositions = await lendingPoolContract.read.numPositions();
+  return Number(numPositions);
+}
+
 
 // Function to get all contract addresses
 export async function getContractData() {
-  const [baseToken, quoteToken] = await Promise.all([
+  const [baseToken, quoteToken, numberOfPositions, baseTokenPriceId, quoteTokenPriceId] = await Promise.all([
     getBaseTokenData(),
     getQuoteTokenData(),
+    getNumberOfPositions(),
+    getBaseTokenPriceId(),
+    getQuoteTokenPriceId(),
   ]);
 
   return {
@@ -87,7 +127,16 @@ export async function getContractData() {
     quoteTokenDecimals: quoteToken.decimals,
     baseTokenPoolBalance: baseToken.poolBalance,
     quoteTokenPoolBalance: quoteToken.poolBalance,
+    numberOfPositions: numberOfPositions,
+    baseTokenPriceId: baseTokenPriceId,
+    quoteTokenPriceId: quoteTokenPriceId,
   };
+}
+
+
+export async function borrow(amount: bigint) {
+  const positionId = await lendingPoolContract.write.borrow([amount]);
+  return Number(positionId);
 }
 
 // Export the contract instance for direct use
