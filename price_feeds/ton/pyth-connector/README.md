@@ -1,12 +1,15 @@
 # Pyth-connector example
-Provides onchain-getter: User -> User JettonWallet -> App -> Pyth -> App -> ... 
-and proxy call: User -> Pyth -> App -> ... pyth usage examples. 
+Provides onchain-getter: **User -> User JettonWallet -> App -> Pyth -> App -> ...** and proxy call: **User -> Pyth -> App -> ...** pyth usage examples. 
 
-This example can be used as a separate module providing tools for sandbox testing: exports functions for deploying and configuring a local pyth contract
+This example can be used as a standalone module that provides tools for sandbox testing by exporting functions for deploying and configuring a local Pyth contract.
 
-It shows techniques how to use the pyth oracle in finacial applications.
-The demonstration is fully sandboxed and doesn't need real on-chain contracts nor testnet neither mainnet.
-Usage of hermes client is also not required: prices can be formed locally, e.g. **{TON: 3.12345, USDC: 0.998, USDT: 0.999}.**
+It demonstrates techniques for using the Pyth oracle in financial applications.
+
+The demonstration is fully sandboxed and does not require real on-chain contracts on either testnet or mainnet.
+Using the Hermes client is also not required — prices can be generated locally, for example: **{TON: 3.12345, USDC: 0.998, USDT: 0.999}**.
+
+This is achieved by using a patched Pyth contract that accepts simplified prices without a Merkle trie proof, and therefore does not verify the authenticity of the prices.
+Important: This patched contract is intended for testing purposes only. The production version must use the authentic Pyth contract deployed on the mainnet.
 
 ## Project structure
 
@@ -20,7 +23,7 @@ First you need to install dependencies, node v22 is required, you can use nvm to
 Then install dependencies, just run `yarn`
 
 ### Build
-to build the module you can run`yarn build`
+to build the module you can run `yarn build`
 
 ### Contracts
 To prebuild contracts run`yarn contracts`

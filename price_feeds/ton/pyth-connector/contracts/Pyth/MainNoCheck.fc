@@ -23,7 +23,7 @@
 
     ;; Get sender address from message
     slice cs = in_msg_full.begin_parse();
-    int flags = cs~load_uint(4);  ;; skip flags
+    int flags = cs~load_uint(4);  ;; load flags
     if (flags & 1) {
         return ();
     }
