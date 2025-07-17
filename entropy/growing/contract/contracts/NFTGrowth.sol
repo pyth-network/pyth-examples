@@ -59,7 +59,7 @@ event NftGrowthRequested(
 );
 
 contract NFTGrowth is NFT, IEntropyConsumer {
-    IEntropy entropy;
+    IEntropyV2 entropy;
     uint256 maxLevel = 5;
     uint256 successChance = 4000;
     uint256 failChance = 4000;
@@ -72,7 +72,7 @@ contract NFTGrowth is NFT, IEntropyConsumer {
     mapping(uint256 => NFTLock) public nftLock;
 
     constructor(address _entropy) {
-        entropy = IEntropy(_entropy);
+        entropy = IEntropyV2(_entropy);
     }
 
     function requireLock(uint256 tokenId) private view {
