@@ -73,21 +73,14 @@ async function main() {
     client,
   });
 
-  console.log("1. Generating user's random number...");
-
-  const randomNumber: `0x${string}` = `0x${crypto
-    .randomBytes(32)
-    .toString("hex")}`;
-  console.log(`User Generated Random number: ${randomNumber}`);
-
-  console.log("\n2. Requesting coin flip...");
+  console.log("\n1. Requesting coin flip...");
 
   const flipFee = await coinFlipContract.read.getFlipFee();
   console.log(`Flip Fee: ${flipFee} wei`);
 
-  console.log("\n3. Sending request to flip coin...");
+  console.log("\n2. Sending request to flip coin...");
 
-  const flipTxHash = await coinFlipContract.write.requestFlip([randomNumber], {
+  const flipTxHash = await coinFlipContract.write.requestFlip([], {
     value: flipFee,
   });
   console.log(`Transaction Hash: ${flipTxHash}`);
@@ -106,7 +99,7 @@ async function main() {
 
   console.log(`\nSequence Number: ${sequenceNumber}`);
 
-  console.log("\n4. Waiting for flip result...");
+  console.log("\n3. Waiting for flip result...");
   const result = await new Promise((resolve, reject) => {
   const unwatch = coinFlipContract.watchEvent.FlipResult({
     fromBlock: receipt.blockNumber - 1n,

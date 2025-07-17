@@ -3,7 +3,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
     "@openzeppelin/contracts": "^5.0.2",
-    "@pythnetwork/entropy-sdk-solidity": "^1.3.0",
+    "@pythnetwork/entropy-sdk-solidity": "^2.0.0",
     "dotenv": "^16.4.5",
     "erc721a": "^4.3.0",
     "hardhat": "^2.22.4"

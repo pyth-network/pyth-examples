@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {IEntropyConsumer} from "@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol";
-import {IEntropy} from "@pythnetwork/entropy-sdk-solidity/IEntropy.sol";
+import {IEntropyV2} from "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
 
 import "./NFT.sol";
 
@@ -59,8 +59,7 @@ event NftGrowthRequested(
 );
 
 contract NFTGrowth is NFT, IEntropyConsumer {
-    IEntropy entropy;
-    address entropyProvider;
+    IEntropyV2 entropy;
     uint256 maxLevel = 5;
     uint256 successChance = 4000;
     uint256 failChance = 4000;
@@ -72,9 +71,8 @@ contract NFTGrowth is NFT, IEntropyConsumer {
 
     mapping(uint256 => NFTLock) public nftLock;
 
-    constructor(address _entropy, address _provider) {
-        entropy = IEntropy(_entropy);
-        entropyProvider = _provider;
+    constructor(address _entropy) {
+        entropy = IEntropyV2(_entropy);
     }
 
     function requireLock(uint256 tokenId) private view {
@@ -104,16 +102,13 @@ contract NFTGrowth is NFT, IEntropyConsumer {
         require(nftInfo[tokenId].status == NFTStatus.ALIVE, "NFT is dead");
         require(nftInfo[tokenId].level < maxLevel, "Already max level");
 
-        uint128 requestFee = entropy.getFee(entropyProvider);
+        uint128 requestFee = entropy.getFeeV2();
         require(msg.value >= requestFee, "Not enough fees");
 
         nftLock[tokenId].status = LockStatus.LOCKED;
         nftLock[tokenId].timestamp = block.timestamp;
 
-        uint64 sequenceNumber = entropy.requestWithCallback{value: requestFee}(
-            entropyProvider,
-            userRandomNumber
-        );
+        uint64 sequenceNumber = entropy.requestV2();
 
         pendingRandomRequests[sequenceNumber] = RandomRequest({
             sender: msg.sender,
@@ -167,7 +162,7 @@ contract NFTGrowth is NFT, IEntropyConsumer {
     }
 
     function getGrowFee() public view returns (uint256 fee) {
-        fee = entropy.getFee(entropyProvider);
+        fee = entropy.getFeeV2();
     }
 
     function unlock(uint256 tokenId) public {
