@@ -41,7 +41,7 @@ import { Copy } from "lucide-react";
 import { addTenderlyBalance, addTenderlyErc20Balance } from "@/contracts/fund";
 import { approveToken, borrow, repay, getPosition, getTotalPositions } from "@/contracts/lendinpool";
 import { WalletClient, parseEther } from "viem";
-import { getBaseTokenData, getQuoteTokenData } from "@/contracts/tokens";
+import { getWalletCapabilities, smartBorrow } from "@/contracts/smart";
 
 export default function LendingProtocol() {
   const { theme, setTheme } = useTheme();
@@ -63,6 +63,7 @@ export default function LendingProtocol() {
   const [borrowSuccess, setBorrowSuccess] = useState(false);
   const [newPositionId, setNewPositionId] = useState<number | null>(null);
   const [isProcessingBorrow, setIsProcessingBorrow] = useState(false);
+  const [isProcessingSmartBorrow, setIsProcessingSmartBorrow] = useState(false);
   const [tenderlySuccess, setTenderlySuccess] = useState(false);
   const [pwethSuccess, setPwethSuccess] = useState(false);
   const [pusdtSuccess, setPusdtSuccess] = useState(false);
@@ -111,6 +112,7 @@ export default function LendingProtocol() {
   };
 
   return (
+    getWalletCapabilities(walletClient as WalletClient).then(console.log),    
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
       <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
@@ -218,7 +220,7 @@ export default function LendingProtocol() {
                         <div className="flex justify-between items-center">
                           <span>Balance:</span>
                           <span className="font-mono">
-                            {Number(balance.formatted).toFixed(4)}{" "}
+                            {Number(balance).toFixed(4)}{" "}
                             {balance.symbol}
                           </span>
                         </div>
@@ -693,7 +695,6 @@ export default function LendingProtocol() {
                             }
                           } catch (error) {
                             console.error("Failed to borrow:", error);
-                            // You might want to show an error toast here
                           } finally {
                             setIsProcessingBorrow(false);
                           }
@@ -711,12 +712,40 @@ export default function LendingProtocol() {
                       <Button
                         className="w-full"
                         variant="outline"
-                        disabled={isProcessingBorrow}
-                        onClick={() => {
-                          // Smart Borrow functionality to be implemented
+                        disabled={isProcessingBorrow || isProcessingSmartBorrow}
+                        onClick={async () => {
+                          if (!walletClient || !isConnected) {
+                            console.error("Wallet not connected");
+                            return;
+                          }
+                          try {
+                            setIsProcessingSmartBorrow(true);
+                            const amountInWei = parseEther(borrowAmount);
+                            const result = await smartBorrow(
+                              amountInWei,
+                              walletClient as WalletClient
+                            );
+                            if (result.status && result.positionId) {
+                              setNewPositionId(result.positionId);
+                              setBorrowSuccess(true);
+                            } else {
+                              console.error("Smart Borrow failed", result);
+                            }
+                          } catch (error) {
+                            console.error("Failed to smart borrow:", error);
+                          } finally {
+                            setIsProcessingSmartBorrow(false);
+                          }
                         }}
                       >
-                        Smart Borrow
+                        {isProcessingSmartBorrow ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          "Smart Borrow"
+                        )}
                       </Button>
                     </CardContent>
                   </Card>
