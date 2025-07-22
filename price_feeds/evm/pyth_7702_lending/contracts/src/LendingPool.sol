@@ -17,6 +17,9 @@ contract LendingPool {
 
     uint256 public loanToValueBps;
 
+    event Borrow(uint indexed positionId, address indexed taker, uint amount, uint collateral);
+    event Repay(uint indexed positionId, address indexed taker, uint amount, uint collateral);
+
     struct Position {
         address taker;
         uint amount;
@@ -70,6 +73,8 @@ contract LendingPool {
         position.taker = msg.sender;
         position.amount = amount;
         position.collateral = collateral;
+
+        emit Borrow(positionId, msg.sender, amount, collateral);
     }
 
     function repay(
@@ -78,6 +83,8 @@ contract LendingPool {
         Position storage position = positions[positionId];
         baseToken.transferFrom(msg.sender, address(this), position.amount);
         quoteToken.transfer(msg.sender, position.collateral);
+
+        emit Repay(positionId, msg.sender, position.amount, position.collateral);
     }
 
     receive() external payable {}
