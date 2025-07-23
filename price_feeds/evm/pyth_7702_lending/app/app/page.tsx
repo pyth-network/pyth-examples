@@ -39,7 +39,7 @@ import { useTokens } from "@/contexts/TokenContext";
 import { PriceDisplay } from "@/components/PriceDisplay";
 import { Copy } from "lucide-react";
 import { addTenderlyBalance, addTenderlyErc20Balance } from "@/contracts/fund";
-import { borrow, repay, getTotalPositions } from "@/contracts/lendinpool";
+import { borrow, repay, getTotalPositions, getUserPositions, type Position } from "@/contracts/lendinpool";
 import { approveToken, getTokenAllowance } from "@/contracts/tokens";
 import { WalletClient, parseEther } from "viem";
 import {smartBorrow } from "@/contracts/smart";
@@ -79,6 +79,8 @@ export default function LendingProtocol() {
   const [repaySuccess, setRepaySuccess] = useState(false);
   const { data: walletClient } = useWalletClient();
   const [totalPositions, setTotalPositions] = useState<number>(0);
+  const [userPositions, setUserPositions] = useState<Position[]>([]);
+  const [isLoadingUserPositions, setIsLoadingUserPositions] = useState(false);
   const [isAddingNetwork, setIsAddingNetwork] = useState(false);
   const [networkAddSuccess, setNetworkAddSuccess] = useState(false);
   const [pwethAllowance, setPwethAllowance] = useState<bigint>(BigInt(0));
@@ -126,6 +128,21 @@ export default function LendingProtocol() {
     }
   };
 
+  // Function to fetch user positions
+  const fetchUserPositions = async () => {
+    if (!walletClient || !isConnected) return;
+    
+    try {
+      setIsLoadingUserPositions(true);
+      const positions = await getUserPositions(walletClient as WalletClient);
+      setUserPositions(positions);
+    } catch (error) {
+      console.error("Failed to fetch user positions:", error);
+    } finally {
+      setIsLoadingUserPositions(false);
+    }
+  };
+
   // Fetch allowances when wallet is connected and tokens are loaded
   useEffect(() => {
     if (walletClient && baseToken && quoteToken) {
@@ -133,14 +150,22 @@ export default function LendingProtocol() {
     }
   }, [walletClient, baseToken, quoteToken]);
 
+  // Fetch user positions when wallet is connected
+  useEffect(() => {
+    if (walletClient && isConnected) {
+      fetchUserPositions();
+    }
+  }, [walletClient, isConnected]);
+
   const handleUpdatePoolInfo = async () => {
     setIsUpdatingPoolInfo(true);
     if (walletClient) {
       const totalPositions = await getTotalPositions(walletClient as WalletClient);
       setTotalPositions(totalPositions);
       await refetch(); // <-- This updates the token context
-      // Refresh allowances as well
+      // Refresh allowances and user positions
       await fetchAllowances();
+      await fetchUserPositions();
       setIsUpdatingPoolInfo(false);
     }
   };
@@ -864,12 +889,14 @@ export default function LendingProtocol() {
                                 walletClient as WalletClient
                               );
                               
-                              if (result.status) {
-                                setNewPositionId(result.positionId);
-                                setBorrowSuccess(true);
-                              } else {
-                                console.error("Borrow failed");
-                              }
+                                                          if (result.status) {
+                              setNewPositionId(result.positionId);
+                              setBorrowSuccess(true);
+                              // Refresh user positions after successful borrow
+                              await fetchUserPositions();
+                            } else {
+                              console.error("Borrow failed");
+                            }
                             } catch (error) {
                               console.error("Failed to borrow:", error);
                             } finally {
@@ -906,6 +933,8 @@ export default function LendingProtocol() {
                             if (result.status && result.positionId) {
                               setNewPositionId(result.positionId);
                               setBorrowSuccess(true);
+                              // Refresh user positions after successful smart borrow
+                              await fetchUserPositions();
                             } else {
                               console.error("Smart Borrow failed", result);
                             }
@@ -982,6 +1011,8 @@ export default function LendingProtocol() {
                                   setRepaySuccess(true);
                                   setTimeout(() => setRepaySuccess(false), 3000);
                                   setRepayPositionId(""); // Clear the input
+                                  // Refresh user positions after successful repay
+                                  await fetchUserPositions();
                                 } else {
                                   console.error("Repay failed");
                                 }
@@ -1059,7 +1090,12 @@ export default function LendingProtocol() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {totalPositions === 0 ? (
+                      {isLoadingUserPositions ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <RefreshCw className="w-12 h-12 mx-auto mb-4 animate-spin opacity-50" />
+                          <p>Loading positions...</p>
+                        </div>
+                      ) : userPositions.length === 0 ? (
                         <div className="text-center py-8 text-muted-foreground">
                           <Wallet className="w-12 h-12 mx-auto mb-4 opacity-50" />
                           <p>No active positions</p>
@@ -1069,45 +1105,46 @@ export default function LendingProtocol() {
                         </div>
                       ) : (
                         <div className="space-y-3">
-                          {/* Example position - replace with actual data */}
-                          <div className="p-4 border rounded-lg space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2">
-                                <Badge variant="outline">Position #0</Badge>
-                                <Badge
-                                  variant="secondary"
-                                  className="text-green-600"
+                          {userPositions.map((position) => (
+                            <div key={position.positionId} className="p-4 border rounded-lg space-y-2">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                  <Badge variant="outline">Position #{position.positionId}</Badge>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-green-600"
+                                  >
+                                    Active
+                                  </Badge>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setRepayPositionId(position.positionId.toString())}
                                 >
-                                  Active
-                                </Badge>
+                                  Repay
+                                </Button>
                               </div>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setRepayPositionId("0")}
-                              >
-                                Repay
-                              </Button>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Borrowed:
-                                </span>
-                                <div className="font-mono">
-                                  1,500 {baseToken?.symbol}
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <span className="text-muted-foreground">
+                                    Borrowed:
+                                  </span>
+                                  <div className="font-mono">
+                                    {(Number(position.amount) / Math.pow(10, baseToken?.decimals || 18)).toLocaleString()} {baseToken?.symbol}
+                                  </div>
                                 </div>
-                              </div>
-                              <div>
-                                <span className="text-muted-foreground">
-                                  Collateral:
-                                </span>
-                                <div className="font-mono">
-                                  4,500,000 {quoteToken?.symbol}
+                                <div>
+                                  <span className="text-muted-foreground">
+                                    Collateral:
+                                  </span>
+                                  <div className="font-mono">
+                                    {(Number(position.collateral) / Math.pow(10, quoteToken?.decimals || 18)).toLocaleString()} {quoteToken?.symbol}
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
+                          ))}
                         </div>
                       )}
                     </CardContent>

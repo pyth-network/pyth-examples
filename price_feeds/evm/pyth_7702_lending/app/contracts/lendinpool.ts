@@ -81,3 +81,47 @@ export async function getTotalPositions(walletClient: WalletClient): Promise<num
   const positions = await contract.read.numPositions();
   return Number(positions);
 }
+
+export interface Position {
+  positionId: number;
+  taker: string;
+  amount: bigint;
+  collateral: bigint;
+}
+
+export async function getUserPositions(walletClient: WalletClient): Promise<Position[]> {
+  const contract = getContract({
+    address: LENDING_POOL_ADDRESS,
+    abi: lendingPoolAbi,
+    client: walletClient,
+  });
+  
+  if (!walletClient.account?.address) {
+    throw new Error("Wallet account address is undefined");
+  }
+  
+  const userAddress = walletClient.account.address;
+  const totalPositions = await contract.read.numPositions();
+  const userPositions: Position[] = [];
+  
+  // Iterate through all positions to find user's positions
+  for (let i = 0; i < Number(totalPositions); i++) {
+          try {
+        const position = await contract.read.positions([i]) as any;
+        if (position && position[0] === userAddress) {
+          userPositions.push({
+            positionId: i,
+            taker: position[0],
+            amount: position[1],
+            collateral: position[2],
+          });
+        }
+      } catch (error) {
+      console.error(`Error fetching position ${i}:`, error);
+      // Continue with next position
+    }
+  }
+  console.log("User positions:", userPositions);
+  
+  return userPositions;
+}
