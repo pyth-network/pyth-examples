@@ -122,9 +122,9 @@ export async function smartBorrow(
     // Track the status of the batch
     const status = await trackBatchStatus(batchResult.id, walletClient);
     
-    if (status.status !== 200 && status.receipts.length === 0) {
+    if (status.status !== 200) {
         throw new Error("Failed to submit batch transaction");
-    } else if (status.status === 200 || status.status === 100 && status.receipts.length > 0) {
+    } else if (status.status === 200 || status.status === 100) {
       // Parse the borrow event from the receipt to get position ID
       const borrowReceipt = status.receipts[status.receipts.length - 1]; // Last receipt should be the borrow
       const positionId = parseBorrowEvent(borrowReceipt);

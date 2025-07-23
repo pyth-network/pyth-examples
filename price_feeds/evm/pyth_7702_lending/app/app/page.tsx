@@ -39,9 +39,11 @@ import { useTokens } from "@/contexts/TokenContext";
 import { PriceDisplay } from "@/components/PriceDisplay";
 import { Copy } from "lucide-react";
 import { addTenderlyBalance, addTenderlyErc20Balance } from "@/contracts/fund";
-import { approveToken, borrow, repay, getPosition, getTotalPositions } from "@/contracts/lendinpool";
+import { borrow, repay, getTotalPositions } from "@/contracts/lendinpool";
+import { approveToken, getTokenAllowance } from "@/contracts/tokens";
 import { WalletClient, parseEther } from "viem";
-import { getWalletCapabilities, smartBorrow } from "@/contracts/smart";
+import {smartBorrow } from "@/contracts/smart";
+import { addTenderlyNetworkToMetaMask } from "@/lib/add-network";
 
 export default function LendingProtocol() {
   const { theme, setTheme } = useTheme();
@@ -77,6 +79,22 @@ export default function LendingProtocol() {
   const [repaySuccess, setRepaySuccess] = useState(false);
   const { data: walletClient } = useWalletClient();
   const [totalPositions, setTotalPositions] = useState<number>(0);
+  const [isAddingNetwork, setIsAddingNetwork] = useState(false);
+  const [networkAddSuccess, setNetworkAddSuccess] = useState(false);
+  const [pwethAllowance, setPwethAllowance] = useState<bigint>(BigInt(0));
+  const [pusdtAllowance, setPusdtAllowance] = useState<bigint>(BigInt(0));
+  const [isLoadingAllowances, setIsLoadingAllowances] = useState(false);
+  
+  // Token balances
+  const { data: pwethBalance, isLoading: pwethBalanceLoading } = useBalance({
+    address,
+    token: baseToken?.address as `0x${string}`,
+  });
+  
+  const { data: pusdtBalance, isLoading: pusdtBalanceLoading } = useBalance({
+    address,
+    token: quoteToken?.address as `0x${string}`,
+  });
 
   // Prevent hydration mismatch
   useEffect(() => {
@@ -89,12 +107,40 @@ export default function LendingProtocol() {
     }
   }, [walletClient]);
 
+  // Function to fetch token allowances
+  const fetchAllowances = async () => {
+    if (!walletClient || !baseToken || !quoteToken) return;
+    
+    try {
+      setIsLoadingAllowances(true);
+      const [pwethAllowanceResult, pusdtAllowanceResult] = await Promise.all([
+        getTokenAllowance(baseToken.address, walletClient as WalletClient),
+        getTokenAllowance(quoteToken.address, walletClient as WalletClient)
+      ]);
+      setPwethAllowance(pwethAllowanceResult);
+      setPusdtAllowance(pusdtAllowanceResult);
+    } catch (error) {
+      console.error("Failed to fetch allowances:", error);
+    } finally {
+      setIsLoadingAllowances(false);
+    }
+  };
+
+  // Fetch allowances when wallet is connected and tokens are loaded
+  useEffect(() => {
+    if (walletClient && baseToken && quoteToken) {
+      fetchAllowances();
+    }
+  }, [walletClient, baseToken, quoteToken]);
+
   const handleUpdatePoolInfo = async () => {
     setIsUpdatingPoolInfo(true);
     if (walletClient) {
       const totalPositions = await getTotalPositions(walletClient as WalletClient);
       setTotalPositions(totalPositions);
       await refetch(); // <-- This updates the token context
+      // Refresh allowances as well
+      await fetchAllowances();
       setIsUpdatingPoolInfo(false);
     }
   };
@@ -112,7 +158,6 @@ export default function LendingProtocol() {
   };
 
   return (
-    getWalletCapabilities(walletClient as WalletClient).then(console.log),    
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Header */}
       <header className="border-b bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-50">
@@ -120,9 +165,6 @@ export default function LendingProtocol() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <DollarSign className="w-5 h-5 text-white" />
-                </div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                   Pyth 7702 Lending
                 </h1>
@@ -134,7 +176,7 @@ export default function LendingProtocol() {
                 <div className="flex items-center space-x-2 text-sm">
                   <Coins className="w-4 h-4 text-green-500" />
                   <span className="font-medium">
-                    {Number(balance.formatted).toFixed(4)} {balance.symbol}
+                    {Number(balance.formatted).toLocaleString(undefined, { maximumFractionDigits: 4 })} {balance.symbol}
                   </span>
                 </div>
               )}
@@ -152,6 +194,55 @@ export default function LendingProtocol() {
                 </Button>
               )}
 
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isAddingNetwork}
+                onClick={async () => {
+                  try {
+                    setIsAddingNetwork(true);
+                    const result = await addTenderlyNetworkToMetaMask();
+                    if (result.success) {
+                      setNetworkAddSuccess(true);
+                      setTimeout(() => setNetworkAddSuccess(false), 3000);
+                    } else {
+                      console.error("Failed to add network:", result.message);
+                    }
+                  } catch (error) {
+                    console.error("Error adding network:", error);
+                  } finally {
+                    setIsAddingNetwork(false);
+                  }
+                }}
+                className="text-xs"
+              >
+                {isAddingNetwork ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Adding...
+                  </>
+                ) : networkAddSuccess ? (
+                  <>
+                    <svg
+                      className="w-4 h-4 mr-2 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    Added!
+                  </>
+                ) : (
+                  "Add vNet to MetaMask"
+                )}
+              </Button>
+
               {isConnected && chainId !== virtualBase.id && (
                 <Button
                   variant="outline"
@@ -159,7 +250,7 @@ export default function LendingProtocol() {
                   onClick={() => switchChain({ chainId: virtualBase.id })}
                   className="text-xs"
                 >
-                  Add Base Network
+                  Switch to Base
                 </Button>
               )}
 
@@ -218,13 +309,43 @@ export default function LendingProtocol() {
                       </div>
                       {balance && (
                         <div className="flex justify-between items-center">
-                          <span>Balance:</span>
+                          <span>ETH Balance:</span>
                           <span className="font-mono">
-                            {Number(balance).toFixed(4)}{" "}
+                            {Number(balance.formatted).toLocaleString(undefined, { maximumFractionDigits: 4 })}{" "}
                             {balance.symbol}
                           </span>
                         </div>
                       )}
+                      
+                      {pwethBalanceLoading ? (
+                        <div className="flex justify-between items-center">
+                          <span>{baseToken?.symbol} Balance:</span>
+                          <span className="text-muted-foreground text-sm">Loading...</span>
+                        </div>
+                      ) : pwethBalance ? (
+                        <div className="flex justify-between items-center">
+                          <span>{baseToken?.symbol} Balance:</span>
+                          <span className="font-mono">
+                            {Number(pwethBalance.formatted).toLocaleString(undefined, { maximumFractionDigits: 4 })}{" "}
+                            {pwethBalance.symbol}
+                          </span>
+                        </div>
+                      ) : null}
+                      
+                      {pusdtBalanceLoading ? (
+                        <div className="flex justify-between items-center">
+                          <span>{quoteToken?.symbol} Balance:</span>
+                          <span className="text-muted-foreground text-sm">Loading...</span>
+                        </div>
+                      ) : pusdtBalance ? (
+                        <div className="flex justify-between items-center">
+                          <span>{quoteToken?.symbol} Balance:</span>
+                          <span className="font-mono">
+                            {Number(pusdtBalance.formatted).toLocaleString(undefined, { maximumFractionDigits: 4 })}{" "}
+                            {pusdtBalance.symbol}
+                          </span>
+                        </div>
+                      ) : null}
                     </div>
                   ) : (
                     <div className="text-center py-4">
@@ -307,8 +428,8 @@ export default function LendingProtocol() {
                             <span>Decimals: {baseToken.decimals}</span>
                             <span>
                               Pool:{" "}
-                              {Number(baseToken.poolBalance) /
-                                Math.pow(10, baseToken.decimals)}
+                              {(Number(baseToken.poolBalance) /
+                                Math.pow(10, baseToken.decimals)).toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -330,8 +451,8 @@ export default function LendingProtocol() {
                             <span>Decimals: {quoteToken.decimals}</span>
                             <span>
                               Pool:{" "}
-                              {Number(quoteToken.poolBalance) /
-                                Math.pow(10, quoteToken.decimals)}
+                              {(Number(quoteToken.poolBalance) /
+                                Math.pow(10, quoteToken.decimals)).toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -372,23 +493,54 @@ export default function LendingProtocol() {
                   {/* Token Approvals Card */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <RefreshCw className="w-5 h-5 text-blue-500" />
-                        <span>Token Approvals</span>
-                      </CardTitle>
-                      <CardDescription>
-                        Approve tokens for lending operations
-                      </CardDescription>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="flex items-center space-x-2">
+                            <RefreshCw className="w-5 h-5 text-blue-500" />
+                            <span>Token Approvals</span>
+                          </CardTitle>
+                          <CardDescription>
+                            Approve tokens for lending operations
+                          </CardDescription>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={fetchAllowances}
+                          disabled={isLoadingAllowances || !walletClient}
+                        >
+                          <RefreshCw
+                            className={`w-4 h-4 mr-2 ${
+                              isLoadingAllowances ? "animate-spin" : ""
+                            }`}
+                          />
+                          Refresh Allowances
+                        </Button>
+                      </div>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="approve-pweth-amount">
-                            Approve {baseToken?.symbol} Amount
-                          </Label>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="approve-pweth-amount">
+                              Approve {baseToken?.symbol} Amount
+                            </Label>
+                            <div className="text-xs text-muted-foreground">
+                              {isLoadingAllowances ? (
+                                <span className="flex items-center">
+                                  <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+                                  Loading...
+                                </span>
+                              ) : (
+                                <span>
+                                  Current Allowance: {(Number(pwethAllowance) / Math.pow(10, baseToken?.decimals || 18)).toLocaleString()} {baseToken?.symbol}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                           <Input
                             id="approve-pweth-amount"
-                            placeholder="0.0"
+                            placeholder="1000"
                             value={approvePwethAmount}
                             onChange={(e) =>
                               setApprovePwethAmount(e.target.value)
@@ -414,6 +566,8 @@ export default function LendingProtocol() {
                                     walletClient as WalletClient
                                   );
                                   setPwethApprovalSuccess(true);
+                                  // Refresh allowances after successful approval
+                                  await fetchAllowances();
                                   setTimeout(
                                     () => setPwethApprovalSuccess(false),
                                     3000
@@ -457,12 +611,26 @@ export default function LendingProtocol() {
                           </Button>
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="approve-pusdt-amount">
-                            Approve {quoteToken?.symbol} Amount
-                          </Label>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="approve-pusdt-amount">
+                              Approve {quoteToken?.symbol} Amount
+                            </Label>
+                            <div className="text-xs text-muted-foreground">
+                              {isLoadingAllowances ? (
+                                <span className="flex items-center">
+                                  <RefreshCw className="w-3 h-3 mr-1 animate-spin" />
+                                  Loading...
+                                </span>
+                              ) : (
+                                <span>
+                                  Current Allowance: {(Number(pusdtAllowance) / Math.pow(10, quoteToken?.decimals || 18)).toLocaleString()} {quoteToken?.symbol}
+                                </span>
+                              )}
+                            </div>
+                          </div>
                           <Input
                             id="approve-pusdt-amount"
-                            placeholder="0.0"
+                            placeholder="1000000"
                             value={approvePusdtAmount}
                             onChange={(e) =>
                               setApprovePusdtAmount(e.target.value)
@@ -488,6 +656,8 @@ export default function LendingProtocol() {
                                     walletClient as WalletClient
                                   );
                                   setPusdtApprovalSuccess(true);
+                                  // Refresh allowances after successful approval
+                                  await fetchAllowances();
                                   setTimeout(
                                     () => setPusdtApprovalSuccess(false),
                                     3000
@@ -554,7 +724,7 @@ export default function LendingProtocol() {
                           </Label>
                           <Input
                             id="borrow-amount"
-                            placeholder="0.0"
+                            placeholder="1.5"
                             value={borrowAmount}
                             onChange={(e) => setBorrowAmount(e.target.value)}
                           />
@@ -570,7 +740,13 @@ export default function LendingProtocol() {
                             <div className="flex justify-between">
                               <span>Borrowing:</span>
                               <span className="font-mono">
-                                {borrowAmount} {baseToken?.symbol}
+                                {Number(borrowAmount).toLocaleString()} {baseToken?.symbol}
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>Amount in Wei:</span>
+                              <span className="font-mono">
+                                {parseEther(borrowAmount).toString()}
                               </span>
                             </div>
                           </div>
@@ -663,43 +839,44 @@ export default function LendingProtocol() {
                         </div>
                       )}
 
-                      <Button
-                        className="w-full"
-                        disabled={
-                          !borrowAmount ||
-                          Number(borrowAmount) <= 0 ||
-                          isProcessingBorrow ||
-                          !walletClient ||
-                          !isConnected
-                        }
-                        onClick={async () => {
-                          if (!walletClient || !isConnected) {
-                            console.error("Wallet not connected");
-                            return;
+                                              <Button
+                          className="w-full"
+                          disabled={
+                            !borrowAmount ||
+                            Number(borrowAmount) <= 0 ||
+                            isProcessingBorrow ||
+                            !walletClient ||
+                            !isConnected
                           }
-
-                          try {
-                            setIsProcessingBorrow(true);
-                            const amountInWei = parseEther(borrowAmount);
-                            
-                            const result = await borrow(
-                              amountInWei,
-                              walletClient as WalletClient
-                            );
-                            
-                            if (result.status) {
-                              setNewPositionId(result.positionId);
-                              setBorrowSuccess(true);
-                            } else {
-                              console.error("Borrow failed");
+                          onClick={async () => {
+                            if (!walletClient || !isConnected) {
+                              console.error("Wallet not connected");
+                              return;
                             }
-                          } catch (error) {
-                            console.error("Failed to borrow:", error);
-                          } finally {
-                            setIsProcessingBorrow(false);
-                          }
-                        }}
-                      >
+
+                            try {
+                              setIsProcessingBorrow(true);
+                              // Convert human-readable amount to wei using token decimals
+                              const amountInWei = parseEther(borrowAmount);
+                              
+                              const result = await borrow(
+                                amountInWei,
+                                walletClient as WalletClient
+                              );
+                              
+                              if (result.status) {
+                                setNewPositionId(result.positionId);
+                                setBorrowSuccess(true);
+                              } else {
+                                console.error("Borrow failed");
+                              }
+                            } catch (error) {
+                              console.error("Failed to borrow:", error);
+                            } finally {
+                              setIsProcessingBorrow(false);
+                            }
+                          }}
+                        >
                         {isProcessingBorrow ? (
                           <>
                             <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -720,6 +897,7 @@ export default function LendingProtocol() {
                           }
                           try {
                             setIsProcessingSmartBorrow(true);
+                            // Convert human-readable amount to wei using token decimals
                             const amountInWei = parseEther(borrowAmount);
                             const result = await smartBorrow(
                               amountInWei,
@@ -917,7 +1095,7 @@ export default function LendingProtocol() {
                                   Borrowed:
                                 </span>
                                 <div className="font-mono">
-                                  1.5 {baseToken?.symbol}
+                                  1,500 {baseToken?.symbol}
                                 </div>
                               </div>
                               <div>
@@ -925,7 +1103,7 @@ export default function LendingProtocol() {
                                   Collateral:
                                 </span>
                                 <div className="font-mono">
-                                  4500 {quoteToken?.symbol}
+                                  4,500,000 {quoteToken?.symbol}
                                 </div>
                               </div>
                             </div>
@@ -957,7 +1135,7 @@ export default function LendingProtocol() {
                           Available to claim:
                         </div>
                         <div className="text-2xl font-bold text-purple-600">
-                          1.0 ETH
+                          1 ETH
                         </div>
                       </div>
                       <Button
@@ -1015,7 +1193,7 @@ export default function LendingProtocol() {
                           <div className="flex justify-between items-center">
                             <span className="font-semibold">PWETH</span>
                             <span className="text-sm text-muted-foreground">
-                              1000 available
+                              1,000 available
                             </span>
                           </div>
                         </div>
@@ -1023,7 +1201,7 @@ export default function LendingProtocol() {
                           <div className="flex justify-between items-center">
                             <span className="font-semibold">PUSDT</span>
                             <span className="text-sm text-muted-foreground">
-                              1000 available
+                              1,000,000 available
                             </span>
                           </div>
                         </div>

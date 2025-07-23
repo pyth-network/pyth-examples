@@ -1,4 +1,4 @@
-import { Address, ByteArray, createPublicClient, erc20Abi, getContract, http} from "viem";
+import { Address, ByteArray, createPublicClient, erc20Abi, getContract, http, WalletClient} from "viem";
 import { LENDING_POOL_ADDRESS } from "./fund";
 import { wagmiConfig } from "@/lib/wagmi";
 import lendingPoolAbi from "./abis/LendingPool.json";
@@ -65,4 +65,31 @@ export async function getQuoteTokenData(): Promise<{address: `0x${string}`, symb
     console.error("Failed to get quoteToken address:", error);
     throw new Error("Could not read quoteToken address from contract");
   }
+}
+
+export async function approveToken(tokenAddress: Address, amount: bigint, walletClient: WalletClient): Promise<string> {
+  const tokenContract = getContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    client: walletClient,
+  });
+  if (!walletClient.account) {
+    throw new Error("Wallet client account is undefined");
+  }
+  const txHash = await tokenContract.write.approve([LENDING_POOL_ADDRESS, amount], {
+    account: walletClient.account,
+    chain: walletClient.chain,
+  });
+  console.log("Approval txHash", txHash);
+  return txHash;
+}
+
+export async function getTokenAllowance(tokenAddress: Address, walletClient: WalletClient): Promise<bigint> {
+  const tokenContract = getContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    client: walletClient,
+  });
+  const allowance = await tokenContract.read.allowance([walletClient.account?.address as Address, LENDING_POOL_ADDRESS]);
+  return allowance;
 }

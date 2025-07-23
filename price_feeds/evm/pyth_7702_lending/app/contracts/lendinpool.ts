@@ -44,22 +44,7 @@ export async function borrow(amount: bigint, walletClient: WalletClient): Promis
   return {status: receipt.status === "success", positionId: Number(positionId)};
 }
 
-export async function approveToken(tokenAddress: Address, amount: bigint, walletClient: WalletClient): Promise<string> {
-  const tokenContract = getContract({
-    address: tokenAddress,
-    abi: erc20Abi,
-    client: walletClient,
-  });
-  if (!walletClient.account) {
-    throw new Error("Wallet client account is undefined");
-  }
-  const txHash = await tokenContract.write.approve([LENDING_POOL_ADDRESS, amount], {
-    account: walletClient.account,
-    chain: walletClient.chain,
-  });
-  console.log("Approval txHash", txHash);
-  return txHash;
-}
+
 
 
 export async function repay(positionId: number, walletClient: WalletClient): Promise<{status: boolean}> {
