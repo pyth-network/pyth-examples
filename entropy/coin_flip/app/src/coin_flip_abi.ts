@@ -25,19 +25,52 @@ export const ICoinFlipAbi = [
   },
   {
     "type": "function",
+    "name": "getDefaultProviderGasLimit",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint32", "internalType": "uint32" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "getFlipFee",
     "inputs": [],
-    "outputs": [
-      { "name": "fee", "type": "uint256", "internalType": "uint256" }
-    ],
+    "outputs": [{ "name": "", "type": "uint256", "internalType": "uint256" }],
     "stateMutability": "view"
   },
   {
     "type": "function",
     "name": "requestFlip",
+    "inputs": [],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "requestFlipWithCustomGasLimit",
     "inputs": [
+      { "name": "gasLimit", "type": "uint32", "internalType": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "requestFlipWithCustomProviderAndGasLimit",
+    "inputs": [
+      { "name": "provider", "type": "address", "internalType": "address" },
+      { "name": "gasLimit", "type": "uint32", "internalType": "uint32" }
+    ],
+    "outputs": [],
+    "stateMutability": "payable"
+  },
+  {
+    "type": "function",
+    "name": "requestFlipWithCustomProviderAndGasLimitAndUserContribution",
+    "inputs": [
+      { "name": "provider", "type": "address", "internalType": "address" },
+      { "name": "gasLimit", "type": "uint32", "internalType": "uint32" },
       {
-        "name": "userRandomNumber",
+        "name": "userContribution",
         "type": "bytes32",
         "internalType": "bytes32"
       }

@@ -120,5 +120,9 @@ contract CoinFlip is IEntropyConsumer {
         return address(entropy);
     }
 
+    function getFlipFee() public view returns (uint256) {
+        return entropy.getFeeV2();
+    }
+
     receive() external payable {}
 }

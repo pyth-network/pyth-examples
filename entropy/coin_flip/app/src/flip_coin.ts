@@ -87,7 +87,7 @@ async function main() {
 
   console.log("\n3. Sending request to flip coin...");
 
-  const flipTxHash = await coinFlipContract.write.requestFlip([randomNumber], {
+const flipTxHash = await coinFlipContract.write.requestFlip({
     value: flipFee,
   });
   console.log(`Transaction Hash: ${flipTxHash}`);
