@@ -2,8 +2,10 @@
 pragma solidity ^0.8.0;
 
 // Import the entropy SDK in order to interact with the entropy contracts
-import "entropy-sdk-solidity/IEntropy.sol";
-import "entropy-sdk-solidity/IEntropyConsumer.sol";
+import "@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol";
+import "@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol";
+// Import the EntropyStructsV2 contract to get the ProviderInfo struct
+import "@pythnetwork/entropy-sdk-solidity/EntropyStructsV2.sol";
 
 library CoinFlipErrors {
     error IncorrectSender();
@@ -30,21 +32,20 @@ contract CoinFlip is IEntropyConsumer {
     // and a specific entropy provider to use for requests. Each provider commits to a sequence of random numbers.
     // Providers are then responsible for fulfilling a request on chain by revealing their random number.
     // Users should choose a reliable provider who they trust to uphold these commitments.
-    // (For the moment, the only available provider is 0x6CC14824Ea2918f5De5C2f75A9Da968ad4BD6344)
-    IEntropy private entropy;
+    IEntropyV2 private entropy;
     address private entropyProvider;
 
     constructor(address _entropy, address _entropyProvider) {
-        entropy = IEntropy(_entropy);
+        entropy = IEntropyV2(_entropy);
         entropyProvider = _entropyProvider;
     }
 
-    // Request to flip a coin. The caller should generate and pass in a random number when calling this method.
-    function requestFlip(bytes32 userRandomNumber) external payable {
+    // Request to flip a coin.
+    function requestFlip() external payable {
         // The entropy protocol requires the caller to pay a fee (in native gas tokens) per requested random number.
         // This fee can either be paid by the contract itself or passed on to the end user.
         // This implementation of the requestFlip method passes on the fee to the end user.
-        uint256 fee = entropy.getFee(entropyProvider);
+        uint256 fee = entropy.getFeeV2();
         if (msg.value < fee) {
             revert CoinFlipErrors.InsufficientFee();
         }
@@ -52,17 +53,52 @@ contract CoinFlip is IEntropyConsumer {
         // Request the random number from the Entropy protocol. The call returns a sequence number that uniquely
         // identifies the generated random number. Callers can use this sequence number to match which request
         // is being revealed in the next stage of the protocol.
-        uint64 sequenceNumber = entropy.requestWithCallback{value: fee}(
-            entropyProvider,
-            userRandomNumber
-        );
+        // This requestV2 function will trust the provider to draw a random number. 
+        uint64 sequenceNumber = entropy.requestV2{value: fee}();
 
         emit FlipRequest(sequenceNumber);
     }
 
-    // Get the fee to flip a coin. See the comment above about fees.
-    function getFlipFee() public view returns (uint256 fee) {
-        fee = entropy.getFee(entropyProvider);
+    // Request to flip a coin with a custom gas limit.
+    function requestFlipWithCustomGasLimit(uint32 gasLimit) external payable {
+        uint256 fee = entropy.getFeeV2(gasLimit);
+        if (msg.value < fee) {
+            revert CoinFlipErrors.InsufficientFee();
+        }
+
+        uint64 sequenceNumber = entropy.requestV2{value: fee}(gasLimit);
+
+        emit FlipRequest(sequenceNumber);
+    }
+
+    // Request to flip a coin with a custom provider and custom gas limit.
+    function requestFlipWithCustomProviderAndGasLimit(address provider, uint32 gasLimit) external payable {
+        uint256 fee = entropy.getFeeV2(provider, gasLimit);
+        if (msg.value < fee) {
+            revert CoinFlipErrors.InsufficientFee();
+        }
+
+        uint64 sequenceNumber = entropy.requestV2{value: fee}(provider, gasLimit);
+
+        emit FlipRequest(sequenceNumber);
+    }
+
+    // Request to flip a coin with a custom provider and custom gas limit and userContribution / Random Number.
+    function requestFlipWithCustomProviderAndGasLimitAndUserContribution(address provider, uint32 gasLimit, bytes32 userContribution) external payable {
+        uint256 fee = entropy.getFeeV2(provider, gasLimit);
+        if (msg.value < fee) {
+            revert CoinFlipErrors.InsufficientFee();
+        }
+
+        uint64 sequenceNumber = entropy.requestV2{value: fee}(provider, userContribution, gasLimit);
+
+        emit FlipRequest(sequenceNumber);
+    }
+
+    // Get the default gas limit for the default provider.
+    function getDefaultProviderGasLimit() public view returns (uint32) {
+        EntropyStructsV2.ProviderInfo memory providerInfo = entropy.getProviderInfoV2(entropy.getDefaultProvider());
+        return providerInfo.defaultGasLimit;
     }
 
     // This method is required by the IEntropyConsumer interface.
