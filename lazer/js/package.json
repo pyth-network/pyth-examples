@@ -7,21 +7,28 @@
   "scripts": {
     "start": "node --loader ts-node/esm src/index.js",
     "start:publish": "node --loader ts-node/esm src/publish.js",
-    "test": "pnpm run test:format && pnpm run build:cjs && pnpm run build:esm",
+    "start:verify_ecdsa_message": "node --loader ts-node/esm src/verify_ecdsa_message.js",
+    "start:verify_ed25519_message": "node --loader ts-node/esm src/verify_ed25519_message.js",
+    "test": "pnpm run test:format && pnpm run test:types && pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --project tsconfig.json --verbatimModuleSyntax false --module commonjs --outDir ./dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "build:esm": "tsc --project tsconfig.json --outDir ./dist/esm && echo '{\"type\":\"module\"}' > dist/esm/package.json",
     "fix:format": "prettier --write **/*.*",
-    "test:format": "prettier --check **/*.*"
+    "test:format": "prettier --check **/*.*",
+    "test:types": "tsc"
   },
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@pythnetwork/pyth-lazer-sdk": "^0.3.1",
-    "@solana/web3.js": "^1.98.0"
+    "@pythnetwork/pyth-lazer-sdk": "^2.0.0",
+    "@pythnetwork/pyth-lazer-solana-sdk": "^0.1.2",
+    "@solana/web3.js": "^1.98.0",
+    "@coral-xyz/anchor": "^0.30.1",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@cprussin/tsconfig": "^3.0.1",
     "@types/node": "^22.10.0",
+    "@types/yargs": "^17.0.33",
     "prettier": "^3.4.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

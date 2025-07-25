@@ -1,7 +1,5 @@
-import {
-  PythLazerClient,
-  createEd25519Instruction,
-} from "@pythnetwork/pyth-lazer-sdk";
+import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
+import { createEd25519Instruction } from "@pythnetwork/pyth-lazer-solana-sdk";
 import fs from "fs";
 
 import {
@@ -36,10 +34,10 @@ const connection = new Connection(SOLANA_RPC_URL, "confirmed");
 // Load the payer's keypair
 const payer = Keypair.fromSecretKey(PAYER_SECRET_KEY);
 const main = async () => {
-  const client = await PythLazerClient.create(
-    ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-    "my_token",
-  );
+  const client = await PythLazerClient.create({
+    urls: ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
+    token: "my_token",
+  });
 
   // data received from pyth lazer
   let rawData: string | undefined = undefined;
@@ -166,7 +164,7 @@ const main = async () => {
     // Example contract receives ETH/USD price
     priceFeedIds: [2],
     properties: ["price"],
-    chains: ["solana"],
+    formats: ["solana"],
     deliveryFormat: "json",
     channel: "real_time",
     jsonBinaryEncoding: "hex",
