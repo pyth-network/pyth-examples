@@ -1,0 +1,39 @@
+name: Lazer Sui Move Build and Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lazer/sui
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Sui CLI
+      run: |
+        LATEST_RELEASE=$(curl -s https://api.github.com/repos/MystenLabs/sui/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        echo "Installing Sui CLI version: $LATEST_RELEASE"
+        
+        wget -q "https://github.com/MystenLabs/sui/releases/download/$LATEST_RELEASE/sui-$LATEST_RELEASE-ubuntu-x86_64.tgz"
+        
+        tar -xzf "sui-$LATEST_RELEASE-ubuntu-x86_64.tgz"
+        chmod +x sui
+        sudo mv sui /usr/local/bin/
+        
+        sui --version
+        
+    - name: Build Sui Move contract
+      run: sui move build
+        
+    - name: Run Sui Move tests
+      run: sui move test
+        
+    - name: Test with verbose output
+      run: sui move test --gas-limit 100000000
