@@ -1,10 +1,10 @@
 import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
 
 const main = async () => {
-  const client = await PythLazerClient.create(
-    ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-    "my_token",
-  );
+  const client = await PythLazerClient.create({
+    urls: ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
+    token: "my_token",
+  });
 
   client.addMessageListener((message) => {
     console.log("got message:", message);
@@ -41,7 +41,7 @@ const main = async () => {
     subscriptionId: 1,
     priceFeedIds: [1, 2],
     properties: ["price"],
-    chains: ["solana"],
+    formats: ["solana"],
     deliveryFormat: "json",
     channel: "fixed_rate@200ms",
     jsonBinaryEncoding: "hex",
