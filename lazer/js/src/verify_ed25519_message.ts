@@ -73,8 +73,10 @@ async function main() {
     1,
     12,
   );
+  const ed25519InstructionIndex = 0;
+  const signatureIndex = 0;
   const lazerInstruction = await program.methods
-    .verifyMessage(instructionMessage, 0, 0)
+    .verifyMessage(instructionMessage, ed25519InstructionIndex, signatureIndex)
     .accounts({
       payer: provider.wallet.publicKey,
       instructionsSysvar: SYSVAR_INSTRUCTIONS_PUBKEY,
