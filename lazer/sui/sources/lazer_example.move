@@ -5,14 +5,15 @@ use lazer_example::i16::{Self, I16};
 use sui::bcs;
 use sui::ecdsa_k1::secp256k1_ecrecover;
 
+const UPDATE_MESSAGE_MAGIC: u32 = 1296547300;
+const PAYLOAD_MAGIC: u32 = 2479346549;
+
 public enum Channel has copy, drop {
     Invalid,
     RealTime,
     FixedRate50ms,
     FixedRate200ms,
 }
-
-
 
 public struct Update has drop {
     timestamp: u64,
@@ -34,7 +35,7 @@ public struct Feed has drop {
     price: Option<Option<I64>>,
     /// Best bid price available across all publishers
     best_bid_price: Option<Option<I64>>,
-    /// Best ask price available across all publishers  
+    /// Best ask price available across all publishers
     best_ask_price: Option<Option<I64>>,
     /// Number of publishers contributing to this price feed
     publisher_count: Option<u16>,
@@ -56,7 +57,7 @@ public fun parse_and_validate_update(update: vector<u8>): Update {
     let mut cursor = bcs::new(update);
 
     let magic = cursor.peel_u32();
-    assert!(magic == 1296547300, 0);
+    assert!(magic == UPDATE_MESSAGE_MAGIC, 0);
 
     let mut signature = vector::empty<u8>();
 
@@ -80,7 +81,7 @@ public fun parse_and_validate_update(update: vector<u8>): Update {
 
     let mut cursor = bcs::new(payload);
     let payload_magic = cursor.peel_u32();
-    assert!(payload_magic == 2479346549, 0);
+    assert!(payload_magic == PAYLOAD_MAGIC, 0);
 
     let timestamp = cursor.peel_u64();
     let channel_value = cursor.peel_u8();
