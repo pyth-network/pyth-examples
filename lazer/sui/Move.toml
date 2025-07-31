@@ -1,0 +1,12 @@
+[package]
+name = "lazer_example"
+edition = "2024.beta"
+
+[dependencies]
+
+[addresses]
+lazer_example = "0x0"
+
+[dev-dependencies]
+
+[dev-addresses]

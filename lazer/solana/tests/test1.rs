@@ -21,19 +21,11 @@ async fn test1() {
         env::set_var(
             "SBF_OUT_DIR",
             format!(
-                "{}/target/sbf-solana-solana/release",
+                "{}/target/sbpf-solana-solana/release",
                 env::var("CARGO_MANIFEST_DIR").unwrap()
             ),
         );
     }
-    std::fs::copy(
-        "tests/pyth_lazer_solana_contract.so",
-        format!(
-            "{}/target/sbf-solana-solana/release/pyth_lazer_solana_contract.so",
-            env::var("CARGO_MANIFEST_DIR").unwrap()
-        ),
-    )
-    .unwrap();
     println!("if add_program fails, run `cargo build-sbf` first.");
     let mut program_test = ProgramTest::new(
         "pyth_lazer_solana_example",
