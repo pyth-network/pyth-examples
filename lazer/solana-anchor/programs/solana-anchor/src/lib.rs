@@ -1,3 +1,5 @@
+#![allow(unexpected_cfgs, deprecated)] // caused by anchor
+
 use anchor_lang::prelude::*;
 use pyth_lazer_solana_contract::protocol::{
     message::LeEcdsaMessage,
@@ -114,7 +116,7 @@ fn apply_update(state: &mut Account<State>, data: &PayloadData) -> Result<()> {
     }
 
     // Check if the timestamp is greater than the current timestamp
-    if data.timestamp_us.0 <= state.latest_timestamp {
+    if data.timestamp_us.as_micros() <= state.latest_timestamp {
         return Err(ErrorCode::InvalidPayloadTimestamp.into());
     }
 
@@ -139,7 +141,7 @@ fn apply_update(state: &mut Account<State>, data: &PayloadData) -> Result<()> {
     };
 
     state.latest_price = price.into_inner().into();
-    state.latest_timestamp = data.timestamp_us.0;
+    state.latest_timestamp = data.timestamp_us.as_micros();
 
     Ok(())
 }
