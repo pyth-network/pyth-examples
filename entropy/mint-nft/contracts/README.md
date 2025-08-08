@@ -64,9 +64,47 @@ forge test
 forge script script/EntropyBeastsDeploy.s.sol --broadcast --rpc-url <RPC_URL>
 ```
 
-## Integration
+## Addresses and Deployment
 
-The contracts integrate with Pyth's Entropy service on Base testnet. The entropy provider address is configured in the deployment script.
+### Network Configuration
+
+This example is configured for **Base Sepolia Testnet**:
+
+- **Pyth Entropy Contract**: `0x41c9e39574F40Ad34c79f1C99B66A45eFB830d4c`
+- **Network**: Base Sepolia (Chain ID: 84532)
+- **RPC URL**: Use Base Sepolia RPC endpoint
+
+### Deployment
+
+The deployment script (`EntropyBeastsDeploy.s.sol`) automatically uses the correct Entropy contract address for Base Sepolia testnet.
+
+To deploy:
+
+```bash
+# Deploy to Base Sepolia
+forge script script/EntropyBeastsDeploy.s.sol \
+    --rpc-url https://sepolia.base.org \
+    --broadcast \
+    --verify \
+    --private-key <YOUR_PRIVATE_KEY>
+```
+
+**Note**: Ensure your deployer account has sufficient ETH on Base Sepolia for deployment gas fees.
+
+### Current Deployment
+
+The example contract is currently deployed on Base Sepolia testnet:
+
+- **Contract Address**: `0x2e2bae4389ddd3272b945b0833ecf20554202f2c`
+- **Transaction Hash**: `0x848047b48ce3b5b754bbe48c8400eb4ffa4b4c74112970c585b4d307777f1304`
+- **Block Number**: 29,541,269 (0x1c10395)
+- **Deployer**: `0x78357316239040e19fc823372cc179ca75e64b81`
+
+You can interact with this deployment directly or use it as a reference for testing the Entropy V2 integration.
+
+### Other Networks
+
+To deploy on different networks, update the Entropy contract address in `EntropyBeastsDeploy.s.sol`. Refer to [Pyth Entropy documentation](https://docs.pyth.network/entropy) for addresses on other supported networks.
 
 ## Usage Example
 

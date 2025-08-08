@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, Zap, CheckCircle, Clock, Wallet, Settings, AlertTriangle, Activity, XCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -11,6 +11,25 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { useEntropyBeasts } from '@/hooks/use-entropy-beasts'
+import { GAS_LIMITS, CONTRACTS } from '@/lib/contracts'
+import { useAccount } from 'wagmi'
+
+// Client-side only wrapper for ConnectButton
+function ClientConnectButton() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return <div className="h-10 w-32 bg-gray-200 rounded-lg animate-pulse" />
+  }
+
+  return <ConnectButton />
+}
 
 type MintingState = 'idle' | 'sending' | 'processing' | 'listening' | 'callback' | 'completed' | 'failed'
 type CallbackStatus = 'success' | 'out_of_gas' | 'execution_reverted' | 'invalid_request' | null
@@ -19,35 +38,76 @@ type NFTSize = 'small' | 'big'
 interface NFTConfig {
   size: NFTSize
   minGas: number
-  description: string
 }
 
 const NFT_CONFIGS: Record<NFTSize, NFTConfig> = {
   small: {
     size: 'small',
-    minGas: 50000,
-    description: 'Simple NFT with basic metadata'
+    minGas: GAS_LIMITS.small,
   },
   big: {
     size: 'big',
-    minGas: 150000,
-    description: 'Complex NFT with rich metadata and attributes'
+    minGas: GAS_LIMITS.big,
   }
 }
 
-export default function PythentropyNFTDemo() {
+// Client-only wrapper to prevent SSR issues
+function ClientOnlyDemo() {
   const [mintingState, setMintingState] = useState<MintingState>('idle')
   const [callbackStatus, setCallbackStatus] = useState<CallbackStatus>(null)
   const [gasLimit, setGasLimit] = useState('50000')
   const [nftSize, setNftSize] = useState<NFTSize>('small')
-  const [nftName, setNftName] = useState('My Awesome NFT')
   const [transactionHash, setTransactionHash] = useState('')
   const [eventLogs, setEventLogs] = useState<string[]>([])
   const [failureReason, setFailureReason] = useState('')
+  
+  // Contract integration
+  const {
+    totalSupply,
+    mintedBeasts,
+    isListening,
+    isMinting,
+    isConfirming,
+    isConfirmed,
+    mintError,
+    mint,
+    resetMintedBeasts,
+  } = useEntropyBeasts()
+
+  // Get connection status
+  const { isConnected } = useAccount()
 
   const addEventLog = (message: string) => {
     setEventLogs(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
   }
+
+  // Handle contract state changes
+  useEffect(() => {
+    if (isMinting) {
+      setMintingState('sending')
+    } else if (isConfirming) {
+      setMintingState('processing')
+    } else if (isListening) {
+      setMintingState('listening')
+    } else if (mintError) {
+      setMintingState('failed')
+      setFailureReason(mintError.message)
+      addEventLog(`❌ Transaction failed: ${mintError.message}`)
+    }
+  }, [isMinting, isConfirming, isListening, mintError])
+
+  // Handle successful mint
+  useEffect(() => {
+    if (mintedBeasts.length > 0) {
+      const latestBeast = mintedBeasts[mintedBeasts.length - 1]
+      setMintingState('completed')
+      setTransactionHash(`Beast #${latestBeast.tokenId}`)
+      addEventLog('📨 Callback event received')
+      addEventLog('✅ Callback status: SUCCESS')
+      addEventLog(`🎉 Beast NFT minted! Strength: ${latestBeast.strength}, Intelligence: ${latestBeast.intelligence}`)
+      addEventLog(`⛽ Gas used: ${latestBeast.gasUsed}`)
+    }
+  }, [mintedBeasts])
 
   const handleNFTSizeChange = (size: NFTSize) => {
     setNftSize(size)
@@ -71,63 +131,31 @@ export default function PythentropyNFTDemo() {
   }
 
   const handleMint = async () => {
-    setMintingState('sending')
-    setEventLogs([])
-    setCallbackStatus(null)
-    setFailureReason('')
-    
-    addEventLog('🚀 Mint request initiated')
-    
-    // Simulate the flow
-    setTimeout(() => {
+    try {
+      setMintingState('sending')
+      setEventLogs([])
+      setCallbackStatus(null)
+      setFailureReason('')
+      
+      addEventLog('🚀 Mint request initiated')
+      
+      // Call the real contract
+      await mint(nftSize === 'big', parseInt(gasLimit))
+      
       setMintingState('processing')
       addEventLog('📡 Request sent to Pyth Entropy Provider')
-    }, 1000)
-    
-    setTimeout(() => {
-      setMintingState('listening')
       addEventLog('⛓️ Transaction submitted to blockchain')
+      
+      setMintingState('listening')
       addEventLog('👂 Listening for callback events...')
-    }, 2500)
-    
-    setTimeout(() => {
-      setMintingState('callback')
-      addEventLog('📨 Callback event received')
       
-      const status = simulateCallbackFailure()
-      setCallbackStatus(status)
-      
-      if (status === 'success') {
-        addEventLog('✅ Callback status: SUCCESS')
-        setTimeout(() => {
-          setTransactionHash('0x1234...abcd')
-          setMintingState('completed')
-          addEventLog('🎉 NFT minted successfully!')
-        }, 1000)
-      } else {
-        addEventLog(`❌ Callback status: FAILED (${status.toUpperCase()})`)
-        
-        let reason = ''
-        switch (status) {
-          case 'out_of_gas':
-            reason = `Insufficient gas provided. Required: ${NFT_CONFIGS[nftSize].minGas}, Provided: ${gasLimit}`
-            break
-          case 'execution_reverted':
-            reason = 'Smart contract execution reverted due to failed assertion'
-            break
-          case 'invalid_request':
-            reason = 'Invalid request parameters or malformed data'
-            break
-        }
-        
-        setFailureReason(reason)
-        addEventLog(`🔍 Failure reason: ${reason}`)
-        
-        setTimeout(() => {
-          setMintingState('failed')
-        }, 1000)
-      }
-    }, 4000)
+      // The rest will be handled by the event listener in the hook
+    } catch (error) {
+      console.error('Mint error:', error)
+      setMintingState('failed')
+      setFailureReason(error instanceof Error ? error.message : 'Unknown error')
+      addEventLog(`❌ Mint failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
   }
 
   const resetDemo = () => {
@@ -136,55 +164,64 @@ export default function PythentropyNFTDemo() {
     setTransactionHash('')
     setEventLogs([])
     setFailureReason('')
+    resetMintedBeasts()
   }
 
   const getStateInfo = (state: MintingState) => {
     switch (state) {
       case 'idle':
-        return { title: 'Ready to Mint', description: 'Configure your NFT and gas settings', color: 'bg-gray-100' }
+        return { title: 'Ready to Mint', description: 'Configure your NFT and gas settings', color: 'bg-gray-100 dark:bg-gray-800' }
       case 'sending':
-        return { title: 'Sending Request', description: 'Transmitting to Pyth Entropy Provider', color: 'bg-blue-100' }
+        return { title: 'Sending Request', description: 'Transmitting to Pyth Entropy Provider', color: 'bg-blue-100 dark:bg-blue-900' }
       case 'processing':
-        return { title: 'Processing', description: 'Entropy Provider handling request', color: 'bg-yellow-100' }
+        return { title: 'Processing', description: 'Entropy Provider handling request', color: 'bg-yellow-100 dark:bg-yellow-900' }
       case 'listening':
-        return { title: 'Listening for Events', description: 'Monitoring blockchain for callback', color: 'bg-purple-100' }
+        return { title: 'Listening for Events', description: 'Monitoring blockchain for callback', color: 'bg-purple-100 dark:bg-purple-900' }
       case 'callback':
-        return { title: 'Callback Received', description: 'Processing callback status', color: 'bg-orange-100' }
+        return { title: 'Callback Received', description: 'Processing callback status', color: 'bg-orange-100 dark:bg-orange-900' }
       case 'completed':
-        return { title: 'Minting Complete', description: 'NFT successfully minted!', color: 'bg-green-100' }
+        return { title: 'Minting Complete', description: 'NFT successfully minted!', color: 'bg-green-100 dark:bg-green-900' }
       case 'failed':
-        return { title: 'Minting Failed', description: 'Callback failed - see details below', color: 'bg-red-100' }
+        return { title: 'Minting Failed', description: 'Callback failed - see details below', color: 'bg-red-100 dark:bg-red-900' }
       default:
-        return { title: 'Error', description: 'Something went wrong', color: 'bg-red-100' }
+        return { title: 'Error', description: 'Something went wrong', color: 'bg-red-100 dark:bg-red-900' }
     }
   }
 
   const isGasInsufficient = parseInt(gasLimit) < NFT_CONFIGS[nftSize].minGas
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Pyth Entropy v2 Demo
+        <div className="text-center mb-8 relative">
+          {/* Theme Toggle - Top Right */}
+          <div className="absolute top-0 right-0">
+            <ThemeToggle />
+          </div>
+          
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            EntropyBeasts NFT Minting
           </h1>
-          <p className="text-lg text-gray-600 mb-4">
-            NFT Minting with Enhanced Callback Status Monitoring
+          <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
+            Mint unique beasts with random stats using Pyth Entropy v2
           </p>
+          <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            Total Beasts Minted: {totalSupply} | Contract: {CONTRACTS.ENTROPY_BEASTS.slice(0, 6)}...{CONTRACTS.ENTROPY_BEASTS.slice(-4)}
+          </div>
           
           {/* Wallet Connection */}
           <div className="flex justify-center mb-6">
-            <ConnectButton />
+            <ClientConnectButton />
           </div>
           
           {/* Disclaimer */}
           <div className="max-w-2xl mx-auto mb-4">
-            <Alert className="border-blue-200 bg-blue-50">
-              <AlertTriangle className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
-                <strong>Demo Only:</strong> This is an educational example showcasing Pyth Entropy v2 features. 
-                No actual NFTs will be minted and no real transactions will be executed.
+            <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
+              <AlertTriangle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <AlertDescription className="text-blue-800 dark:text-blue-200">
+                <strong>Live Contract:</strong> This app connects to a real EntropyBeasts contract on Base. 
+                Minting will create actual NFTs with random stats using Pyth Entropy v2.
               </AlertDescription>
             </Alert>
           </div>
@@ -196,26 +233,15 @@ export default function PythentropyNFTDemo() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Wallet className="w-5 h-5" />
-                NFT Minting Interface
+                Beast Minting Interface
               </CardTitle>
               <CardDescription>
-                Configure your NFT size and gas settings below
+                Configure your beast size and gas settings below
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="nft-name">NFT Name</Label>
-                <Input
-                  id="nft-name"
-                  value={nftName}
-                  onChange={(e) => setNftName(e.target.value)}
-                  placeholder="Enter NFT name"
-                  disabled={mintingState !== 'idle'}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="nft-size">NFT Size</Label>
+                <Label htmlFor="nft-size">Beast Size</Label>
                 <Select 
                   value={nftSize} 
                   onValueChange={handleNFTSizeChange}
@@ -227,20 +253,20 @@ export default function PythentropyNFTDemo() {
                   <SelectContent>
                     <SelectItem value="small">
                       <div className="flex flex-col items-start">
-                        <span className="font-medium">Small NFT</span>
-                        <span className="text-xs text-gray-500">Min gas: 50,000</span>
+                        <span className="font-medium">Small Beast</span>
+                        <span className="text-xs text-gray-500">Min gas: {GAS_LIMITS.small.toLocaleString()}</span>
                       </div>
                     </SelectItem>
                     <SelectItem value="big">
                       <div className="flex flex-col items-start">
-                        <span className="font-medium">Big NFT</span>
-                        <span className="text-xs text-gray-500">Min gas: 150,000</span>
+                        <span className="font-medium">Big Beast</span>
+                        <span className="text-xs text-gray-500">Min gas: {GAS_LIMITS.big.toLocaleString()}</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-sm text-gray-500">
-                  {NFT_CONFIGS[nftSize].description}
+                  {nftSize === 'big' ? 'Complex beast with extra processing' : 'Simple beast with basic stats'}
                 </p>
               </div>
 
@@ -258,9 +284,9 @@ export default function PythentropyNFTDemo() {
                   className={isGasInsufficient ? 'border-red-300 focus:border-red-500' : ''}
                 />
                 {isGasInsufficient && (
-                  <Alert className="border-red-200 bg-red-50">
-                    <AlertTriangle className="h-4 w-4 text-red-600" />
-                    <AlertDescription className="text-red-700">
+                  <Alert className="border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950">
+                    <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    <AlertDescription className="text-red-700 dark:text-red-200">
                       Gas limit too low! Minimum required: {NFT_CONFIGS[nftSize].minGas.toLocaleString()}
                     </AlertDescription>
                   </Alert>
@@ -276,14 +302,15 @@ export default function PythentropyNFTDemo() {
                     onClick={handleMint} 
                     className="w-full" 
                     size="lg"
+                    disabled={!isConnected}
                   >
                     <Zap className="w-4 h-4 mr-2" />
-                    Mint NFT
+                    Mint Beast
                   </Button>
                 ) : mintingState === 'completed' ? (
                   <div className="space-y-3">
-                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm font-medium text-green-800">
+                    <div className="p-3 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800 rounded-lg">
+                      <p className="text-sm font-medium text-green-800 dark:text-green-200">
                         Transaction Hash: {transactionHash}
                       </p>
                     </div>
@@ -293,11 +320,11 @@ export default function PythentropyNFTDemo() {
                   </div>
                 ) : mintingState === 'failed' ? (
                   <div className="space-y-3">
-                    <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p className="text-sm font-medium text-red-800 mb-2">
+                    <div className="p-3 bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-800 rounded-lg">
+                      <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
                         Callback Failed: {callbackStatus?.replace('_', ' ').toUpperCase()}
                       </p>
-                      <p className="text-xs text-red-600">
+                      <p className="text-xs text-red-600 dark:text-red-300">
                         {failureReason}
                       </p>
                     </div>
@@ -345,18 +372,18 @@ export default function PythentropyNFTDemo() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`p-3 rounded-lg border ${
                       callbackStatus === 'success' 
-                        ? 'bg-green-50 border-green-200' 
-                        : 'bg-red-50 border-red-200'
+                        ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800' 
+                        : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
                     }`}
                   >
                     <div className="flex items-center gap-2">
                       {callbackStatus === 'success' ? (
-                        <CheckCircle className="w-5 h-5 text-green-600" />
+                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                       ) : (
-                        <XCircle className="w-5 h-5 text-red-600" />
+                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
                       )}
                       <span className={`font-medium ${
-                        callbackStatus === 'success' ? 'text-green-800' : 'text-red-800'
+                        callbackStatus === 'success' ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'
                       }`}>
                         Callback Status: {callbackStatus.replace('_', ' ').toUpperCase()}
                       </span>
@@ -542,18 +569,18 @@ export default function PythentropyNFTDemo() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="p-4 bg-green-50 border border-green-200 rounded-lg text-center"
+                      className="p-4 bg-green-50 border border-green-200 dark:bg-green-950 dark:border-green-800 rounded-lg text-center"
                     >
                       <motion.div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1 }}
                         className="inline-block mb-2"
                       >
-                        <CheckCircle className="w-8 h-8 text-green-500" />
+                        <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-400" />
                       </motion.div>
-                      <h3 className="font-semibold text-green-800">Success!</h3>
-                      <p className="text-sm text-green-600">
-                        Your {nftSize} NFT "{nftName}" has been minted successfully
+                      <h3 className="font-semibold text-green-800 dark:text-green-200">Success!</h3>
+                      <p className="text-sm text-green-600 dark:text-green-300">
+                        Your {nftSize} Beast NFT has been minted successfully
                       </p>
                     </motion.div>
                   )}
@@ -563,17 +590,17 @@ export default function PythentropyNFTDemo() {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -20 }}
-                      className="p-4 bg-red-50 border border-red-200 rounded-lg text-center"
+                      className="p-4 bg-red-50 border border-red-200 dark:bg-red-950 dark:border-red-800 rounded-lg text-center"
                     >
                       <motion.div
                         animate={{ rotate: [0, -10, 10, -10, 0] }}
                         transition={{ duration: 0.5 }}
                         className="inline-block mb-2"
                       >
-                        <XCircle className="w-8 h-8 text-red-500" />
+                        <XCircle className="w-8 h-8 text-red-500 dark:text-red-400" />
                       </motion.div>
-                      <h3 className="font-semibold text-red-800">Callback Failed!</h3>
-                      <p className="text-sm text-red-600">
+                      <h3 className="font-semibold text-red-800 dark:text-red-200">Callback Failed!</h3>
+                      <p className="text-sm text-red-600 dark:text-red-300">
                         Entropy v2 detected: {callbackStatus?.replace('_', ' ')}
                       </p>
                     </motion.div>
@@ -685,4 +712,25 @@ export default function PythentropyNFTDemo() {
       </div>
     </div>
   )
+}
+
+export default function PythEntropyNFTDemo() {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading Pyth Entropy NFT Demo...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return <ClientOnlyDemo />
 }

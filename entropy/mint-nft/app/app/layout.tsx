@@ -3,13 +3,15 @@ import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 import { Providers } from './providers'
-import { ThemeProvider } from 'next-themes'
-import { inter } from 'path/to/inter/font' // Assuming inter font is imported from somewhere
+import { ThemeProvider } from '@/components/theme-provider'
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Pyth Entropy NFT Demo',
+  description: 'Pyth Entropy NFT Demo',
+  generator: 'Pyth Entropy NFT Demo',
 }
 
 export default function RootLayout({
