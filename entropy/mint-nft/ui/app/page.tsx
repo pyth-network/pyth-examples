@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { ConnectButton } from "@/components/mock-connect-button"
+import { WalletConnectButton } from "@/components/wallet-connect-button"
 import { InteractiveFlowDiagram } from "@/components/interactive-flow-diagram"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -208,7 +208,7 @@ export default function PythentropyNFTDemo() {
 
           {/* Wallet Connection */}
           <div className="flex justify-center mb-6">
-            <ConnectButton />
+            <WalletConnectButton />
           </div>
 
           {/* Disclaimer */}
