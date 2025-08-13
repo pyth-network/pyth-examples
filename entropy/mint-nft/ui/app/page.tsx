@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Zap, CheckCircle, Clock, Wallet, Settings, AlertTriangle, Activity, XCircle } from "lucide-react"
+import { Zap, CheckCircle, Clock, Wallet, Settings, AlertTriangle, Activity, XCircle, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -13,9 +13,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
 import { InteractiveFlowDiagram } from "@/components/interactive-flow-diagram"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useEntropyBeasts } from "@/hooks/use-entropy-beasts"
+import { useWalletClient } from "wagmi"
 
-type MintingState = "idle" | "sending" | "processing" | "listening" | "callback" | "completed" | "failed"
-type CallbackStatus = "success" | "out_of_gas" | "execution_reverted" | "invalid_request" | null
 type NFTSize = "small" | "big"
 
 interface NFTConfig {
@@ -38,156 +38,18 @@ const NFT_CONFIGS: Record<NFTSize, NFTConfig> = {
 }
 
 export default function PythentropyNFTDemo() {
-  const [mintingState, setMintingState] = useState<MintingState>("idle")
-  const [callbackStatus, setCallbackStatus] = useState<CallbackStatus>(null)
   const [gasLimit, setGasLimit] = useState("50000")
   const [nftSize, setNftSize] = useState<NFTSize>("small")
-  const [nftName, setNftName] = useState("My Awesome NFT")
-  const [transactionHash, setTransactionHash] = useState("")
-  const [eventLogs, setEventLogs] = useState<string[]>([])
-  const [failureReason, setFailureReason] = useState("")
 
-  const addEventLog = (message: string) => {
-    setEventLogs((prev) => [...prev, `${new Date().toLocaleTimeString()}: ${message}`])
-  }
+  // Real contract hook
+  const { mint, isMinting, mintSequenceNumber, mintError, isListening, transactionHash, callbackCompleted, revealedEvent } = useEntropyBeasts()
 
   const handleNFTSizeChange = (size: NFTSize) => {
     setNftSize(size)
     setGasLimit(NFT_CONFIGS[size].minGas.toString())
   }
 
-  const simulateCallbackFailure = () => {
-    const currentGas = Number.parseInt(gasLimit)
-    const minRequired = NFT_CONFIGS[nftSize].minGas
 
-    if (currentGas < minRequired) {
-      return "out_of_gas"
-    }
-
-    // Simulate other potential failures
-    const random = Math.random()
-    if (random < 0.1) return "execution_reverted"
-    if (random < 0.05) return "invalid_request"
-
-    return "success"
-  }
-
-  const handleMint = async () => {
-    setMintingState("sending")
-    setEventLogs([])
-    setCallbackStatus(null)
-    setFailureReason("")
-
-    addEventLog("🚀 Mint request initiated")
-
-    // Simulate the flow
-    setTimeout(() => {
-      setMintingState("processing")
-      addEventLog("📡 Request sent to Pyth Entropy Provider")
-    }, 1000)
-
-    setTimeout(() => {
-      setMintingState("listening")
-      addEventLog("⛓️ Transaction submitted to blockchain")
-      addEventLog("👂 Listening for callback events...")
-    }, 2500)
-
-    setTimeout(() => {
-      setMintingState("callback")
-      addEventLog("📨 Callback event received")
-
-      const status = simulateCallbackFailure()
-      setCallbackStatus(status)
-
-      if (status === "success") {
-        addEventLog("✅ Callback status: SUCCESS")
-        setTimeout(() => {
-          setTransactionHash("0x1234...abcd")
-          setMintingState("completed")
-          addEventLog("🎉 NFT minted successfully!")
-        }, 1000)
-      } else {
-        addEventLog(`❌ Callback status: FAILED (${status.toUpperCase()})`)
-
-        let reason = ""
-        switch (status) {
-          case "out_of_gas":
-            reason = `Insufficient gas provided. Required: ${NFT_CONFIGS[nftSize].minGas}, Provided: ${gasLimit}`
-            break
-          case "execution_reverted":
-            reason = "Smart contract execution reverted due to failed assertion"
-            break
-          case "invalid_request":
-            reason = "Invalid request parameters or malformed data"
-            break
-        }
-
-        setFailureReason(reason)
-        addEventLog(`🔍 Failure reason: ${reason}`)
-
-        setTimeout(() => {
-          setMintingState("failed")
-        }, 1000)
-      }
-    }, 4000)
-  }
-
-  const resetDemo = () => {
-    setMintingState("idle")
-    setCallbackStatus(null)
-    setTransactionHash("")
-    setEventLogs([])
-    setFailureReason("")
-  }
-
-  const getStateInfo = (state: MintingState) => {
-    switch (state) {
-      case "idle":
-        return {
-          title: "Ready to Mint",
-          description: "Configure your NFT and gas settings",
-          color: "bg-gray-100 dark:bg-gray-800",
-        }
-      case "sending":
-        return {
-          title: "Sending Request",
-          description: "Transmitting to Pyth Entropy Provider",
-          color: "bg-blue-100 dark:bg-blue-900/30",
-        }
-      case "processing":
-        return {
-          title: "Processing",
-          description: "Entropy Provider handling request",
-          color: "bg-yellow-100 dark:bg-yellow-900/30",
-        }
-      case "listening":
-        return {
-          title: "Listening for Events",
-          description: "Monitoring blockchain for callback",
-          color: "bg-purple-100 dark:bg-purple-900/30",
-        }
-      case "callback":
-        return {
-          title: "Callback Received",
-          description: "Processing callback status",
-          color: "bg-orange-100 dark:bg-orange-900/30",
-        }
-      case "completed":
-        return {
-          title: "Minting Complete",
-          description: "NFT successfully minted!",
-          color: "bg-green-100 dark:bg-green-900/30",
-        }
-      case "failed":
-        return {
-          title: "Minting Failed",
-          description: "Callback failed - see details below",
-          color: "bg-red-100 dark:bg-red-900/30",
-        }
-      default:
-        return { title: "Error", description: "Something went wrong", color: "bg-red-100 dark:bg-red-900/30" }
-    }
-  }
 
   const isGasInsufficient = Number.parseInt(gasLimit) < NFT_CONFIGS[nftSize].minGas
 
@@ -205,6 +67,29 @@ export default function PythentropyNFTDemo() {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
             NFT Minting with Enhanced Callback Status Monitoring
           </p>
+
+          {/* Contract Status */}
+          <div className="max-w-2xl mx-auto mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Sequence Number:</span>
+                <span className="ml-2 font-mono text-lg font-bold">{mintSequenceNumber}</span>
+              </div>
+              {mintSequenceNumber && (
+                <div>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Last TX:</span>
+                  <span className="ml-2 font-mono text-sm text-blue-600 dark:text-blue-400">
+                    {transactionHash ? `${transactionHash.slice(0, 10)}...${transactionHash.slice(-8)}` : ""}
+                  </span>
+                </div>
+              )}
+            </div>
+            {mintError && (
+              <div className="mt-2 text-sm text-red-600 dark:text-red-400">
+                Error: {mintError}
+              </div>
+            )}
+          </div>
 
           {/* Wallet Connection */}
           <div className="flex justify-center mb-6">
@@ -232,7 +117,17 @@ export default function PythentropyNFTDemo() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <InteractiveFlowDiagram mintingState={mintingState} callbackStatus={callbackStatus} />
+            <InteractiveFlowDiagram 
+              mintingState={isMinting ? "processing" : "idle"}
+              callbackStatus={callbackCompleted ? "success" : null}
+              isRealMinting={isMinting}
+              hasSequenceNumber={!!mintSequenceNumber}
+              sequenceNumber={mintSequenceNumber}
+              isListening={isListening}
+              callbackCompleted={callbackCompleted}
+              revealedEvent={revealedEvent}
+              transactionHash={transactionHash}
+            />
           </CardContent>
         </Card>
 
@@ -248,19 +143,8 @@ export default function PythentropyNFTDemo() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="nft-name">NFT Name</Label>
-                <Input
-                  id="nft-name"
-                  value={nftName}
-                  onChange={(e) => setNftName(e.target.value)}
-                  placeholder="Enter NFT name"
-                  disabled={mintingState !== "idle"}
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="nft-size">NFT Size</Label>
-                <Select value={nftSize} onValueChange={handleNFTSizeChange} disabled={mintingState !== "idle"}>
+                <Select value={nftSize} onValueChange={handleNFTSizeChange} disabled={isMinting}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select NFT size" />
                   </SelectTrigger>
@@ -292,7 +176,7 @@ export default function PythentropyNFTDemo() {
                   value={gasLimit}
                   onChange={(e) => setGasLimit(e.target.value)}
                   placeholder="50000"
-                  disabled={mintingState !== "idle"}
+                  disabled={isMinting}
                   className={isGasInsufficient ? "border-red-300 focus:border-red-500" : ""}
                 />
                 {isGasInsufficient && (
@@ -308,160 +192,171 @@ export default function PythentropyNFTDemo() {
                 </p>
               </div>
 
-              <div className="pt-4">
-                {mintingState === "idle" ? (
-                  <Button onClick={handleMint} className="w-full" size="lg">
-                    <Zap className="w-4 h-4 mr-2" />
-                    Mint NFT
-                  </Button>
-                ) : mintingState === "completed" ? (
-                  <div className="space-y-3">
-                    <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                      <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                        Transaction Hash: {transactionHash}
-                      </p>
-                    </div>
-                    <Button onClick={resetDemo} variant="outline" className="w-full bg-transparent">
-                      Try Another Mint
-                    </Button>
-                  </div>
-                ) : mintingState === "failed" ? (
-                  <div className="space-y-3">
-                    <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
-                        Callback Failed: {callbackStatus?.replace("_", " ").toUpperCase()}
-                      </p>
-                      <p className="text-xs text-red-600 dark:text-red-400">{failureReason}</p>
-                    </div>
-                    <Button onClick={resetDemo} variant="outline" className="w-full bg-transparent">
-                      Try Again
-                    </Button>
-                  </div>
-                ) : (
-                  <Button disabled className="w-full" size="lg">
-                    <Clock className="w-4 h-4 mr-2 animate-spin" />
-                    {getStateInfo(mintingState).title}
-                  </Button>
-                )}
+              <div className="pt-4 space-y-3">
+                {/* Real Contract Mint Button */}
+                <Button 
+                  onClick={() => mint(Number(gasLimit), nftSize === "big")} 
+                  disabled={isMinting} 
+                  className="w-full" 
+                  size="lg"
+                  variant="default"
+                >
+                  {isMinting ? (
+                    <>
+                      <Clock className="w-4 h-4 mr-2 animate-spin" />
+                      Minting...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 mr-2" />
+                      Mint Real NFT (Contract)
+                    </>
+                  )}
+                </Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Right Panel - Flow Visualization */}
-          <Card>
+          {/* Right Panel - Event Display */}
+          <Card className="h-fit">
             <CardHeader>
-              <CardTitle>Pyth Entropy v2 Flow</CardTitle>
-              <CardDescription>Watch the enhanced callback status monitoring</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Activity className="w-5 h-5" />
+                Event Details
+              </CardTitle>
+              <CardDescription>Returned event from Beast Minted</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Current State Display */}
-                <div className={`p-4 rounded-lg ${getStateInfo(mintingState).color}`}>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold dark:text-white">{getStateInfo(mintingState).title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {getStateInfo(mintingState).description}
-                      </p>
+            <CardContent className="space-y-4">
+              {callbackCompleted ? (
+                <div className="space-y-3">
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
+                      <CheckCircle className="w-4 h-4" />
+                      <span className="font-medium">Revealed Event Received</span>
                     </div>
-                    <Badge variant="secondary">{mintingState.toUpperCase()}</Badge>
+                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                      Pyth Entropy v2 Revealed event successfully processed
+                    </p>
                   </div>
+                  
+                  {revealedEvent && (
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Provider Address</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.provider}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Caller Address</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.caller}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Sequence Number</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm">
+                          {revealedEvent.args.sequenceNumber?.toString()}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Random Number</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.randomNumber}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">User Contribution</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.userContribution}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Provider Contribution</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.providerContribution}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Callback Status</Label>
+                        <div className={`p-2 rounded border font-mono text-sm ${
+                          revealedEvent.args.callbackFailed 
+                            ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200'
+                            : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200'
+                        }`}>
+                          {revealedEvent.args.callbackFailed ? 'Failed ❌' : 'Success ✅'}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Callback Return Value</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.callbackReturnValue || '0x'}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Callback Gas Used</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm">
+                          {revealedEvent.args.callbackGasUsed?.toString() || '0'}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium">Extra Args</Label>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                          {revealedEvent.args.extraArgs || '0x'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {transactionHash && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Transaction Hash</Label>
+                      <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
+                        {transactionHash}
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Callback Status Display */}
-                {callbackStatus && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`p-3 rounded-lg border ${
-                      callbackStatus === "success"
-                        ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                        : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      {callbackStatus === "success" ? (
-                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                      )}
-                      <span
-                        className={`font-medium ${
-                          callbackStatus === "success"
-                            ? "text-green-800 dark:text-green-200"
-                            : "text-red-800 dark:text-red-200"
-                        }`}
-                      >
-                        Callback Status: {callbackStatus.replace("_", " ").toUpperCase()}
-                      </span>
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Event Logs */}
-                {eventLogs.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="font-medium mb-3 flex items-center gap-2">
-                      <Activity className="w-4 h-4" />
-                      Event Logs
-                    </h4>
-                    <div className="bg-gray-900 text-green-400 p-3 rounded-lg text-xs font-mono max-h-40 overflow-y-auto">
-                      {eventLogs.map((log, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="mb-1"
-                        >
-                          {log}
-                        </motion.div>
-                      ))}
-                    </div>
+              ) : isListening ? (
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                    <Clock className="w-4 h-4 animate-spin" />
+                    <span className="font-medium">Listening for Events</span>
                   </div>
-                )}
-
-                {/* Success/Failure Animation */}
-                <AnimatePresence>
-                  {mintingState === "completed" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg text-center"
-                    >
-                      <motion.div animate={{ rotate: 360 }} transition={{ duration: 1 }} className="inline-block mb-2">
-                        <CheckCircle className="w-8 h-8 text-green-500 dark:text-green-400" />
-                      </motion.div>
-                      <h3 className="font-semibold text-green-800 dark:text-green-200">Success!</h3>
-                      <p className="text-sm text-green-600 dark:text-green-300">
-                        Your {nftSize} NFT "{nftName}" has been minted successfully
-                      </p>
-                    </motion.div>
-                  )}
-
-                  {mintingState === "failed" && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-center"
-                    >
-                      <motion.div
-                        animate={{ rotate: [0, -10, 10, -10, 0] }}
-                        transition={{ duration: 0.5 }}
-                        className="inline-block mb-2"
-                      >
-                        <XCircle className="w-8 h-8 text-red-500 dark:text-red-400" />
-                      </motion.div>
-                      <h3 className="font-semibold text-red-800 dark:text-red-200">Callback Failed!</h3>
-                      <p className="text-sm text-red-600 dark:text-red-300">
-                        Entropy v2 detected: {callbackStatus?.replace("_", " ")}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Waiting for Beast Minted event...
+                  </p>
+                </div>
+              ) : isMinting ? (
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                  <div className="flex items-center gap-2 text-yellow-800 dark:text-yellow-200">
+                    <Zap className="w-4 h-4" />
+                    <span className="font-medium">Minting in Progress</span>
+                  </div>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                    Transaction being processed...
+                  </p>
+                </div>
+              ) : (
+                <div className="p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <Info className="w-4 h-4" />
+                    <span className="font-medium">Ready to Mint</span>
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                    Click "Mint Real NFT" to start the process
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

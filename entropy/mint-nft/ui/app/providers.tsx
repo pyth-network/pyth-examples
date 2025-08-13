@@ -2,7 +2,7 @@
 
 import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { WagmiProvider } from 'wagmi'
-import { base } from 'wagmi/chains'
+import { baseSepolia } from 'wagmi/chains'
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import '@rainbow-me/rainbowkit/styles.css'
 import { useEffect, useState } from 'react'
@@ -18,7 +18,7 @@ const createConfig = () => {
   return getDefaultConfig({
     appName: 'Pyth Entropy NFT Demo',
     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || 'demo-project-id',
-    chains: [base],
+    chains: [baseSepolia],
     ssr: false,
   })
 }
@@ -61,7 +61,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider 
-          initialChain={base}
+          initialChain={baseSepolia}
           showRecentTransactions={true}
         >
           {children}

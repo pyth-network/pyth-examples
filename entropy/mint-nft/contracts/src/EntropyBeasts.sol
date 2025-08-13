@@ -19,6 +19,7 @@ contract EntropyBeasts is IEntropyConsumer {
     uint256 public totalSupply;
     mapping(uint64 => bool) public pendingIsBig;
     event BeastMinted(uint256 indexed tokenId, uint256 strength, uint256 intelligence, uint32 gasUsed);
+    event BeastMintRequested(uint256 indexed tokenId, uint32 gasLimit, bool isBig, uint64 sequenceNumber);
     
     constructor(address _entropy) {
         entropy = IEntropyV2(_entropy);
@@ -38,6 +39,8 @@ contract EntropyBeasts is IEntropyConsumer {
         
         pendingMints[sequenceNumber] = tokenId;
         pendingIsBig[sequenceNumber] = isBig;
+        
+        emit BeastMintRequested(tokenId, gasLimit, isBig, sequenceNumber);
         
         return tokenId;
     }
