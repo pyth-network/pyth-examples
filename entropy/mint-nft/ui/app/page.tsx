@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Zap, CheckCircle, Clock, Wallet, Settings, AlertTriangle, Activity, XCircle, Info } from "lucide-react"
+import { Zap, CheckCircle, Clock, Wallet, Settings, AlertTriangle, Activity, XCircle, Info, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -33,7 +33,7 @@ const NFT_CONFIGS: Record<NFTSize, NFTConfig> = {
   },
   big: {
     size: "big",
-    minGas: 150000,
+    minGas: 550000,
     description: "Complex NFT with rich metadata and attributes",
   },
 }
@@ -70,6 +70,78 @@ export default function PythentropyNFTDemo() {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-4">
             NFT Minting with Enhanced Callback Status Monitoring
           </p>
+
+          {/* What You'll Learn Section */}
+          <div className="max-w-4xl mx-auto mb-6">
+            <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl text-blue-900 dark:text-blue-100">🎓 What You'll Learn</CardTitle>
+                <CardDescription className="text-blue-800 dark:text-blue-200 text-lg">
+                  Understand the complete Pyth Entropy v2 flow from your contract to the provider and back
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-lg">📚 Learning Objectives</h3>
+                    <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
+                      <li className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                        How your contract requests entropy from Pyth Entropy v2
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                        How Entropy processes requests and sends to providers
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                        How callbacks return results and handle failures
+                      </li>
+                    </ul>
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-blue-900 dark:text-blue-100 text-lg">🧪 Demo Steps</h3>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="font-medium text-green-800 dark:text-green-200">Step 1: Success Scenario</div>
+                        <div className="text-sm text-green-700 dark:text-green-300">Mint a small NFT with default gas to see successful callback</div>
+                      </div>
+                      <div className="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg">
+                        <div className="font-medium text-orange-800 dark:text-orange-200">Step 2: Failure Scenario</div>
+                        <div className="text-sm text-orange-700 dark:text-orange-300">Mint a big NFT with only 10 gas to see callback failure</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Base Sepolia Faucet Button */}
+                <div className="pt-4 border-t border-blue-200 dark:border-blue-800">
+                  <div className="text-center">
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                      💡 Need testnet ETH to try this demo?
+                    </p>
+                    <Button 
+                      asChild
+                      className="bg-orange-500 hover:bg-orange-600 text-white"
+                    >
+                      <a 
+                        href="https://faucet.quicknode.com/base/sepolia" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2"
+                      >
+                        🚰 Get Base Sepolia Testnet ETH
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </Button>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                      QuickNode faucet provides 0.05 ETH every 12 hours
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Contract Status */}
           <div className="max-w-2xl mx-auto mb-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -148,6 +220,44 @@ export default function PythentropyNFTDemo() {
               <CardDescription>Configure your NFT size and gas settings below</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Guided Demo Buttons */}
+              <div className="space-y-3">
+                <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">🎯 Quick Demo Actions</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button 
+                    onClick={() => {
+                      setNftSize("small")
+                      setGasLimit("50000")
+                    }}
+                    disabled={isMinting}
+                    variant="outline"
+                    className="text-sm h-auto py-3 px-4"
+                  >
+                    <div className="text-left">
+                      <div className="font-medium">✅ Success Demo</div>
+                      <div className="text-xs text-gray-500">Small NFT + 50k gas</div>
+                    </div>
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      setNftSize("big")
+                      setGasLimit("10")
+                    }}
+                    disabled={isMinting}
+                    variant="outline"
+                    className="text-sm h-auto py-3 px-4"
+                  >
+                    <div className="text-left">
+                      <div className="font-medium">❌ Failure Demo</div>
+                      <div className="text-xs text-gray-500">Big NFT + 10 gas</div>
+                    </div>
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Click these buttons to quickly set up the recommended demo scenarios
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="nft-size">NFT Size</Label>
                 <Select value={nftSize} onValueChange={handleNFTSizeChange} disabled={isMinting}>
@@ -230,7 +340,9 @@ export default function PythentropyNFTDemo() {
                 <Activity className="w-5 h-5" />
                 Event Details
               </CardTitle>
-              <CardDescription>Returned event from Beast Minted</CardDescription>
+              <CardDescription>
+                Returned event from Pyth Entropy v2 Contract - This shows the callback result
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {callbackCompleted ? (
@@ -245,6 +357,17 @@ export default function PythentropyNFTDemo() {
                     </p>
                   </div>
                   
+                  {/* Event Source Info */}
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="flex items-center gap-2 text-blue-800 dark:text-blue-200">
+                      <Info className="w-4 h-4" />
+                      <span className="font-medium">Event Source</span>
+                    </div>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                      This event comes from the Pyth Entropy v2 contract, not your NFT contract. It shows the callback execution result.
+                    </p>
+                  </div>
+                  
                   {revealedEvent && (
                     <div className="space-y-3">
                       <div className="space-y-2">
@@ -252,6 +375,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.provider}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">The Fortuna provider that generated the entropy</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -259,6 +383,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.caller}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Your contract address that requested the entropy</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -266,6 +391,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm">
                           {revealedEvent.args.sequenceNumber?.toString()}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Unique identifier for this entropy request</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -273,6 +399,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.randomNumber}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">The entropy value generated by the provider</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -280,6 +407,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.userContribution}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Your contribution to the entropy generation</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -287,6 +415,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.providerContribution}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Provider's contribution to the entropy generation</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -298,6 +427,12 @@ export default function PythentropyNFTDemo() {
                         }`}>
                           {revealedEvent.args.callbackFailed ? 'Failed ❌' : 'Success ✅'}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {revealedEvent.args.callbackFailed 
+                            ? 'Your contract callback failed (likely due to insufficient gas)'
+                            : 'Your contract callback executed successfully'
+                          }
+                        </p>
                       </div>
                       
                       <div className="space-y-2">
@@ -305,6 +440,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.callbackReturnValue || '0x'}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Return value from your contract's callback function</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -312,6 +448,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm">
                           {revealedEvent.args.callbackGasUsed?.toString() || '0'}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Gas consumed by your contract's callback execution</p>
                       </div>
                       
                       <div className="space-y-2">
@@ -319,6 +456,7 @@ export default function PythentropyNFTDemo() {
                         <div className="p-2 bg-gray-50 dark:bg-gray-800 rounded border font-mono text-sm break-all">
                           {revealedEvent.args.extraArgs || '0x'}
                         </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Additional arguments passed to your callback function</p>
                       </div>
                     </div>
                   )}
@@ -378,9 +516,9 @@ export default function PythentropyNFTDemo() {
                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Settings className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-semibold mb-2 dark:text-white">Smart Gas Management</h3>
+                <h3 className="font-semibold mb-2 dark:text-white">Configurable Gas Limits</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Automatic gas estimation with size-based requirements
+                  Configurable Gas Limits for Callbacks
                 </p>
               </div>
               <div className="text-center">
@@ -396,72 +534,11 @@ export default function PythentropyNFTDemo() {
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Activity className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="font-semibold mb-2 dark:text-white">Real-time Event Monitoring</h3>
+                <h3 className="font-semibold mb-2 dark:text-white">Public Entropy Explorer</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Live event logs showing the complete transaction lifecycle
+                  Public Entropy Explorer for all Pyth Entropy requests at <a href="https://entropy-explorer.pyth.network/" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline">entropy-explorer.pyth.network</a>
                 </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Usage Notes */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle>How to Use This Demo</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Getting Started</h3>
-                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Connect your wallet using the button above (optional for demo)
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Choose between Small or Big NFT to see different gas requirements
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Adjust gas limit to trigger different callback scenarios
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Watch the flow visualization and event logs in real-time
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">What You'll Learn</h3>
-                <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
-                    How Pyth Entropy v2 handles custom gas limits
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Enhanced callback status detection and error handling
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Real-time event monitoring and transaction lifecycle
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full mt-2 flex-shrink-0"></span>
-                    Out-of-gas detection and failure reason analysis
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2">💡 Pro Tip</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Try setting the gas limit below the minimum requirement for your selected NFT size to see how Entropy v2
-                detects and reports out-of-gas failures in the callback status.
-              </p>
             </div>
           </CardContent>
         </Card>

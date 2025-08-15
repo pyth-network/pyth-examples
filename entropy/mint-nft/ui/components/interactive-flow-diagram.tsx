@@ -40,13 +40,15 @@ export function InteractiveFlowDiagram({
         
         case "pyth-entropy":
           // Only active when we have sequence number but not listening yet
+          // Once listening starts, execute is complete, so box should be neutral
           if (hasSequenceNumber && !isListening) return "active"
           return "inactive"
         
         case "provider":
           // Only active when we have sequence number but not listening yet
+          // Once listening starts, provider processing is complete, so box should be neutral
           if (hasSequenceNumber && !isListening) return "active"
-          if (hasSequenceNumber && isListening) return "processing"
+          // Remove the processing state during listening - should be neutral
           return "inactive"
         
         default:
@@ -178,6 +180,7 @@ export function InteractiveFlowDiagram({
               duration: 3,
               repeat: getBoxState("entropy-beasts") === "active" ? Number.POSITIVE_INFINITY : 0,
             }}
+            title="Your NFT contract that requests entropy from Pyth Entropy v2"
           >
             <div className="text-center">
               <div className="font-bold">Entropy Beasts</div>
@@ -197,6 +200,7 @@ export function InteractiveFlowDiagram({
             className="flex items-center"
             animate={isArrowActive("forward1") ? { x: [0, 5, 0] } : {}}
             transition={{ duration: 2, repeat: isArrowActive("forward1") ? Number.POSITIVE_INFINITY : 0 }}
+            title="Your contract sends a request to Pyth Entropy v2 for entropy"
           >
             <ArrowRight
               className={`w-8 h-8 ${isArrowActive("forward1") ? "text-blue-500" : "text-gray-300 dark:text-gray-600"}`}
@@ -212,6 +216,7 @@ export function InteractiveFlowDiagram({
               duration: 3,
               repeat: getBoxState("pyth-entropy") === "active" ? Number.POSITIVE_INFINITY : 0,
             }}
+            title="Pyth Entropy v2 processes your request and sends it to a provider"
           >
             <div className="text-center">
               <div className="font-bold">Pyth Entropy V2</div>
@@ -230,6 +235,7 @@ export function InteractiveFlowDiagram({
             className="flex items-center"
             animate={isArrowActive("forward2") ? { x: [0, 5, 0] } : {}}
             transition={{ duration: 2, repeat: isArrowActive("forward2") ? Number.POSITIVE_INFINITY : 0 }}
+            title="Pyth Entropy v2 executes the request by sending it to a provider"
           >
             <ArrowRight
               className={`w-8 h-8 ${isArrowActive("forward2") ? "text-yellow-500" : "text-gray-300 dark:text-gray-600"}`}
@@ -242,6 +248,7 @@ export function InteractiveFlowDiagram({
             className={`relative w-40 h-24 rounded-xl border-2 flex items-center justify-center font-semibold text-sm ${getBoxColor(getBoxState("provider"))}`}
             animate={getBoxState("provider") === "active" ? { scale: [1, 1.02, 1] } : {}}
             transition={{ duration: 3, repeat: getBoxState("provider") === "active" ? Number.POSITIVE_INFINITY : 0 }}
+            title="Fortuna provider generates entropy and sends it back through the callback"
           >
             <div className="text-center">
               <div className="font-bold">Provider </div>
@@ -263,6 +270,7 @@ export function InteractiveFlowDiagram({
             className="relative"
             animate={isArrowActive("callback") ? { scale: [1, 1.02, 1] } : {}}
             transition={{ duration: 3, repeat: isArrowActive("callback") ? Number.POSITIVE_INFINITY : 0 }}
+            title="The provider sends entropy back to your contract through a callback function. This is where you can see if your callback succeeded or failed."
           >
             {/* Updated SVG with marker arrowhead and responsive half-square path */}
             <svg
@@ -391,6 +399,27 @@ export function InteractiveFlowDiagram({
             )}
           </motion.div>
         )}
+
+        {/* Educational Flow Explanation */}
+        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <h4 className="font-medium text-gray-900 dark:text-white mb-3 text-center">🔍 Understanding the Pyth Entropy Flow</h4>
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-600 dark:text-gray-300">
+            <div className="space-y-2">
+              <div className="font-medium text-gray-800 dark:text-gray-200">📤 Request Phase:</div>
+              <p>Entropy Beasts contract requests random number from Pyth Entropy v2. The requests creates a sequence number for tracking.</p>
+              
+              <div className="font-medium text-gray-800 dark:text-gray-200">⚡ Execute Phase:</div>
+              <p>Pyth Entropy v2 processes your request and sends it to the Fortuna provider for random number generation.</p>
+            </div>
+            <div className="space-y-2">
+              <div className="font-medium text-gray-800 dark:text-gray-200">🔄 Callback Phase:</div>
+              <p>The provider generates random number and sends it back to your contract through a callback function.</p>
+              
+              <div className="font-medium text-gray-800 dark:text-gray-200">📊 Monitoring:</div>
+              <p>Watch the Event Details panel to see the callback result and understand success/failure scenarios.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
