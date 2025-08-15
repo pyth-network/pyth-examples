@@ -30,7 +30,7 @@ export async function getFeeV2(gasLimit: number, client: WalletClient): Promise<
   }
 }
 
-export async function mintBeast(gasLimit: number, isBig: boolean, client: WalletClient): Promise<[string | null, bigint, string | null]> {
+export async function mintBeast(gasLimit: number, isBig: boolean, client: WalletClient, rpcUrl: string): Promise<[string | null, bigint, string | null]> {
   console.log('minting beast', gasLimit, isBig)
 
   if (!client.account) {
@@ -65,7 +65,7 @@ export async function mintBeast(gasLimit: number, isBig: boolean, client: Wallet
 
   const publicClient = createPublicClient({
     chain: baseSepolia,
-    transport: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_PUBLIC_RPC_URL || "https://base-sepolia.drpc.org"),
+    transport: http(rpcUrl),
   })
 
   await new Promise(resolve => setTimeout(resolve, 2500))
@@ -93,11 +93,11 @@ export async function mintBeast(gasLimit: number, isBig: boolean, client: Wallet
   }
 }
 
-export async function listenForBeastMinted(sequenceNumber: string, requestTxBlockNumber: bigint, client: WalletClient) {
+export async function listenForBeastMinted(sequenceNumber: string, requestTxBlockNumber: bigint, client: WalletClient, rpcUrl: string) {
   console.log('listening for beast minted', sequenceNumber, requestTxBlockNumber)
   const publicClient = createPublicClient({
     chain: baseSepolia,
-    transport: http(process.env.NEXT_PUBLIC_BASE_SEPOLIA_PUBLIC_RPC_URL || "https://base-sepolia.drpc.org"),
+    transport: http(rpcUrl),
   })
   
   try {
@@ -174,7 +174,7 @@ export async function listenForBeastMinted(sequenceNumber: string, requestTxBloc
 
 
 
-export function useEntropyBeasts() {
+export function useEntropyBeasts(rpcUrl: string) {
   const { data: client } = useWalletClient()
   const [isMinting, setIsMinting] = useState(false)
   const [mintSequenceNumber, setMintSequenceNumber] = useState<string | null>(null)
@@ -201,7 +201,7 @@ export function useEntropyBeasts() {
     }
     
     try {
-      const [sequenceNumber, requestTxBlockNumber, txHash] = await mintBeast(gasLimit, isBig, client)
+      const [sequenceNumber, requestTxBlockNumber, txHash] = await mintBeast(gasLimit, isBig, client, rpcUrl)
       
       if (sequenceNumber) {
         setMintSequenceNumber(sequenceNumber)
@@ -212,7 +212,7 @@ export function useEntropyBeasts() {
         await new Promise(resolve => setTimeout(resolve, 10000))
         
         try {
-          const result = await listenForBeastMinted(sequenceNumber, requestTxBlockNumber, client)
+          const result = await listenForBeastMinted(sequenceNumber, requestTxBlockNumber, client, rpcUrl)
           
           console.log('listenForBeastMinted result:', result)
           console.log('result.logs.length:', result.logs.length)

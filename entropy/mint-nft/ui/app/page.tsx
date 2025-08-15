@@ -11,10 +11,11 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { WalletConnectButton } from "@/components/wallet-connect-button"
+import { RPCInput } from "@/components/rpc-input"
 import { InteractiveFlowDiagram } from "@/components/interactive-flow-diagram"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useEntropyBeasts } from "@/hooks/use-entropy-beasts"
-import { useWalletClient } from "wagmi"
+import { useWalletClient, useAccount } from "wagmi"
 
 type NFTSize = "small" | "big"
 
@@ -40,9 +41,11 @@ const NFT_CONFIGS: Record<NFTSize, NFTConfig> = {
 export default function PythentropyNFTDemo() {
   const [gasLimit, setGasLimit] = useState("50000")
   const [nftSize, setNftSize] = useState<NFTSize>("small")
+  const [rpcUrl, setRpcUrl] = useState("https://base-sepolia.drpc.org")
+  const { isConnected } = useAccount()
 
   // Real contract hook
-  const { mint, isMinting, mintSequenceNumber, mintError, isListening, transactionHash, callbackCompleted, revealedEvent } = useEntropyBeasts()
+  const { mint, isMinting, mintSequenceNumber, mintError, isListening, transactionHash, callbackCompleted, revealedEvent } = useEntropyBeasts(rpcUrl)
 
   const handleNFTSizeChange = (size: NFTSize) => {
     setNftSize(size)
@@ -95,6 +98,9 @@ export default function PythentropyNFTDemo() {
           <div className="flex justify-center mb-6">
             <WalletConnectButton />
           </div>
+
+          {/* RPC Configuration */}
+          <RPCInput onRPCSet={setRpcUrl} isConnected={isConnected} />
 
           {/* Disclaimer */}
           <div className="max-w-2xl mx-auto mb-4">

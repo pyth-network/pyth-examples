@@ -34,14 +34,17 @@ export function InteractiveFlowDiagram({
     if (isRealMinting || hasSequenceNumber) {
       switch (step) {
         case "entropy-beasts":
-          if (isRealMinting || hasSequenceNumber) return "active"
+          // Only active during minting, not after sequence number is received
+          if (isRealMinting && !hasSequenceNumber) return "active"
           return "inactive"
         
         case "pyth-entropy":
-          if (hasSequenceNumber) return "active"
+          // Only active when we have sequence number but not listening yet
+          if (hasSequenceNumber && !isListening) return "active"
           return "inactive"
         
         case "provider":
+          // Only active when we have sequence number but not listening yet
           if (hasSequenceNumber && !isListening) return "active"
           if (hasSequenceNumber && isListening) return "processing"
           return "inactive"
@@ -96,9 +99,12 @@ export function InteractiveFlowDiagram({
     if (isRealMinting || hasSequenceNumber) {
       switch (arrow) {
         case "forward1":
-          return isRealMinting || hasSequenceNumber
+          // Request arrow: only active during minting, not after sequence number is received
+          return isRealMinting && !hasSequenceNumber
         case "forward2":
-          return hasSequenceNumber
+          // Execute arrow: only active when we have sequence number but not listening yet
+          // Once listening starts, execute is complete, so arrow should be neutral
+          return hasSequenceNumber && !isListening
         case "callback":
           // Only show callback arrow if we have a sequence number, callback is completed, AND callback didn't fail
           return hasSequenceNumber && callbackCompleted && revealedEvent && !revealedEvent.args.callbackFailed
