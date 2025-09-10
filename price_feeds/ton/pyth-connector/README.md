@@ -1,35 +1,74 @@
 # Pyth-connector example
-Provides onchain-getter: **User -> User JettonWallet -> App -> Pyth -> App -> ...** and proxy call: **User -> Pyth -> App -> ...** pyth usage examples. 
+This example provides two main usage patterns for interacting with Pyth:
 
-This example can be used as a standalone module that provides tools for sandbox testing by exporting functions for deploying and configuring a local Pyth contract.
+- **On-chain getter:**  
+  `User → User JW → App JW → App → Pyth → App → ...`
 
-It demonstrates techniques for using the Pyth oracle in financial applications.
+- **Proxy call:**  
+  `User → Pyth → App → ...`
 
-The demonstration is fully sandboxed and does not require real on-chain contracts on either testnet or mainnet.
-Using the Hermes client is also not required — prices can be generated locally, for example: **{TON: 3.12345, USDC: 0.998, USDT: 0.999}**.
+You can use this example as a standalone module for sandbox testing. It exports functions to deploy and configure a local Pyth contract, making it easy to experiment without connecting to real on-chain contracts on testnet or mainnet.
 
-This is achieved by using a patched Pyth contract that accepts simplified prices without a Merkle trie proof, and therefore does not verify the authenticity of the prices.
-Important: This patched contract is intended for testing purposes only. The production version must use the authentic Pyth contract deployed on the mainnet.
+This example uses a patched Pyth contract intended only for testing purposes in a local development environment. It accepts simplified prices without requiring a Merkle trie proof, so price authenticity is not verified.
 
-## Project structure
+<div style="border-radius: 8px; border: 1px solid #ffd700; background: #fffbe6; padding: 16px; margin: 16px 0;">
+  <strong>Important:</strong> This patched contract is for <strong>testing purposes only</strong>. For production, always use the official Pyth contract deployed on mainnet.
+</div>
 
-- `contracts` - source code of all the smart contracts of the project and their dependencies.
-- `wrappers` - wrapper classes (implementing `Contract` from ton-core) for the contracts, including any [de]serialization primitives and compilation functions.
-- `tests` - tests for the contracts.
-- `scripts` - scripts used by the project, mainly the deployment scripts.
+The demonstration is fully sandboxed. You do not need the Hermes client, prices can be generated locally, for example:  **`{ TON: 3.456, USDC: 0.998, USDT: 0.999 }`**
+
+## Project Structure
+
+- `contracts/` — Source code of the smart contracts and their dependencies.
+- `wrappers/` — TypeScript contract wrappers (implementing `Contract` from ton-core), including serialization/deserialization and compilation utilities.
+- `tests/` — Unit and integration tests for the contracts.
+- `scripts/` — Deployment and utility scripts.
+
 
 ## How to use
-First you need to install dependencies, node v22 is required, you can use nvm to install it: `nvm use 22` .
-Then install dependencies, just run `yarn`
+
+1. **Install Node.js version 22**  
+   It is recommended to use [nvm](https://github.com/nvm-sh/nvm) for managing Node.js versions.  
+   If you don't have nvm installed, run:
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+   source ~/.bashrc
+   ```
+   Then install and use Node.js 22:
+   ```bash
+   nvm install 22
+   nvm use 22
+   ```
+
+2. **Install Yarn** (if not already installed):
+   ```bash
+   npm install -g yarn
+   ```
+
+3. **Install project dependencies**  
+   In the project root directory, run:
+   ```bash
+   yarn install
+   ```
+
+After these steps, you are ready to build, test, and use the example. See the sections below for more commands.
 
 ### Build
-to build the module you can run `yarn build`
+to build the module you can run:
+   ```bash 
+   yarn build
+   ```
 
 ### Contracts
-To prebuild contracts run`yarn contracts`
+To prebuild contracts run:
+   ```bash 
+   yarn contracts
+   ```
 
 ### Test
-`yarn test:unit`
+   ```bash
+    yarn test:unit
+   ```
     
 ### Deploy
 You don't need to deploy this example's contracts to testnet/mainnet,

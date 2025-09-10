@@ -14,12 +14,15 @@
     return (transferred_amount);
 }
 
-;; todo: test, debug
 () proxy_operation_process(int my_balance, int msg_value, slice initial_sender, cell prices_dict, int query_id, cell operation_payload) impure {
     var (transferred_amount) = parse_proxy_operation_payload(operation_payload);
-    throw_unless(ERROR::NOT_ENOUGH_TRANSFERRED, msg_value < transferred_amount + FEE::SUPPLY_MARGIN);
 
-    raw_reserve(my_balance + transferred_amount, RESERVE::REGULAR);
+    ;; check that the msg value is enough to cover the transferred amount and supply margin, 
+    ;; which is supposed to be pyth connector fee
+    throw_unless(ERROR::NOT_ENOUGH_TRANSFERRED, msg_value >= transferred_amount + FEE::SUPPLY_MARGIN);
+    
+    ;; reserve the transferred amount
+    raw_reserve(transferred_amount, RESERVE::APPEND_BALANCE);
 
     emit_log(LOG::PROXY_OPERATION_PROCESSING,
         begin_cell()
@@ -32,6 +35,6 @@
     send_message(
         initial_sender, 0,
         begin_cell().store_query_id(query_id).store_ref(makeTextBody("Thank you!")).end_cell(),
-        SENDMODE::CARRY_ALL_BALANCE
+        SENDMODE::CARRY_ALL_BALANCE ;; only balance remaining after reserve is sent to the initial sender
     );
 }

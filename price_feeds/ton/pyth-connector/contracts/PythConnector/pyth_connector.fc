@@ -100,7 +100,6 @@
         }
 
         throw(ERROR::UNSUPPORTED_OPERATION);
-
     }
 
     int query_id = in_msg_body~load_query_id();

@@ -1,5 +1,5 @@
 import { Blockchain, EventAccountCreated, SandboxContract, TreasuryContract } from '@ton/sandbox';
-import { Address, beginCell, Cell, Dictionary, toNano } from '@ton/core';
+import { Address, beginCell, Cell, Dictionary, SendMode, toNano } from '@ton/core';
 import { PythConnector } from '../wrappers/PythConnector';
 import '@ton/test-utils';
 
@@ -16,7 +16,7 @@ import {
     TEST_FEED_NAMES, TEST_FEEDS, TEST_FEEDS_MAP
 } from "./utils/assets";
 import { packNamedPrices } from "./utils/prices";
-import { makeOnchainGetterPayload, makeTransferMessage } from "./utils/messages";
+import { makeOnchainGetterPayload, makePythProxyMessage, makePythProxyPayloadMessage, makeTransferMessage, parsePythProxyLogBody } from "./utils/messages";
 import { EventMessageSent } from "@ton/sandbox/dist/event/Event";
 
 dotenv.config();
@@ -27,10 +27,6 @@ const HERMES_ENDPOINT = 'https://hermes.pyth.network';
 export type OraclesInfo = {
     pythAddress: Address;
     feedsMap: Dictionary<bigint, Buffer>,
-    // pricesTtl: number,
-    // pythComputeBaseGas: bigint,
-    // pythComputePerUpdateGas: bigint,
-    // pythSingleUpdateFee: bigint,
 };
 
 describe('Generated Prices', () => {
@@ -137,10 +133,6 @@ describe('PythConnector', () => {
         oraclesInfo = {
             feedsMap: TEST_FEEDS_MAP,
             pythAddress: pyth.address,
-            // pricesTtl: 180,
-            // pythComputeBaseGas: 100n,
-            // pythComputePerUpdateGas: 200n,
-            // pythSingleUpdateFee: 300n,
         } as OraclesInfo;
 
         pythConnector = await deployPythConnector(blockchain, deployer, pyth.address);
@@ -254,7 +246,107 @@ describe('PythConnector', () => {
         });
     })
 
-    it.skip('should succeed pyth proxy operation', async () => {
+    it('should succeed pyth proxy operation', async () => {
+        await pythConnector.sendConfigure(deployer.getSender(),{
+            value: toNano('0.05'), 
+            pythAddress: pyth.address, 
+            feedsMap: TEST_FEEDS_MAP
+        });
 
+        // technically, prices are not important for current implementation of pyth proxy operation
+        // but we pass them to pyth contract for demonstration purposes
+        const updateDataCell = packNamedPrices({TON: 3.1, USDT: 0.99, USDC: 1.01}, () => blockchain.now!);
+        const pythPriceIds = composeFeedsCell(defaultFeeds);
+
+        const queryId = 0x123456n;
+
+        const pythFee = toNano('0.0234');
+        const transferredAmount = toNano('0.5');
+        const supplyMargin = toNano('0.1');
+
+        // need to cover pyth fee, transferred amount and supply margin
+        const sentValue = pythFee + transferredAmount + supplyMargin;
+
+        const proxyPayload = makePythProxyPayloadMessage({
+            queryId,
+            transferredAmount,
+        });
+
+        const minPublishTime = blockchain.now! - 10;
+        const maxPublishTime = blockchain.now! + 180;
+
+        const msgToPyth = makePythProxyMessage({
+            updateDataCell,
+            pythPriceIds,
+            minPublishTime,
+            maxPublishTime,
+            targetAddress: pythConnector.address,
+            queryId,
+            proxyPayload,
+            transferredAmount,
+        });
+        console.log({
+            'Alice wallet': aliceWallet.address, 
+            'Pyth contract': pyth.address, 
+            'Pyth connector': pythConnector.address
+        });
+
+        const balanceBefore = (await blockchain.getContract(pythConnector.address)).balance;
+
+        const result = await aliceWallet.send({
+            value: sentValue,
+            to: pyth.address,
+            sendMode: SendMode.PAY_GAS_SEPARATELY + SendMode.IGNORE_ERRORS,
+            body: msgToPyth,
+        });
+
+        const balanceAfter = (await blockchain.getContract(pythConnector.address)).balance;
+
+        // alice sent message to pyth
+        expect(result.transactions).toHaveTransaction({
+            from: aliceWallet.address,
+            to: pyth.address,
+            success: true,
+        });
+
+        // pyth validated feeds and sent prices to pyth connector
+        expect(result.transactions).toHaveTransaction({
+            from: pyth.address,
+            to: pythConnector.address,
+            success: true,
+        });
+
+        // Check that the pyth-connector balance increased by the transferred amount (within a small tolerance)
+        const expectedBalance = balanceBefore + transferredAmount;
+        const delta = Math.abs(Number(balanceAfter - expectedBalance));
+        console.log({
+            balanceBefore, 
+            balanceAfter,
+            expectedBalance,
+            delta
+        });
+
+        expect(delta).toBeLessThanOrEqual(Number(toNano('0.00001')));
+
+        // remaining balance sent back to alice
+        expect(result.transactions).toHaveTransaction({
+            from: pythConnector.address,
+            to: aliceWallet.address,
+            success: true,
+        });
+
+        console.log('externals: ', result.externals);
+
+        // expect connector emitted proxy-operation log into externals
+        const LOG_PROXY_OPERATION_PROCESSING = 128 + 12;
+        const hasProxyLog = result.externals.some((m: any) => {
+            const src = (m.info as any).src?.toString?.();
+            if (src !== pythConnector.address.toString()) return false;
+            const logInfo = parsePythProxyLogBody(m.body);
+            console.log('logInfo: ', logInfo);
+            return logInfo.op === LOG_PROXY_OPERATION_PROCESSING;
+        });
+
+        expect(hasProxyLog).toBe(true);
     })
 });
