@@ -18,6 +18,7 @@ jobs:
         with:
           toolchain: 1.81.0
           components: clippy, rustfmt
+          cache-workspaces: "lazer/solana -> target"
       - name: install extra tools
         run: |
           cargo install --locked taplo-cli@0.9.3
