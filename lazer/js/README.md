@@ -1,6 +1,6 @@
 # Pyth Lazer JavaScript SDK Examples
 
-This directory contains JavaScript/TypeScript examples demonstrating how to use the Pyth Lazer SDK to interact with real-time price feeds and verify cryptographic messages on the Solana blockchain.
+This directory contains JavaScript/TypeScript examples demonstrating how to use the Pyth Lazer SDK to interact with real-time price feeds and verify price updates on the Solana blockchain.
 
 ## What is Pyth Lazer?
 
@@ -12,7 +12,7 @@ Before running these examples, make sure you have the following installed:
 
 - **Node.js** (version 18 or higher)
 - **pnpm** package manager
-- A Lazer Access Token -- please see the TODO. 
+- A Lazer Access Token -- please see [How to Acquire an Access Token](https://docs.pyth.network/lazer/acquire-access-token) if you don't have one.
 
 ## Installation
 
@@ -33,7 +33,7 @@ Before running these examples, make sure you have the following installed:
 ## Basic Examples
 
 ### 1. WebSocket Client Example (`src/index.ts`)
-Demonstrates how to connect to the Pyth Lazer WebSocket stream and receive real-time price feed updates.
+Demonstrates how to connect to the Pyth Lazer WebSocket stream and receive real-time price updates.
 
 **What it does:**
 - Connects to the Pyth Lazer server
