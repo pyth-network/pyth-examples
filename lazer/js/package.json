@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node --loader ts-node/esm src/index.js",
-    "start:publish": "node --loader ts-node/esm src/publish.js",
-    "start:verify_ecdsa_message": "node --loader ts-node/esm src/verify_ecdsa_message.js",
-    "start:verify_ed25519_message": "node --loader ts-node/esm src/verify_ed25519_message.js",
+    "start:post_solana": "node --loader ts-node/esm src/solana/post_solana.js",
+    "start:verify_ecdsa_message": "node --loader ts-node/esm src/solana/verify_ecdsa_message.js",
+    "start:verify_ed25519_message": "node --loader ts-node/esm src/solana/verify_ed25519_message.js",
     "test": "pnpm run test:format && pnpm run test:types && pnpm run build:cjs && pnpm run build:esm",
     "build:cjs": "tsc --project tsconfig.json --verbatimModuleSyntax false --module commonjs --outDir ./dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "build:esm": "tsc --project tsconfig.json --outDir ./dist/esm && echo '{\"type\":\"module\"}' > dist/esm/package.json",
