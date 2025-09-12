@@ -15,7 +15,7 @@ import { SYSVAR_INSTRUCTIONS_PUBKEY } from "@solana/web3.js";
 
 const SOLANA_RPC_URL = "https://api.devnet.solana.com";
 const PAYER_SECRET_KEY = Uint8Array.from(
-  JSON.parse(fs.readFileSync("/path/to/private-key.json", "utf8")) as number[],
+  JSON.parse(fs.readFileSync("./keypair.json", "utf8")) as number[],
 );
 // Program ID of the example contract on devnet
 const PROGRAM_ID = "HU64YGK66e1wdxD83D3snGuZEvfhM4YDdYShTfQvf6nm";
@@ -35,8 +35,8 @@ const connection = new Connection(SOLANA_RPC_URL, "confirmed");
 const payer = Keypair.fromSecretKey(PAYER_SECRET_KEY);
 const main = async () => {
   const client = await PythLazerClient.create({
-    urls: ["wss://pyth-lazer-staging.dourolabs.app/v1/stream"],
-    token: "my_token",
+    urls: ["wss://pyth-lazer.dourolabs.app/v1/stream"],
+    token: process.env.ACCESS_TOKEN!,
   });
 
   // data received from pyth lazer
