@@ -40,17 +40,6 @@
 ### What problem does it solve or demonstrate?
 <!-- Describe the use case or issue this addresses -->
 
-## Changes Made
-
-### Files Added/Modified
-<!-- List the main files you've added or modified -->
-- [ ] Smart contracts
-- [ ] Frontend/UI components  
-- [ ] Documentation (README, comments)
-- [ ] Configuration files
-- [ ] Tests
-- [ ] Other: ___________
-
 ### Directory Structure (for new examples)
 <!-- If adding a new example, show the directory structure -->
 ```
@@ -85,13 +74,6 @@ npm install
 **Contract Address(es):** <!-- Deployed contract addresses -->
 
 **Demo URL:** <!-- Link to live demo if available -->
-
-## Documentation
-
-- [ ] Added/updated README.md with clear instructions
-- [ ] Code is well-commented and self-explanatory
-- [ ] Included usage examples
-- [ ] Added any necessary configuration details
 
 ## Checklist
 
