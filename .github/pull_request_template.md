@@ -1,6 +1,6 @@
 # 🎲 Pyth Entropy Hackathon Submission
 
-## 📋 Project Information
+## Project Information
 
 **Project Name:** <!-- Enter your project name -->
 
@@ -33,7 +33,6 @@
 
 ## Project Structure
 
-### Directory Structure
 ```
 entropy/[your-project-name]/
 ├── contract/          # Smart contracts
@@ -79,43 +78,9 @@ npm run dev
 ### How You Solved Them
 <!-- Explain your solutions and any innovative approaches -->
 
-## 📚 Documentation
-
-### README.md Checklist
-- [ ] Clear project description
-- [ ] Installation instructions
-- [ ] Usage examples
-- [ ] Architecture explanation
-- [ ] Entropy integration details
-- [ ] Demo links/screenshots
-
-### Code Documentation
-- [ ] Smart contracts are well-commented
-- [ ] Complex logic is explained
-
-## 🧪 Testing & Verification
-
-### Smart Contract Testing
-- [ ] Unit tests written and passing
-- [ ] Entropy callback functionality tested
-- [ ] Edge cases covered
-
-### Deployment Verification
-- [ ] Contract deployed successfully
-- [ ] Contract verified on block explorer
-- [ ] All functions working as expected
-
 ---
 
-### Known Issues
-<!-- List any known limitations or issues -->
-
-### Future Roadmap
-<!-- Briefly describe your plans for this project post-hackathon -->
-
----
-
-**Thank you for reviewing my hackathon submission! 🙏**
+**Thank you for reviewing my hackathon submission!**
 
 <!-- 
 Helpful Links:
