@@ -1,90 +1,130 @@
-# 🎲 Pyth Entropy Hackathon Submission
+# Pyth Examples Contribution
+
+## Type of Contribution
+<!-- Please check the type of contribution this PR represents -->
+
+- [ ] **New Example Project** (Adding a new example to demonstrate Pyth integration)
+- [ ] **Bug Fix** (Fixing an issue in existing examples)
+- [ ] **Documentation Update** (Improving README, comments, or guides)
+- [ ] **Enhancement** (Improving existing functionality or adding features)
+- [ ] **Hackathon Submission** (Submitting a project from a hackathon)
 
 ## Project Information
 
-**Project Name:** <!-- Enter your project name -->
+**Project/Example Name:** <!-- Enter the name of your project or the example you're working on -->
 
-**Team/Individual:** <!-- Your name or team name -->
+**Pyth Product Used:** 
+- [ ] Pyth Price Feeds
+- [ ] Pyth Entropy
+- [ ] Multiple Products
+- [ ] Other: ___________
 
-**Hackathon Event:** <!-- Name of the hackathon -->
+**Blockchain/Platform:**
+- [ ] Ethereum/EVM
+- [ ] Solana  
+- [ ] Aptos
+- [ ] Sui
+- [ ] Fuel
+- [ ] Starknet
+- [ ] TON
+- [ ] Other: ___________
 
-**Contact:** <!-- Your GitHub username, email, or Discord handle -->
+## Description
 
-## Project Description
+### What does this contribution do?
+<!-- Provide a clear description of what you're adding or changing -->
 
-### What does your project do?
-<!-- Provide a clear, concise description of your entropy-based application -->
+### How does it integrate with Pyth?
+<!-- Explain how your code uses Pyth products/services -->
 
-### How does it use Pyth Entropy?
-<!-- Explain how your project integrates with Pyth Entropy and what randomness features you utilize -->
+### What problem does it solve or demonstrate?
+<!-- Describe the use case or issue this addresses -->
 
-### What problem does it solve?
-<!-- Describe the real-world problem your project addresses -->
+## Changes Made
 
-## Technical Implementation
+### Files Added/Modified
+<!-- List the main files you've added or modified -->
+- [ ] Smart contracts
+- [ ] Frontend/UI components  
+- [ ] Documentation (README, comments)
+- [ ] Configuration files
+- [ ] Tests
+- [ ] Other: ___________
 
-### Architecture Overview
-<!-- Briefly describe your project's architecture -->
-
-**Network Details:** <!-- e.g., Ethereum Sepolia, Arbitrum Sepolia, etc. -->
-
-### Smart Contract Details
-**Contract Address(es):** <!-- Deployed contract addresses -->
-
-## Project Structure
-
+### Directory Structure (for new examples)
+<!-- If adding a new example, show the directory structure -->
 ```
-entropy/[your-project-name]/
-├── contract/          # Smart contracts
-├── app/              # Frontend application (if applicable)
+[product]/[example-name]/
+├── contract/          # Smart contracts (if applicable)
+├── app/              # Frontend application (if applicable)  
 ├── README.md         # Project documentation
 └── ...
 ```
 
-## Demo & Usage
+## Testing & Verification
 
-### Live Demo
-**Demo URL:** <!-- Link to your live demo (if available) -->
-
-**Video Demo:** <!-- Link to video demonstration -->
-
-### How to Run Locally
+### How to Test This Contribution
+<!-- Provide clear instructions for reviewers to test your changes -->
 
 #### Prerequisites
-<!-- List any prerequisites needed to run your project -->
+<!-- List any prerequisites needed -->
 - Node.js version: ___
 - Other dependencies: ___
 
-#### Installation & Setup
+#### Setup & Run Instructions
 ```bash
-# Add your installation commands here
-cd entropy/[your-project-name]
+# Add your setup and run commands here
+cd [path-to-your-example]
 npm install
-# ... other setup commands
+# ... other commands
 ```
 
-#### Running the Application
-```bash
-# Add commands to run your application
-npm run dev
-# or other run commands
-```
+### Deployment Information (if applicable)
+**Network:** <!-- e.g., Ethereum Sepolia, Solana Devnet, etc. -->
 
-## Technical Challenges & Solutions
+**Contract Address(es):** <!-- Deployed contract addresses -->
 
-### Challenges Faced
-<!-- Describe any technical challenges you encountered -->
+**Demo URL:** <!-- Link to live demo if available -->
 
-### How You Solved Them
-<!-- Explain your solutions and any innovative approaches -->
+## Documentation
+
+- [ ] Added/updated README.md with clear instructions
+- [ ] Code is well-commented and self-explanatory
+- [ ] Included usage examples
+- [ ] Added any necessary configuration details
+
+## Checklist
+
+### Code Quality
+- [ ] Code follows existing patterns in the repository
+- [ ] Proper error handling implemented
+- [ ] No hardcoded values (use environment variables where appropriate)
+
+### Testing
+- [ ] Tested locally and works as expected
+- [ ] All existing functionality still works (no breaking changes)
+
+## Additional Context
+
+### Related Issues
+<!-- Link any related GitHub issues -->
+Fixes #<!-- issue number -->
+
+### Screenshots/Demo (if applicable)
+<!-- Add screenshots or links to demos that help explain your contribution -->
+
+### Notes for Reviewers
+<!-- Add any additional context that would help reviewers -->
 
 ---
 
-**Thank you for reviewing my hackathon submission!**
+**Thank you for contributing to Pyth Examples!**
 
 <!-- 
-Helpful Links:
-- Pyth Entropy Documentation: https://docs.pyth.network/entropy
-- Example Projects: Check the existing entropy/ directory for reference implementations
-- Pyth Discord: [Add Discord link for support]
+Helpful Resources:
+- Pyth Documentation: https://docs.pyth.network/
+- Price Feeds: https://docs.pyth.network/price-feeds
+- Entropy: https://docs.pyth.network/entropy  
+- Lazer: https://docs.pyth.network/lazer
+- Existing Examples: Browse the repository for reference implementations
 -->
