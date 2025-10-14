@@ -1,0 +1,107 @@
+#include "../constants/constants.fc";
+#include "../constants/op_codes.fc";
+#include "../imports/stdlib.fc";
+
+() emit_log_simple (cell data) impure inline {
+    var msg = begin_cell()
+        .store_uint(12, 4)         ;; ext_out_msg_info$11 src:MsgAddressInt ()
+        .store_uint(1, 2)          ;; addr_extern$01
+        .store_uint(256, 9)        ;; len:(## 9)
+        .store_uint(0, 256)       ;; external_address:(bits len)
+        .store_uint(1, 64 + 32 + 2) ;; created_lt, created_at, init:Maybe, body:Either
+        .store_ref(data)
+        .end_cell();
+    send_raw_message(msg, 0);
+}
+
+() emit_log(int status, cell body) impure inline {
+    emit_log_simple(
+        begin_cell()
+            .store_uint(status, 8)
+            .store_ref(body)
+            .end_cell()
+    );
+}
+
+(cell) makeTextBody(slice text) impure inline {
+    return begin_cell().store_uint(0, 32).store_slice(text).end_cell();
+}
+
+(cell) makeIntBody(int value, int bits) impure inline {
+    return begin_cell().store_uint(value, bits).end_cell();
+}
+
+() send_message(
+    slice to_address, int nano_ton_amount,
+    cell content, int mode
+) impure {
+    var msg = begin_cell()
+        .store_uint(0x10, 6)
+        .store_slice(to_address)
+        .store_grams(nano_ton_amount)
+        .store_uint(0, 1 + 4 + 4 + 64 + 32 + 1)
+        .store_maybe_ref(content); ;; body:(Either X ^X)
+
+    send_raw_message(msg.end_cell(), mode);
+}
+
+() send_jetton(
+    slice my_jetton_wallet_address,
+    slice to_address,
+    int query_id, int amount,
+    int nano_ton_attachment, cell body, int mode
+) impure {
+    send_message(
+        my_jetton_wallet_address,
+        0, ;; because we using mode 128 +raw_reserve everywhere we dont need ton amount here
+        begin_cell()
+            .store_uint(OP::JETTON_TRANSFER, 32)
+            .store_uint(query_id, 64)
+            .store_grams(amount) ;; jetton amount
+            .store_slice(to_address) ;; new owner
+            .store_slice(to_address) ;; response_destination -> refund excess fees to the owner
+            .store_maybe_ref(body) ;; custom_response_payload
+            .store_grams(nano_ton_attachment) ;; minimum nano-TON amount to send transfer_notification
+        ;;.store_bool(false) ;; forward_payload
+            .store_maybe_ref(body) ;; custom_response_payload
+            .end_cell(),
+        mode ;; send mode
+    );
+}
+
+;; Carries all the remaining TON balance
+() respond_send_jetton(
+    slice my_jetton_wallet_address,
+    slice to_address,
+    int query_id, int amount,
+    cell body, int forward_ton_amount
+) impure {
+    send_jetton(
+        my_jetton_wallet_address,
+        to_address,
+        query_id, amount,
+        forward_ton_amount, ;; nanotons
+        body,
+        SENDMODE::CARRY_ALL_REMAINING_MESSAGE_VALUE
+    );
+}
+
+() reserve_and_send_rest(
+    int nano_ton_amount_to_reserve,
+    slice to_address, cell content
+) impure {
+    raw_reserve(nano_ton_amount_to_reserve, RESERVE::REGULAR);
+    send_message(to_address, 0, content, SENDMODE::CARRY_ALL_BALANCE);
+}
+
+() try_reserve_and_send_rest(
+    int nano_ton_amount_to_reserve,
+    slice to_address, cell content
+) impure {
+    raw_reserve(nano_ton_amount_to_reserve, RESERVE::AT_MOST);
+    send_message(to_address, 0, content, SENDMODE::CARRY_ALL_BALANCE + 2);
+}
+
+() return_excesses(slice sender_address, cell body) impure {
+    send_message(sender_address, 0, body, SENDMODE::CARRY_ALL_REMAINING_MESSAGE_VALUE);
+}

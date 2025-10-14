@@ -1,0 +1,50 @@
+#include "../imports/stdlib.fc";
+tuple tuple_of_13_ints([int, int, int, int, int, int, int, int, int, int, int, int, int] specific_tuple) asm "NOP";
+
+int fast_dec_pow(int e) impure {
+    var t = tuple_of_13_ints([
+        1, ;; 0
+        10,
+        100,
+        1000,
+        10000,
+        100000, ;; 5
+        1000000,
+        10000000,
+        100000000,
+        1000000000,
+        10000000000, ;; 10
+        100000000000,
+        1000000000000 ;; 12
+    ]);
+    return t.at(e);
+}
+
+() dump_tuple(tuple t) impure inline {
+    if (null?(t)) {
+        return ();
+    }
+
+    int len = t.tlen();
+    int i = 0;
+    while (i < len) {
+        int x = t.at(i);
+        x~dump();
+        i += 1;
+    }
+
+    return ();
+}
+
+(int) is_valid_address?(slice address) inline {
+    ifnot (ext::addr_std_any_wc?(address)) {
+        return false;
+    }
+    return ext::is_on_same_workchain?(address);
+}
+
+int equal_msg_addr?(slice addr1, slice addr2) impure inline {
+    var (wc1, hash1) = parse_std_addr(addr1);
+    var (wc2, hash2) = parse_std_addr(addr2);
+    return (wc1 == wc2) & (hash1 == hash2);
+}
