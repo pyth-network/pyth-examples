@@ -1,0 +1,13 @@
+{
+  "name": "lottery-contract",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@pythnetwork/entropy-sdk-solidity": "^2.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.4"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.4"
+  }
+}
