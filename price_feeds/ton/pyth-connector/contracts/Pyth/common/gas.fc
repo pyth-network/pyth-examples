@@ -1,0 +1,15 @@
+int get_compute_fee(int workchain, int gas_used) asm(gas_used workchain) "GETGASFEE";
+int get_gas_consumed() asm "GASCONSUMED";
+
+
+;; 1 update:  262,567 gas
+;; 2 updates: 347,791 (+85,224)
+;; 3 updates: 431,504 (+83,713)
+;; 4 updates: 514,442 (+82,938)
+;; 5 updates: 604,247 (+89,805)
+;; 6 updates: 683,113 (+78,866)
+;; 10 updates: 947,594
+;; Upper bound gas increase per additional update: ~90,000
+;; Base cost (1 update): ~262,567 gas
+const UPDATE_PRICE_FEEDS_BASE_GAS = 300000;  ;; Base cost + 10% safety margin rounded up because the amount of gas used can vary based on the current state of the blockchain
+const UPDATE_PRICE_FEEDS_PER_UPDATE_GAS = 90000;  ;; Per update cost

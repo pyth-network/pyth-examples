@@ -1,0 +1,149 @@
+#include "imports/basic_types.fc";
+#include "imports/stdlib.fc";
+
+#include "configuration.fc";
+#include "operations/configure_operation.fc";
+#include "constants/constants.fc";
+#include "constants/errors.fc";
+#include "utils/common.fc";
+#include "utils/tx-utils.fc";
+#include "getters.fc";
+#include "parse_price_feeds.fc";
+#include "constants/op_codes.fc";
+#include "operations/onchain_getter_operation.fc";
+#include "operations/proxy_operation.fc";
+#include "utils/pyth.fc";
+
+;; main message handler
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    if (in_msg_body.slice_empty?()) {
+        return ();
+    }
+
+    ;; get sender address from message
+    slice cs = in_msg_full.begin_parse();
+    cs~skip_bits(4);  ;; skip flags
+    slice sender_address = cs~load_msg_addr();  ;; load sender address
+
+    int op = in_msg_body~load_op();
+
+    ;; cannot read query_id yet, because pyth error response doesn't have it
+    if (op == OP::PYTH_RESPONSE_ERROR) {
+        (slice pyth_address, _) = load_configuration();
+        throw_unless(ERROR::NOT_AUTHORIZED, equal_msg_addr?(sender_address, pyth_address));
+
+        ;; it's what pyth returns in case of error
+        (int error_code, int operation_code, cell custom_payload) = parse_pyth_response_error(in_msg_body);
+        ;; maybe try/catch and log
+
+        ;; if pyth op code don't match, we have an error in our contract
+        ifnot (operation_code == OP::PYTH_PARSE_PRICE_FEED_UPDATES) { ;; don't throw to keep the coins
+            emit_log(LOG::UNSUPPORTED_FEEDS_OPERATION, makeTextBody("Unsupported feeds operation"));
+            return ();
+        }
+
+        ;; handle pyth error response
+        ;; custom_payload was composed by this contract, so we parse it
+        (int op_code, int query_id, cell external_custom_payload) = parse_custom_payload(custom_payload);
+
+        ;; this contract supposes only one operation as onchain-getter
+        if (op_code == OP::CONNECTOR_ONCHAIN_GETTER_PROCESS) {
+            handle_onchain_getter_failure(query_id, error_code, external_custom_payload);
+            return ();
+        }
+
+        ;; don't throw, because it bounces the value back to pyth
+        emit_log(LOG::UNSUPPORTED_OPERATION_FROM_PYTH, makeTextBody("Unsupported operation from pyth"));
+
+        return ();
+    }
+
+    if (op == OP::CONNECTOR_CONFIGURE) {
+        (slice pyth_address, cell ids_map) = parse_configure_params(in_msg_body);
+        ;; todo: add owner address to config
+        ;; (slice pyth_address, cell ids_map, cell tokens_keys) = load_configuration();
+        ;; todo check sender is owner
+        ;; throw_unless(error::unauthorized, equal_msg_addr?(sender_address, owner_address));
+
+        process_configure(sender_address, pyth_address, ids_map);
+
+        return ();
+    }
+
+    if (op == OP::CONNECTOR_CUSTOM_OPERATION) {
+        throw(ERROR::NOT_IMPLEMENTED);
+    }
+
+    ;; we received response from pyth oracle contract, handle it
+    if (op == OP::PYTH_PARSE_PRICE_FEED_UPDATES) {
+        (slice pyth_address, cell ids_map) = load_configuration();
+        throw_unless(ERROR::NOT_AUTHORIZED, equal_msg_addr?(sender_address, pyth_address));
+
+        (_, cell price_feeds_cell, slice initial_sender, cell pyth_payload) = parse_price_feed_updates_response(in_msg_body);
+
+        (cell prices_dict, int num_unique_price_feeds) = price_feeds_cell.parse_price_feeds(ids_map);
+        ;; it can throw only when there are repeating feeds
+        ;; throw_unless(error::incorrect_price_feeds_num, (num_price_feeds == actual_price_feeds));
+
+        (int op_code, int query_id, cell operation_payload) = parse_operation_payload(pyth_payload);
+
+        if (op_code == OP::CONNECTOR_ONCHAIN_GETTER_PROCESS) {
+            throw_unless(ERROR::NOT_AUTHORIZED, equal_msg_addr?(initial_sender, my_address()));
+
+            onchain_getter_process(prices_dict, query_id, operation_payload);
+            return ();
+        }
+
+        if (op_code == OP::CONNECTOR_PROXY_OPERATION) {
+            proxy_operation_process(my_balance, msg_value, initial_sender, prices_dict, query_id, operation_payload);
+            return ();
+        }
+
+        throw(ERROR::UNSUPPORTED_OPERATION);
+    }
+
+    int query_id = in_msg_body~load_query_id();
+    ;; var (wc, addr_hash) = parse_std_addr(sender_address);
+
+    ;; part of onchain-getter pattern
+    if (op == OP::JETTON_TRANSFER_NOTIFICATION) {
+        int jetton_amount = in_msg_body~load_coins();
+        slice initial_sender = in_msg_body~load_msg_addr();
+
+        ;; (slice pyth_address, cell ids_map) = load_configuration();
+
+        ;; todo in a real sc it is crucial to check token is allowed
+        ;; (_, int f) = tokens_keys.udict_get?(256, addr_hash);
+        ;; throw_unless(error::received_unsupported_jetton, f);
+
+        int load_ref = in_msg_body~load_int(1);
+        if (load_ref) {
+            in_msg_body = in_msg_body.preload_ref().begin_parse();
+        }
+
+        int jetton_op_code = in_msg_body~load_uint(32);
+
+        if (jetton_op_code == OP::CONNECTOR_ONCHAIN_GETTER_REQUEST) {
+            onchain_getter_jetton_request(in_msg_body, msg_value, sender_address, initial_sender, query_id, jetton_amount);
+            return ();
+        }
+
+        respond_send_jetton(
+            sender_address, initial_sender, query_id, jetton_amount,
+            begin_cell()
+                    .store_uint(ERROR::UNKNOWN_OPERATION, 32)
+                    .store_ref(makeTextBody("Unknown jetton operation"))
+                .end_cell(),
+            0
+        );
+
+        return ();
+    }
+
+    if (op == OP::JETTON_EXCESSES) {
+        ;; note Just accept TON excesses after sending jettons
+        return ();
+    }
+
+    throw(0xffff); ;; Throw on unknown op
+}
