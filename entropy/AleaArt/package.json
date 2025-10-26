@@ -1,0 +1,18 @@
+{
+  "name": "AleaArt",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "@pythnetwork/entropy-sdk-solidity": "^2.1.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^3.1.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@types/node": "^24.9.1",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0",
+    "forge-std": "^1.1.2",
+    "hardhat": "^3.0.8"
+  }
+}
