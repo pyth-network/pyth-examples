@@ -1,0 +1,31 @@
+{
+  "name": "RogueChain",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.3",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
+    "@types/node": "^22.18.12",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "hardhat": "^3.0.8",
+    "typescript": "~5.8.0",
+    "viem": "^2.38.3"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^4.0.2",
+    "@nomicfoundation/hardhat-ignition-viem": "^3.0.3",
+    "@nomicfoundation/hardhat-keystore": "^3.0.1",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.1",
+    "@nomicfoundation/hardhat-node-test-runner": "^3.0.3",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.4",
+    "@nomicfoundation/hardhat-viem": "^3.0.0",
+    "@nomicfoundation/hardhat-viem-assertions": "^3.0.2",
+    "@openzeppelin/contracts": "^5.4.0",
+    "@pythnetwork/pyth-evm-js": "^2.0.0-alpha2",
+    "@pythnetwork/pyth-sdk-solidity": "^4.2.0",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0"
+  }
+}

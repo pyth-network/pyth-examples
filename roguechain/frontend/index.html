@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RogueChain - Hero Adventure</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+        }
+
+        .connect-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .wallet-info {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin: 10px 0;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .market-card {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .dungeon-card {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .experience-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 20px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exp-progress {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .exp-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .market-status {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .market-normal {
+            background: linear-gradient(135deg, #4ecdc420, #4ecdc410);
+            border: 2px solid #4ecdc4;
+            color: #4ecdc4;
+        }
+
+        .market-bull {
+            background: linear-gradient(135deg, #45b7d120, #45b7d110);
+            border: 2px solid #45b7d1;
+            color: #45b7d1;
+        }
+
+        .market-bear {
+            background: linear-gradient(135deg, #ff6b6b20, #ff6b6b10);
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .market-extreme {
+            background: linear-gradient(135deg, #96ceb420, #96ceb410);
+            border: 2px solid #96ceb4;
+            color: #96ceb4;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .victory-chance {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .chance-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chance-fill {
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .chance-text {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .logs {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logs pre {
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+
+        .logs strong {
+            color: #FFD700;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .log-entry {
+            background: rgba(255,255,255,0.1);
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            border-left: 3px solid #FFD700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .log-entry:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(5px);
+        }
+
+        .log-entry.success {
+            border-left-color: #4CAF50;
+        }
+
+        .log-entry.error {
+            border-left-color: #f44336;
+        }
+
+        .log-entry.info {
+            border-left-color: #2196F3;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 350px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+        }
+
+        .notification.failure {
+            background: linear-gradient(135deg, #f44336, #e91e63);
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚔️ RogueChain</h1>
+            <p>Hero Adventure on Optimism Sepolia</p>
+        </div>
+
+        <div class="connect-section">
+            <button id="connectButton" class="connect-btn">🔗 Connect Wallet</button>
+            <div id="walletAddress" class="wallet-info" style="display: none;"></div>
+        </div>
+
+        <div id="gameControls" style="display: none;">
+            <div class="game-container">
+                <!-- Hero Stats Card -->
+                <div class="card hero-card">
+                    <h3>🛡️ Hero Stats</h3>
+                    <div id="heroInfo">
+                        <div class="hero-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Level</span>
+                                <span class="stat-value" id="heroLevel">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Experience</span>
+                                <span class="stat-value" id="heroExp">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Strength</span>
+                                <span class="stat-value" id="heroStrength">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Agility</span>
+                                <span class="stat-value" id="heroAgility">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Intelligence</span>
+                                <span class="stat-value" id="heroIntelligence">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Vitality</span>
+                                <span class="stat-value" id="heroVitality">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Luck</span>
+                                <span class="stat-value" id="heroLuck">-</span>
+                            </div>
+                        </div>
+                        <div class="experience-bar">
+                            <div class="exp-progress" id="expProgress" style="width: 0%"></div>
+                            <div class="exp-text" id="expText">0 / 1000 XP</div>
+                        </div>
+                    </div>
+                    <div id="noHero" style="text-align: center; padding: 20px;">
+                        <p>No hero found. Mint one to start your adventure!</p>
+                        <button id="mintHeroButton" class="btn btn-primary" style="margin-top: 15px;">🎯 Mint Hero NFT</button>
+                    </div>
+                </div>
+
+                <!-- Market Status Card -->
+                <div class="card market-card">
+                    <h3>📊 Market Status</h3>
+                    <div id="marketStatus" class="market-status market-normal">
+                        <div style="font-size: 1.5rem; margin-bottom: 10px;">📊 Normal Market</div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">ETH market conditions</div>
+                    </div>
+                    <button id="updateMarketButton" class="btn btn-secondary" style="width: 100%; margin-top: 15px;">🔄 Update Market Data</button>
+                </div>
+
+                <!-- Dungeon Card -->
+                <div class="card dungeon-card">
+                    <h3>🏰 Dungeon Challenge</h3>
+                    <div id="dungeonInfo">
+                        <div class="victory-chance">
+                            <div style="text-align: center; margin-bottom: 10px;">
+                                <strong>Victory Chance</strong>
+                            </div>
+                            <div class="chance-bar">
+                                <div class="chance-fill" id="victoryChanceBar" style="width: 0%"></div>
+                            </div>
+                            <div class="chance-text" id="victoryChanceText">Calculating...</div>
+                        </div>
+                        <div class="action-buttons">
+                            <button id="enterDungeonButton" class="btn btn-primary" disabled>
+                                ⚔️ Enter Dungeon (0.001 ETH)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="logs">
+                <strong>📜 Adventure Log:</strong>
+                <div id="logOutput"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
