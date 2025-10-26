@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RogueChain - Frontend Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+    <h1>RogueChain Frontend Test</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        const testResults = document.getElementById('test-results');
+        
+        function addTestResult(test, status, message) {
+            const div = document.createElement('div');
+            div.style.padding = '10px';
+            div.style.margin = '5px 0';
+            div.style.border = '1px solid #ccc';
+            div.style.borderRadius = '5px';
+            div.innerHTML = `<strong>${test}:</strong> <span style="color: ${status === 'PASS' ? 'green' : 'red'}">${status}</span> - ${message}`;
+            testResults.appendChild(div);
+        }
+        
+        // Test 1: Ethers.js loading
+        try {
+            if (typeof ethers !== 'undefined') {
+                addTestResult('Ethers.js Loading', 'PASS', 'Ethers.js library loaded successfully');
+            } else {
+                addTestResult('Ethers.js Loading', 'FAIL', 'Ethers.js library not loaded');
+            }
+        } catch (e) {
+            addTestResult('Ethers.js Loading', 'FAIL', 'Error loading Ethers.js: ' + e.message);
+        }
+        
+        // Test 2: Contract address format
+        const contractAddress = "0x01b4b5227A1234A32b23bdBCF63C354f1253C963";
+        if (ethers.utils.isAddress(contractAddress)) {
+            addTestResult('Contract Address', 'PASS', 'Valid Ethereum address format');
+        } else {
+            addTestResult('Contract Address', 'FAIL', 'Invalid Ethereum address format');
+        }
+        
+        // Test 3: ABI loading
+        fetch('./frontend/abi.json')
+            .then(response => response.json())
+            .then(abi => {
+                if (abi.abi && Array.isArray(abi.abi)) {
+                    addTestResult('ABI Loading', 'PASS', `ABI loaded with ${abi.abi.length} functions`);
+                } else {
+                    addTestResult('ABI Loading', 'FAIL', 'Invalid ABI format');
+                }
+            })
+            .catch(e => {
+                addTestResult('ABI Loading', 'FAIL', 'Error loading ABI: ' + e.message);
+            });
+        
+        // Test 4: Pyth API connection
+        fetch('https://hermes.pyth.network/v2/updates/price/latest?ids[]=0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace')
+            .then(response => {
+                if (response.ok) {
+                    addTestResult('Pyth API Connection', 'PASS', 'Successfully connected to Pyth Hermes API');
+                } else {
+                    addTestResult('Pyth API Connection', 'FAIL', 'HTTP error: ' + response.status);
+                }
+            })
+            .catch(e => {
+                addTestResult('Pyth API Connection', 'FAIL', 'Network error: ' + e.message);
+            });
+        
+        // Test 5: MetaMask detection
+        if (typeof window.ethereum !== 'undefined') {
+            addTestResult('MetaMask Detection', 'PASS', 'MetaMask wallet detected');
+        } else {
+            addTestResult('MetaMask Detection', 'WARN', 'MetaMask not detected (normal in test environment)');
+        }
+        
+        // Test 6: CSS and styling
+        const testDiv = document.createElement('div');
+        testDiv.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        testDiv.style.width = '100px';
+        testDiv.style.height = '100px';
+        document.body.appendChild(testDiv);
+        
+        const computedStyle = window.getComputedStyle(testDiv);
+        if (computedStyle.background.includes('gradient')) {
+            addTestResult('CSS Styling', 'PASS', 'CSS gradients working correctly');
+        } else {
+            addTestResult('CSS Styling', 'FAIL', 'CSS gradients not working');
+        }
+        
+        document.body.removeChild(testDiv);
+        
+        // Test 7: JavaScript functionality
+        try {
+            const testFunction = () => {
+                const timestamp = new Date().toLocaleTimeString();
+                return `Test executed at ${timestamp}`;
+            };
+            
+            const result = testFunction();
+            if (result.includes('Test executed at')) {
+                addTestResult('JavaScript Functions', 'PASS', 'JavaScript functions working correctly');
+            } else {
+                addTestResult('JavaScript Functions', 'FAIL', 'JavaScript functions not working');
+            }
+        } catch (e) {
+            addTestResult('JavaScript Functions', 'FAIL', 'Error in JavaScript: ' + e.message);
+        }
+        
+        // Summary
+        setTimeout(() => {
+            const totalTests = testResults.children.length;
+            const passedTests = Array.from(testResults.children).filter(child => 
+                child.innerHTML.includes('PASS')
+            ).length;
+            
+            const summary = document.createElement('div');
+            summary.style.padding = '20px';
+            summary.style.margin = '20px 0';
+            summary.style.border = '2px solid #333';
+            summary.style.borderRadius = '10px';
+            summary.style.backgroundColor = '#f0f0f0';
+            summary.innerHTML = `
+                <h2>Test Summary</h2>
+                <p><strong>Total Tests:</strong> ${totalTests}</p>
+                <p><strong>Passed:</strong> ${passedTests}</p>
+                <p><strong>Success Rate:</strong> ${Math.round((passedTests / totalTests) * 100)}%</p>
+                <p><strong>Status:</strong> ${passedTests === totalTests ? '✅ ALL TESTS PASSED' : '⚠️ SOME TESTS FAILED'}</p>
+            `;
+            testResults.appendChild(summary);
+        }, 2000);
+    </script>
+</body>
+</html>
