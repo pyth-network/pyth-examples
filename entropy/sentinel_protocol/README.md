@@ -1,8 +1,8 @@
-# Token Reputation System with Pyth Price Feeds
+# Token Reputation System with Pyth Entropy & Price Feeds
 
 The [Sentinel Protocol](https://github.com/csking101/Sentinel-Protocol)  is a decentralized reputation protocol that monitors cryptocurrency portfolios, evaluates token credibility using real-time price data from Pyth Network, and enables autonomous portfolio protection through agent-to-agent (A2A) communication. 
 
-We have used Pyth to obtain real-time pricing feed on-chain, as well as entropy that is used to compute the reputation score, using a stochastic model.
+We have used Pyth to obtain real-time pricing feed on-chain, as well as entropy that is used to compute the reputation score, using a stochastic model. Please check out our [project](https://github.com/csking101/Sentinel-Protocol) to see how Pyth is integrated with AI.
 
 ## 🌟 Overview
 
