@@ -1,0 +1,23 @@
+name: ABI Check
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  abi-check:
+    name: Check ABI files are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - run: npm ci
+      - name: Generate ABI
+        run: npm run generate-abi
+      - name: Check ABI changes
+        # Fails if the ABI files are not up to date. Please use npm run generate-abi to regenerate the ABI files for
+        # the current version of the contracts.
+        run: git diff --exit-code abis/*
