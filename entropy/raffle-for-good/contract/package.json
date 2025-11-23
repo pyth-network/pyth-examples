@@ -1,0 +1,44 @@
+{
+  "name": "eth-global-hackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile --show-stack-traces",
+    "test": "hardhat test",
+    "deploy:baseSepolia": "hardhat ignition deploy ignition/modules/RaffleFactoryModule.ts --network baseSepolia",
+    "deploy:local": "hardhat ignition deploy ignition/modules/RaffleFactoryModule.ts --network hardhat --show-stack-traces",
+    "interact": "hardhat run scripts/interact.ts",
+    "node": "hardhat node"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NicoCaz/eth-global-hackathon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NicoCaz/eth-global-hackathon/issues"
+  },
+  "homepage": "https://github.com/NicoCaz/eth-global-hackathon#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.6",
+    "@pythnetwork/entropy-sdk-solidity": "^2.2.0",
+    "hardhat": "^3.0.15"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.3",
+    "@nomicfoundation/hardhat-ignition": "^3.0.5",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.3",
+    "@nomicfoundation/hardhat-verify": "^3.0.7",
+    "@types/chai": "^5.2.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.19.1",
+    "chai": "^6.2.1",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0",
+    "typescript": "~5.8.0"
+  }
+}
