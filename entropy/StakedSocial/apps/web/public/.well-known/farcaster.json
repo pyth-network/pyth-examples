@@ -1,0 +1,10 @@
+{
+    "version": 1,
+    "name": "My Celo App",
+    "iconUrl": "https://maia-cymose-patronisingly.ngrok-free.dev/icon.png",
+    "homeUrl": "https://maia-cymose-patronisingly.ngrok-free.dev",
+    "wallet": {
+      "enabled": true
+    }
+  }
+  
