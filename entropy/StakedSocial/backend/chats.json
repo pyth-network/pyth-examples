@@ -1,0 +1,68 @@
+{
+  "105434d2461e4cdb1e8b0f4656213c83": {
+    "chatId": "105434d2461e4cdb1e8b0f4656213c83",
+    "groupId": "105434d2461e4cdb1e8b0f4656213c83",
+    "chatName": "CF5",
+    "createdAt": 1763876725021,
+    "createdBy": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+    "memberWallets": [
+      "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005"
+    ],
+    "memberInboxIds": [
+      "2f150dd1fc68999f01799fbfab47f6e53132a555e5aa61ef395827a66a8cd48a"
+    ]
+  },
+  "f9d92b2c9a2eb4949ca4f81fbb87f041": {
+    "chatId": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+    "groupId": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+    "chatName": "CP6",
+    "createdAt": 1763877648488,
+    "createdBy": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+    "memberWallets": [
+      "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005"
+    ],
+    "memberInboxIds": [
+      "2f150dd1fc68999f01799fbfab47f6e53132a555e5aa61ef395827a66a8cd48a"
+    ],
+    "memberProfiles": {
+      "0x65C88500a558C7f4F626C40D4a0487Bf510B3206": {
+        "username": "pragya",
+        "pfp": "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3355c5ea-0758-45ef-a113-a13f89be1500/rectcontain2",
+        "display_name": "pragya"
+      },
+      "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005": {
+        "username": "pulkith",
+        "pfp": "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/a48fa7e4-d1b9-4659-513b-bc2df9eb7500/rectcontain2",
+        "display_name": "pulkith"
+      }
+    }
+  },
+  "189a178abda18a02a6930216b322ab4d": {
+    "chatId": "189a178abda18a02a6930216b322ab4d",
+    "groupId": "189a178abda18a02a6930216b322ab4d",
+    "chatName": "CP7",
+    "createdAt": 1763878714315,
+    "createdBy": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+    "memberWallets": [
+      "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005"
+    ],
+    "memberInboxIds": [
+      "2f150dd1fc68999f01799fbfab47f6e53132a555e5aa61ef395827a66a8cd48a"
+    ],
+    "memberProfiles": {
+      "0x65C88500a558C7f4F626C40D4a0487Bf510B3206": {
+        "username": "pragya",
+        "pfp": "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/3355c5ea-0758-45ef-a113-a13f89be1500/rectcontain2",
+        "display_name": "pragya"
+      },
+      "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005": {
+        "username": "pulkith",
+        "pfp": "https://imagedelivery.net/BXluQx4ige9GuW0Ia56BHw/a48fa7e4-d1b9-4659-513b-bc2df9eb7500/rectcontain2",
+        "display_name": "pulkith"
+      }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "axios": "^1.13.2",
+    "hardhat": "^2.27.0",
+    "hardhat-gas-reporter": "^2.3.0",
+    "husky": "^9.1.7"
+  },
+  "dependencies": {
+    "@xmtp/browser-sdk": "^5.1.0",
+    "dotenv": "^17.2.3",
+    "ethers": "^6.15.0"
+  }
+}
