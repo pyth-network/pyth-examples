@@ -239,7 +239,7 @@ contract StakeArena is Ownable, ReentrancyGuard {
 
     /**
      * @dev Server commits entropy seed for match (Pyth integration)
-     * @param matchId Match identifier
+     * @param matchId Match identifier (can be permanent ID for continuous matches)
      * @param entropyRequestId Entropy request identifier from Base Sepolia
      * @param seedHash keccak256 hash of the actual seed for verification
      */
@@ -247,10 +247,10 @@ contract StakeArena is Ownable, ReentrancyGuard {
         external 
         onlyAuthorizedServer 
     {
-        require(matches[matchId].startTime > 0, "Match not started");
-        require(!matches[matchId].finalized, "Match finalized");
-        require(entropySeedByMatch[matchId] == bytes32(0), "Entropy already committed");
         require(seedHash != bytes32(0), "Invalid seed hash");
+        
+        // Allow re-committing entropy for continuous matches (e.g., on server restart)
+        // In continuous mode, we may update entropy periodically
         
         matchEntropyCommit[matchId] = entropyRequestId;
         entropySeedByMatch[matchId] = seedHash;

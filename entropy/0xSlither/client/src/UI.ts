@@ -156,14 +156,9 @@ export class UI {
     this.walletStatus.textContent = `Connected: ${this.shortenAddress(address)}`;
     this.walletStatus.className = 'success';
     this.stakeSection.classList.remove('hidden');
-    // Don't enable stake button yet - wait for match ID from server
-    this.stakeButton.disabled = true;
-    this.stakeButton.textContent = 'Waiting for match...';
-  }
-
-  enableStakeButton(): void {
+    // VAULT MODE: Enable deposit immediately (no match ID wait)
     this.stakeButton.disabled = false;
-    this.stakeButton.textContent = 'Stake 1 SSS';
+    this.stakeButton.textContent = 'Deposit 1 SSS to Vault';
   }
 
   updateWalletAddress(address: string): void {
@@ -180,18 +175,32 @@ export class UI {
     this.playButton.classList.add('hidden');
   }
 
-  setStaked(): void {
-    this.stakeButton.textContent = '✓ Staked';
+  setDeposited(): void {
+    this.stakeButton.textContent = '✓ Deposited to Vault';
     this.stakeButton.disabled = true;
     this.playButton.classList.remove('hidden');
     this.playButton.disabled = false;
   }
 
-  resetStakeState(): void {
-    this.stakeButton.textContent = 'Stake 1 SSS';
+  resetDepositState(): void {
+    this.stakeButton.textContent = 'Deposit 1 SSS to Vault';
     this.stakeButton.disabled = false;
     this.playButton.classList.add('hidden');
     this.playButton.disabled = true;
+  }
+
+  /**
+   * @deprecated Use setDeposited() for vault mode
+   */
+  setStaked(): void {
+    this.setDeposited();
+  }
+
+  /**
+   * @deprecated Use resetDepositState() for vault mode
+   */
+  resetStakeState(): void {
+    this.resetDepositState();
   }
 
   setWalletNotAvailable(): void {
@@ -204,18 +213,33 @@ export class UI {
     this.tokenBalance.textContent = balance;
   }
 
-  getStakeAmount(): string {
-    return '1'; // Fixed stake amount
+  getDepositAmount(): string {
+    return '1'; // Fixed deposit amount for vault
   }
 
-  onStake(callback: () => void): void {
+  /**
+   * @deprecated Use getDepositAmount() for vault mode
+   */
+  getStakeAmount(): string {
+    return this.getDepositAmount();
+  }
+
+  onDeposit(callback: () => void): void {
     this.stakeButton.addEventListener('click', () => {
       callback();
     });
   }
 
-  updateCurrentScore(totalScore: string): void {
-    this.currentScore.textContent = `${totalScore} SSS`;
+  /**
+   * @deprecated Use onDeposit() for vault mode
+   */
+  onStake(callback: () => void): void {
+    this.onDeposit(callback);
+  }
+
+  updateCurrentScore(pelletTokens: string): void {
+    // VAULT MODE: Display pellet tokens only (kill rewards go directly to wallet)
+    this.currentScore.textContent = `${pelletTokens} SSS (Pellets)`;
   }
 
   updateDeathScreenWithBestScore(finalScore: number, bestScore: number): void {

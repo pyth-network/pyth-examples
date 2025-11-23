@@ -3,6 +3,7 @@ import { NETWORK_CONFIG, getAddChainParameters, getSwitchChainParameters } from 
 
 // Contract ABIs (minimal, only what we need)
 const STAKE_ARENA_ABI = [
+  'function depositToVault() external payable',
   'function enterMatch(bytes32 matchId) external payable',
   'function tapOut(bytes32 matchId, uint256 score) external',
   'function getLeaderboard() external view returns (tuple(address player, uint256 score)[])',
@@ -236,6 +237,37 @@ export class WalletService {
     }
   }
 
+  /**
+   * Deposit SSS to the server vault for continuous gameplay
+   * This replaces the per-match enterMatch flow
+   */
+  async depositToVault(amount: string): Promise<boolean> {
+    if (!this.stakeArena) {
+      console.error('StakeArena not initialized');
+      throw new Error('StakeArena not initialized');
+    }
+    
+    console.log(`Depositing ${amount} SSS to vault...`);
+    
+    const amountWei = ethers.parseEther(amount);
+    console.log('Amount in wei:', amountWei);
+    
+    // Send SSS directly to vault (no match ID needed)
+    const tx = await this.stakeArena.depositToVault({ value: amountWei });
+    console.log('Transaction:', tx);
+    const receipt = await tx.wait(2); // Wait for 2 confirmations for better finality
+    console.log('Transaction confirmed:', receipt.hash);
+    
+    // Add a small delay to ensure all RPC nodes have indexed the transaction
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    console.log('✅ Successfully deposited to vault');
+    return true;
+  }
+
+  /**
+   * @deprecated Use depositToVault() for continuous matches
+   */
   async enterMatch(matchId: string, amount: string): Promise<boolean> {
     if (!this.stakeArena) {
       console.error('StakeArena not initialized');
@@ -262,6 +294,10 @@ export class WalletService {
     return true;
   }
 
+  /**
+   * @deprecated In vault mode, tap-out is handled by server via direct transfers
+   * No on-chain tapOut call needed
+   */
   async tapOut(matchId: string, score: number): Promise<boolean> {
     if (!this.stakeArena) {
       throw new Error('StakeArena not initialized');
@@ -277,6 +313,9 @@ export class WalletService {
     return true;
   }
 
+  /**
+   * @deprecated Not used in vault mode (no per-match active tracking on-chain)
+   */
   async isActive(matchId: string, playerAddress: string): Promise<boolean> {
     if (!this.stakeArena) {
       throw new Error('StakeArena not initialized');
@@ -320,6 +359,10 @@ export class WalletService {
     }
   }
 
+  /**
+   * @deprecated Not used in vault mode (stakes tracked server-side, not on-chain per match)
+   * In vault mode, stakes go directly to server wallet on deposit
+   */
   async getCurrentStake(matchId: string, playerAddress?: string): Promise<string> {
     if (!this.stakeArena) return '0';
     

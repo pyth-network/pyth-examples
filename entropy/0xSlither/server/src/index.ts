@@ -33,10 +33,10 @@ class WebSocketGameServer {
   private wss: WebSocketServer;
   private gameServer: GameServer;
   private blockchain: BlockchainService | null = null;
-  private matchId: string;
   private players: Map<WebSocket, Player> = new Map();
   private nextPlayerId = 0;
   private deltaCompressor: DeltaCompressor = new DeltaCompressor();
+  private readonly FIXED_STAKE_AMOUNT = 1; // Fixed 1 SSS stake per player
 
   constructor(port: number) {
     this.gameServer = new GameServer();
@@ -50,23 +50,15 @@ class WebSocketGameServer {
 
       if (!privateKey || !stakeArenaAddress) {
         console.warn('⚠️  Blockchain integration disabled: Missing SERVER_PRIVATE_KEY or STAKE_ARENA_ADDRESS');
-        this.matchId = `match-${Date.now()}`;
-        process.env.MATCH_ID = this.matchId;
       } else {
         this.blockchain = new BlockchainService(rpcUrl, privateKey, stakeArenaAddress);
-        // Use a fixed match ID string that gets hashed consistently
-        // This allows server restarts without creating new matches
-        const matchIdString = process.env.MATCH_ID || `match-${Date.now()}`;
-        this.matchId = matchIdString;
-        // Store match ID in process.env for access throughout the application
-        process.env.MATCH_ID = this.matchId;
         console.log('✅ Blockchain integration enabled (Native SSS)');
-        console.log(`📝 Match ID (string): ${this.matchId}`);
-        console.log(`📝 Match ID (bytes32): ${this.blockchain.generateMatchId(this.matchId)}`);
+        console.log('🏦 Using server vault model for continuous gameplay');
+        console.log(`📝 Permanent Match ID: ${this.gameServer.getMatchId()}`);
+        console.log(`📝 Match ID (bytes32): ${this.blockchain.generateMatchId(this.gameServer.getMatchId())}`);
       }
     } catch (error) {
       console.error('Failed to initialize blockchain:', error);
-      this.matchId = `match-${Date.now()}`;
     }
     this.wss.on('connection', (ws: WebSocket) => this.handleConnection(ws));
     
@@ -76,15 +68,18 @@ class WebSocketGameServer {
   start(): void {
     // Connect blockchain to game server if enabled
     if (this.blockchain) {
-      this.gameServer.setBlockchainService(this.blockchain, this.matchId);
+      this.gameServer.setBlockchainService(this.blockchain);
     }
     
     // Start game server with synchronized broadcast callback
     // Broadcasts happen immediately after each tick completes
+    // Game runs continuously until server is killed
     this.gameServer.start(() => {
       this.broadcastGameState();
       this.checkDeadSnakes();
     });
+    
+    console.log('🎮 Continuous match started! Players can join anytime.');
   }
 
   private handleConnection(ws: WebSocket): void {
@@ -124,7 +119,18 @@ class WebSocketGameServer {
     }
   }
 
-  private handleJoin(player: Player, name: string, address: string): void {
+  private async handleJoin(player: Player, name: string, address: string): Promise<void> {
+    // VAULT MODE: Verify player has deposited to vault (optional check)
+    // In production, you may want to enforce this more strictly
+    if (this.blockchain) {
+      const hasDeposited = await this.blockchain.verifyVaultDeposit(address, this.FIXED_STAKE_AMOUNT.toString());
+      if (!hasDeposited) {
+        console.warn(`⚠️  Player ${address.slice(0, 8)} joining without verified vault deposit`);
+        // For now, allow them to join anyway (server can enforce deposits client-side)
+        // In stricter mode, you could reject: return;
+      }
+    }
+
     // Remove old snake if exists for this player object
     // Use immediate removal since this is between ticks (during message handling)
     if (player.snakeId) {
@@ -133,14 +139,16 @@ class WebSocketGameServer {
 
     // Remove any existing snake with the same wallet address
     // (handles case where player disconnected improperly and is rejoining)
-    // Already defaults to immediate=true
     this.gameServer.removeSnakeByAddress(address);
+
+    // Register player's stake for kill reward tracking
+    this.gameServer.registerPlayerStake(address, this.FIXED_STAKE_AMOUNT);
 
     // Create new snake with required wallet address
     const snake = this.gameServer.addSnake(player.id, name, address);
     player.snakeId = snake.id;
 
-    console.log(`Player ${player.id} joined as wallet ${address}`);
+    console.log(`Player ${player.id} joined as wallet ${address} (continuous match)`);
 
     // Send initial state with player ID
     const state = this.gameServer.getGameState();
@@ -172,26 +180,29 @@ class WebSocketGameServer {
       return;
     }
 
-    console.log(`Player ${player.id} tapping out from match ${matchId}`);
+    console.log(`Player ${player.id} tapping out from continuous match (address: ${snake.address.slice(0, 8)})`);
 
-    // Remove snake from game
-    // Use immediate removal since this is between ticks (during message handling)
-    const finalStake = snake.getScore(); // Use score as proxy for stake
+    // Get pellet tokens before removing snake
     const pelletTokens = snake.getPelletTokens();
+    const finalScore = snake.getScore();
     
-    // Settle pellet tokens if blockchain is available
-    if (this.blockchain && snake.address) {
-      await this.blockchain.settlePelletTokens(snake.address, pelletTokens);
-    }
-    
+    // Remove snake from game immediately
+    // Use immediate removal since this is between ticks (during message handling)
     this.gameServer.removeSnake(player.snakeId, true);
     player.snakeId = null;
+    
+    // VAULT MODE: Transfer pellet tokens only (stakes already distributed via kills)
+    // Player keeps any stake rewards they earned from kills (already in their wallet)
+    if (this.blockchain && snake.address) {
+      // Only settle pellet tokens - stake rewards were transferred immediately on kills
+      await this.blockchain.settlePelletTokens(snake.address, pelletTokens);
+      console.log(`💰 Tap-out payout: ${pelletTokens.toFixed(2)} SSS (pellet tokens) to ${snake.address.slice(0, 8)}`);
+    }
 
-    // Note: Actual withdrawal happens on-chain when player calls tapOut() from client
-    // Server just removes them from the game
+    // Send success message with pellet token amount
     const tapOutMsg: TapOutSuccessMessage = {
       type: MessageType.TAPOUT_SUCCESS,
-      amountWithdrawn: finalStake,
+      amountWithdrawn: pelletTokens, // Only pellet tokens, not stake
     };
     this.sendMessage(player.ws, tapOutMsg);
   }
@@ -206,23 +217,26 @@ class WebSocketGameServer {
       // Get snake info before killing it
       const snake = this.gameServer.getSnake(player.snakeId);
       
-      // If snake is still alive and has a wallet address, report disconnect as self-death
-      if (snake && snake.alive && snake.address && this.blockchain && this.matchId) {
+      // If snake is still alive and has a wallet address, handle vault mode disconnect
+      if (snake && snake.alive && snake.address && this.blockchain) {
         const snakeScore = snake.getScore();
         const pelletTokens = snake.getPelletTokens();
-        console.log(`Player ${player.id} disconnected with active snake (score: ${snakeScore}, pellet tokens: ${pelletTokens.toFixed(2)}) - checking on-chain status`);
+        console.log(`Player ${player.id} disconnected with active snake (score: ${snakeScore}, pellet tokens: ${pelletTokens.toFixed(2)})`);
         
         // CRITICAL: Immediately kill the snake to prevent other players from eating it
         // while we're doing async blockchain operations
         snake.kill();
         
         try {
-          // Now safely do blockchain operations - snake can't be eaten anymore
-          console.log(`Player ${player.id} (${snake.address}) disconnected - reporting to blockchain`);
-          await this.blockchain.reportSelfDeath(this.matchId, snake.address, snakeScore);
+          // VAULT MODE: On disconnect, player loses everything
+          // - Server keeps the deposit (already in vault)
+          // - Pellet tokens are lost (not paid out)
+          // - Only report death for leaderboard
+          console.log(`💀 Player ${snake.address.slice(0, 8)} disconnected - loses deposit and pellet tokens (${pelletTokens.toFixed(2)} SSS)`);
+          await this.blockchain.reportSelfDeath(this.gameServer.getMatchId(), snake.address, snakeScore);
           
-          // Settle pellet tokens on disconnect
-          await this.blockchain.settlePelletTokens(snake.address, pelletTokens);
+          // NO pellet token payout on disconnect - server keeps everything
+          // This is the penalty for disconnecting
         } catch (err) {
           console.error('Error reporting disconnect:', err);
         }

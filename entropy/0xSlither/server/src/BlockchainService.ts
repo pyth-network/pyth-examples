@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 
 // Contract ABIs (minimal, only what we need)
 const STAKE_ARENA_ABI = [
+  'function depositToVault() external payable',
   'function reportEat(bytes32 matchId, address eater, address eaten) external',
   'function reportSelfDeath(bytes32 matchId, address player, uint256 score) external',
   'function commitEntropy(bytes32 matchId, bytes32 entropyRequestId, bytes32 seedHash) external',
@@ -11,6 +12,9 @@ const STAKE_ARENA_ABI = [
   'function bestScore(address player) external view returns (uint256)',
   'function getStake(bytes32 matchId, address player) external view returns (uint256)',
   'function isActive(bytes32 matchId, address player) external view returns (bool)',
+  'event DepositedToVault(address indexed player, uint256 amount, uint256 timestamp)',
+  'event EatReported(bytes32 indexed matchId, address indexed eater, address indexed eaten, uint256 timestamp)',
+  'event SelfDeathReported(bytes32 indexed matchId, address indexed player, uint256 score, uint256 timestamp)',
   'event EatLoot(bytes32 indexed matchId, address indexed eater, address indexed eaten, uint256 amountTransferred, uint256 timestamp)',
   'event SelfDeath(bytes32 indexed matchId, address indexed player, uint256 amountToServer, uint256 timestamp)',
   'event MatchFinalized(bytes32 indexed matchId, address indexed winner, uint256 timestamp)',
@@ -67,9 +71,98 @@ export class BlockchainService {
   }
 
   /**
-   * Report that one player ate another
+   * Verify that a player has deposited to the vault recently
+   * Checks DepositedToVault events from the contract
+   * @param playerAddress Player's address
+   * @param minAmount Minimum deposit amount required (in SSS)
+   * @param blocksBack How many blocks back to check (default: 1000)
+   * @returns True if player has deposited at least minAmount
+   */
+  async verifyVaultDeposit(
+    playerAddress: string,
+    minAmount: string = '1',
+    blocksBack: number = 1000
+  ): Promise<boolean> {
+    try {
+      const currentBlock = await this.provider.getBlockNumber();
+      const fromBlock = Math.max(0, currentBlock - blocksBack);
+      
+      // Query DepositedToVault events for this player
+      const filter = this.stakeArena.filters.DepositedToVault(playerAddress);
+      const events = await this.stakeArena.queryFilter(filter, fromBlock, currentBlock);
+      
+      if (events.length === 0) {
+        console.log(`[Blockchain] No deposits found for ${playerAddress.slice(0, 8)} in last ${blocksBack} blocks`);
+        return false;
+      }
+      
+      // Check if any deposit meets the minimum amount
+      const minAmountWei = ethers.parseEther(minAmount);
+      for (const event of events) {
+        // Type guard: Check if event is EventLog (has args property)
+        if ('args' in event && event.args) {
+          const depositAmount = event.args.amount || 0n;
+          if (depositAmount >= minAmountWei) {
+            console.log(`[Blockchain] ✅ Verified deposit: ${ethers.formatEther(depositAmount)} SSS from ${playerAddress.slice(0, 8)}`);
+            return true;
+          }
+        }
+      }
+      
+      console.log(`[Blockchain] Deposits found but below minimum ${minAmount} SSS for ${playerAddress.slice(0, 8)}`);
+      return false;
+    } catch (error) {
+      console.error('[Blockchain] Error verifying vault deposit:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Transfer kill reward directly from server wallet to killer
+   * This is used in vault mode where stakes are held in server wallet
+   * @param killerAddress Address of the player who got the kill
+   * @param amount Amount to transfer (victim's stake, in SSS)
+   */
+  async transferKillReward(
+    killerAddress: string,
+    amount: number
+  ): Promise<void> {
+    const description = `transferKillReward: ${amount.toFixed(2)} SSS to ${killerAddress.slice(0, 8)}`;
+    
+    // Queue this operation for the killer's address
+    const operation = async () => {
+      await this.executeWithRetry(async () => {
+        console.log(`[Blockchain] ${description}`);
+        
+        // Convert amount to wei (18 decimals for native SSS)
+        const amountWei = ethers.parseEther(amount.toFixed(18));
+        
+        // Check server wallet balance
+        const serverBalance = await this.provider.getBalance(this.wallet.address);
+        if (serverBalance < amountWei) {
+          console.error(`[Blockchain] Insufficient server balance for kill reward: ${ethers.formatEther(serverBalance)} < ${amount.toFixed(2)} SSS`);
+          throw new Error('Insufficient server balance for kill reward');
+        }
+        
+        // Transfer native SSS from server to killer
+        const tx = await this.wallet.sendTransaction({
+          to: killerAddress,
+          value: amountWei,
+        });
+        const receipt = await tx.wait();
+        console.log(`[Blockchain] ✅ Kill reward sent: ${amount.toFixed(2)} SSS to ${killerAddress.slice(0, 8)}, tx: ${receipt!.hash}`);
+        return receipt;
+      }, description);
+    };
+    
+    // Queue for the killer's address
+    this.queueForAddress(killerAddress, operation);
+  }
+
+  /**
+   * Report that one player ate another (stats/leaderboard only in vault mode)
+   * In vault mode, stake transfers happen via transferKillReward()
    * Non-blocking, fire-and-forget with retry logic
-   * Operations are queued per address to prevent race conditions
    */
   async reportEat(
     matchId: string,
@@ -78,38 +171,32 @@ export class BlockchainService {
   ): Promise<void> {
     const description = `reportEat: ${eaterAddress.slice(0, 8)} ate ${eatenAddress.slice(0, 8)} in match ${matchId.slice(0, 10)}`;
     
-    // Queue this operation for both addresses involved
-    // This prevents race conditions like simultaneous eat/death reports
-    const operation = async () => {
-      const result = await this.executeWithRetry(async () => {
-        console.log(`[Blockchain] ${description}`);
-        
-        // Convert string match ID to bytes32
-        const matchIdBytes32 = ethers.id(matchId);
-        const tx = await this.stakeArena.reportEat(
-          matchIdBytes32,
-          eaterAddress,
-          eatenAddress
-        );
-        console.log(`[Blockchain] reportEat tx sent: ${tx.hash}`);
-        const receipt = await tx.wait();
-        console.log(`[Blockchain] ✅ reportEat confirmed: ${receipt.hash}`);
-        return receipt;
-      }, description);
+    // Fire-and-forget, no queueing needed since no state changes
+    const txPromise = this.executeWithRetry(async () => {
+      console.log(`[Blockchain] ${description}`);
       
-      return result;
-    };
-    
-    // Queue for the eaten player (victim)
-    // The eater can continue with other operations
-    this.queueForAddress(eatenAddress, operation);
+      // Convert string match ID to bytes32
+      const matchIdBytes32 = ethers.id(matchId);
+      const tx = await this.stakeArena.reportEat(
+        matchIdBytes32,
+        eaterAddress,
+        eatenAddress
+      );
+      console.log(`[Blockchain] reportEat tx sent: ${tx.hash}`);
+      const receipt = await tx.wait();
+      console.log(`[Blockchain] ✅ reportEat confirmed (stats only): ${receipt.hash}`);
+      return receipt;
+    }, description);
+
+    this.pendingTxs.push({ promise: txPromise, description });
+    this.cleanupPendingTxs();
   }
 
   /**
-   * Report that a player died from self-inflicted causes
-   * (wall collision, eating self, etc.) - stake goes to server
+   * Report that a player died from self-inflicted causes (leaderboard update only in vault mode)
+   * (wall collision, eating self, disconnect, etc.)
+   * In vault mode, stakes are already in server wallet, no transfer needed
    * Non-blocking, fire-and-forget with retry logic
-   * Operations are queued per address to prevent race conditions
    */
   async reportSelfDeath(
     matchId: string,
@@ -118,30 +205,25 @@ export class BlockchainService {
   ): Promise<void> {
     const description = `reportSelfDeath: ${playerAddress.slice(0, 8)} died with score ${score} in match ${matchId.slice(0, 10)}`;
     
-    // Queue this operation for the player's address
-    // This prevents race conditions like multiple death reports
-    const operation = async () => {
-      const result = await this.executeWithRetry(async () => {
-        console.log(`[Blockchain] ${description}`);
-        
-        // Convert string match ID to bytes32
-        const matchIdBytes32 = ethers.id(matchId);
-        const tx = await this.stakeArena.reportSelfDeath(
-          matchIdBytes32,
-          playerAddress,
-          score
-        );
-        console.log(`[Blockchain] reportSelfDeath tx sent: ${tx.hash}`);
-        const receipt = await tx.wait();
-        console.log(`[Blockchain] ✅ reportSelfDeath confirmed: ${receipt.hash}`);
-        return receipt;
-      }, description);
+    // Fire-and-forget, no queueing needed since no state changes
+    const txPromise = this.executeWithRetry(async () => {
+      console.log(`[Blockchain] ${description}`);
       
-      return result;
-    };
-    
-    // Queue for the player's address
-    this.queueForAddress(playerAddress, operation);
+      // Convert string match ID to bytes32
+      const matchIdBytes32 = ethers.id(matchId);
+      const tx = await this.stakeArena.reportSelfDeath(
+        matchIdBytes32,
+        playerAddress,
+        score
+      );
+      console.log(`[Blockchain] reportSelfDeath tx sent: ${tx.hash}`);
+      const receipt = await tx.wait();
+      console.log(`[Blockchain] ✅ reportSelfDeath confirmed (leaderboard only): ${receipt.hash}`);
+      return receipt;
+    }, description);
+
+    this.pendingTxs.push({ promise: txPromise, description });
+    this.cleanupPendingTxs();
   }
 
   /**

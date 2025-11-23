@@ -11,9 +11,6 @@ const WSS_URL = import.meta.env.VITE_WSS_URL;
 // Contract addresses (configure these after deployment)
 const STAKE_ARENA_ADDRESS = import.meta.env.VITE_STAKE_ARENA_ADDRESS as string;
 
-// Match ID (will be provided by server)
-let CURRENT_MATCH_ID: string | null = null; // Start as null, wait for server
-
 class GameClient {
   private game: Game;
   private renderer: Renderer;
@@ -27,11 +24,9 @@ class GameClient {
   private inputThrottle = 50; // Send input at most every 50ms
   private animationFrameId: number | null = null;
   private walletAddress: string | null = null;
-  private hasStaked = false;
-  private currentStake: number = 0; // Cached stake value (fetched from blockchain)
-  private lastPelletTokens: number = 0; // Track last known pellet tokens for change detection
-  private lastSnakeLength: number = 0; // Track snake length to detect when we eat another snake
-  private matchIdReceived = false; // Track if we've received match ID from server
+  private hasDeposited = false; // Track if player has deposited to vault
+  private lastPelletTokens: number = 0; // Track pellet tokens for UI updates
+  private readonly FIXED_DEPOSIT_AMOUNT = '1'; // Fixed 1 SSS deposit amount
 
   constructor() {
     this.canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
@@ -71,24 +66,9 @@ class GameClient {
       this.ui.updateLeaderboard(state);
       this.ui.renderEntropyInfo(state);
       
-      // CRITICAL: Update match ID from server (only once)
-      // This must happen BEFORE any staking to ensure players stake into the correct match
-      if (state.matchId && !this.matchIdReceived) {
-        CURRENT_MATCH_ID = state.matchId;
-        this.matchIdReceived = true;
-        console.log('✅ Match ID received from server:', CURRENT_MATCH_ID);
-        
-        // Now that we have the match ID, we can safely enable staking
-        // (if wallet is already connected)
-        if (this.walletAddress && STAKE_ARENA_ADDRESS) {
-          this.ui.enableStakeButton();
-          console.log('Stake button enabled - ready to enter match');
-        }
-      }
-      
-      // Event-based score update: only update when pellet tokens change
+      // Update pellet token display during gameplay
       if (this.isPlaying && !this.isSpectating) {
-        this.updateScoreFromGameState();
+        this.updatePelletTokensFromGameState();
       }
     });
 
@@ -104,10 +84,9 @@ class GameClient {
         this.ui.showGameControls();
         this.ui.setTapOutEnabled(true);
         
-        // Initialize stake value from blockchain once when gameplay starts
-        if (STAKE_ARENA_ADDRESS) {
-          this.initializeScore();
-        }
+        // Initialize pellet token tracking
+        this.lastPelletTokens = 0;
+        this.ui.updateCurrentScore('0.00'); // Start at 0 pellet tokens
       }
     });
 
@@ -119,25 +98,23 @@ class GameClient {
       
       // Reset tracking
       this.lastPelletTokens = 0;
-      this.lastSnakeLength = 0;
       
-      // Show loading screen while blockchain processes death
-      this.ui.showLoading('Processing death on blockchain...');
+      // VAULT MODE: On death, player loses everything
+      // No blockchain settlement needed - just show death screen
+      console.log('💀 Death in vault mode - deposit and pellet tokens lost');
       
-      // Wait for the player to become inactive on-chain
-      await this.waitForDeathSettlement();
+      // Update best score if needed
+      if (this.wallet && this.walletAddress) {
+        const bestScore = await this.wallet.getBestScore();
+        this.ui.updateDeathScreenWithBestScore(score, bestScore);
+      }
       
-      // Update stats after settlement
-      await this.updateScoreAfterDeath(score);
-      console.log('Death settled on blockchain');
-      
-      // Now show death screen with respawn option
-      this.ui.hideLoading();
+      // Show death screen with respawn option
       this.ui.showDeathScreen(score);
     });
 
-    this.ui.onStake(async () => {
-      await this.handleStake();
+    this.ui.onDeposit(async () => {
+      await this.handleDeposit();
     });
 
     this.ui.onPlay(async () => {
@@ -149,13 +126,11 @@ class GameClient {
       this.isPlaying = false;
       this.isSpectating = false;
       this.ui.hideDeathScreen();
-      this.ui.resetStakeState();
+      this.ui.resetDepositState(); // Reset deposit state (was resetStakeState)
       this.ui.showStartScreen();
       
       // Reset tracking
-      this.currentStake = 0;
       this.lastPelletTokens = 0;
-      this.lastSnakeLength = 0;
     });
 
     this.ui.onConnectWallet(async () => {
@@ -167,10 +142,10 @@ class GameClient {
     });
 
     this.ui.onRetry(async () => {
-      // Get score again in case we need to retry
-      const playerSnake = this.game.getPlayerSnake();
-      const currentScore = playerSnake ? playerSnake.segments.length : 0;
-      await this.attemptTapOutTransaction(currentScore);
+      // VAULT MODE: No retry needed - server handles payouts
+      // Just hide loading and return to start screen
+      this.ui.hideLoading();
+      this.ui.showStartScreen();
     });
   }
 
@@ -235,46 +210,39 @@ class GameClient {
     }
   }
 
-  private async handleStake(): Promise<void> {
-    // Wallet is required to stake
+  private async handleDeposit(): Promise<void> {
+    // Wallet is required to deposit
     if (!this.walletAddress) {
       alert('Please connect your wallet first');
       return;
     }
 
-    // CRITICAL: Match ID must be received from server before staking
-    if (!CURRENT_MATCH_ID) {
-      alert('Waiting for match ID from server... Please try again in a moment.');
-      return;
-    }
-
-    // If blockchain enabled, stake
+    // Vault mode: deposit directly to server vault
     if (STAKE_ARENA_ADDRESS) {
-      const stakeAmount = '1'; // Fixed stake amount
-      
       try {
-        console.log(`Staking ${stakeAmount} SSS into match ${CURRENT_MATCH_ID}...`);
-        this.ui.showLoading(`Staking ${stakeAmount} SSS... Please sign the transaction in MetaMask.`);
+        console.log(`Depositing ${this.FIXED_DEPOSIT_AMOUNT} SSS to vault...`);
+        this.ui.showLoading(`Depositing ${this.FIXED_DEPOSIT_AMOUNT} SSS... Please sign the transaction in MetaMask.`);
         
-        // Enter match with server's match ID
-        await this.wallet!.enterMatch(CURRENT_MATCH_ID, stakeAmount);
+        // Deposit to vault (no match ID needed)
+        await this.wallet!.depositToVault(this.FIXED_DEPOSIT_AMOUNT);
 
-        console.log('✅ Successfully staked and entered match:', CURRENT_MATCH_ID);
+        console.log('✅ Successfully deposited to vault');
         this.ui.hideLoading();
-        this.ui.setStaked();
+        this.ui.setDeposited(); // Update UI to show deposited state
+        this.hasDeposited = true;
         
         // Update balance
         const balance = await this.wallet!.getTokenBalance();
         this.ui.updateTokenBalance(balance);
       } catch (error: any) {
-        console.error('Error during stake process:', error);
+        console.error('Error during deposit process:', error);
         this.ui.hideLoading();
         
         // Check if user rejected the transaction
         if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
-          alert('Transaction rejected. Please stake to play.');
+          alert('Transaction rejected. Please deposit to play.');
         } else {
-          alert('Failed to stake tokens. See console for details.');
+          alert('Failed to deposit tokens. See console for details.');
         }
         return;
       }
@@ -330,42 +298,6 @@ class GameClient {
     });
   }
 
-  private async waitForDeathSettlement(): Promise<void> {
-    if (!this.wallet || !this.walletAddress || !STAKE_ARENA_ADDRESS || !CURRENT_MATCH_ID) {
-      // No blockchain or no match ID, just wait a bit
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      return;
-    }
-
-    console.log('Waiting for death to settle on blockchain...');
-    console.log(`Checking match: ${CURRENT_MATCH_ID}, address: ${this.walletAddress}`);
-    
-    // Poll until player is no longer active (max 20 seconds)
-    const maxAttempts = 20; // 40 * 500ms = 20 seconds
-    let attempts = 0;
-    
-    while (attempts < maxAttempts) {
-      try {
-        const isActive = await this.wallet.isActive(CURRENT_MATCH_ID, this.walletAddress);
-        
-        console.log(`[Poll ${attempts + 1}/${maxAttempts}] isActive: ${isActive} (${(attempts * 500) / 1000}s elapsed)`);
-        
-        if (!isActive) {
-          console.log(`✅ Death settled on blockchain after ${(attempts * 500) / 1000}s`);
-          return;
-        }
-        
-        await new Promise(resolve => setTimeout(resolve, 500));
-        attempts++;
-      } catch (error) {
-        console.error(`[Poll ${attempts + 1}] Error checking active status:`, error);
-        await new Promise(resolve => setTimeout(resolve, 500));
-        attempts++;
-      }
-    }
-    
-    console.warn('⚠️ Death settlement timeout after 20s - proceeding anyway (server may still be processing)');
-  }
 
   private async handleTapOut(): Promise<void> {
     if (!this.wallet || !this.walletAddress) {
@@ -373,14 +305,12 @@ class GameClient {
       return;
     }
 
-    if (!STAKE_ARENA_ADDRESS || !CURRENT_MATCH_ID) {
-      console.log('Cannot tap out: blockchain not enabled or match ID missing');
-      return;
-    }
-
-    // Get current score before disconnecting
+    // Get current pellet tokens before disconnecting
     const playerSnake = this.game.getPlayerSnake();
+    const pelletTokens = playerSnake ? playerSnake.pelletTokens : 0;
     const currentScore = playerSnake ? playerSnake.segments.length : 0;
+
+    console.log(`Tapping out with ${pelletTokens.toFixed(2)} pellet tokens (score: ${currentScore})`);
 
     // Step 1: Immediately disconnect from game (remove player from server)
     this.isPlaying = false;
@@ -388,74 +318,53 @@ class GameClient {
     this.ui.hideGameControls();
     this.ui.hideDeathScreen();
     
-    // Send tap out message to server to remove snake immediately
+    // Get match ID from server state
+    const state = this.game.getCurrentState();
+    const matchId = state?.matchId || 'permanent-match-v1';
+    
+    // Send tap out message to server (server handles pellet token payout)
     const tapOutMsg: TapOutMessage = {
       type: MessageType.TAPOUT,
-      matchId: CURRENT_MATCH_ID,
+      matchId: matchId,
     };
     this.game.sendCustomMessage(tapOutMsg);
 
-    // Step 2: Attempt to withdraw stake via blockchain transaction with score
-    await this.attemptTapOutTransaction(currentScore);
+    // VAULT MODE: Server handles pellet token payout via direct transfer
+    // No on-chain transaction needed from client
+    this.ui.showLoading(`Tapping out... Server will pay out ${pelletTokens.toFixed(2)} SSS in pellet tokens.`);
+    
+    // Wait a moment for server to process
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    this.ui.hideLoading();
+    
+    // Update balance and return to home screen
+    const balance = await this.wallet.getTokenBalance();
+    this.ui.updateTokenBalance(balance);
+    
+    this.isSpectating = false;
+    this.ui.resetDepositState();
+    this.ui.showStartScreen();
+    
+    console.log('✅ Tapped out successfully - pellet tokens paid by server');
   }
 
-  private async attemptTapOutTransaction(score: number): Promise<void> {
-    if (!this.wallet || !this.walletAddress || !CURRENT_MATCH_ID) return;
+  /**
+   * Update pellet tokens display from game state
+   * In vault mode, we only track pellet tokens (no stake tracking)
+   */
+  private updatePelletTokensFromGameState(): void {
+    if (!this.game) return;
 
-    try {
-      this.ui.showLoading('Checking match status...');
-      
-      // Check if player is still active in the match before attempting tap out
-      const isActive = await this.wallet.isActive(CURRENT_MATCH_ID, this.walletAddress);
-      
-      if (!isActive) {
-        // Player is no longer active (already died/disconnected and stake was settled)
-        console.log('Player is no longer active in match - stake already settled by server');
-        this.ui.hideLoading();
-        
-        // Just return to home screen without attempting tapOut transaction
-        this.isSpectating = false;
-        this.ui.resetStakeState();
-        this.ui.showStartScreen();
-        this.ui.showError('You are no longer active in the match. Your stake was already settled.', 5000);
-        return;
-      }
-      
-      this.ui.showLoading('Sign transaction to withdraw your stake and record your score...');
-      
-      // Call contract to withdraw with score
-      const success = await this.wallet.tapOut(CURRENT_MATCH_ID, score);
-      
-      if (success) {
-        console.log(`✅ Successfully tapped out, withdrawn stake, and recorded score: ${score}`);
-        this.ui.hideLoading();
-        
-        // Update balance and stats
-        const balance = await this.wallet.getTokenBalance();
-        this.ui.updateTokenBalance(balance);
-        
-        // Reset tracking
-        this.currentStake = 0;
-        this.lastPelletTokens = 0;
-        this.lastSnakeLength = 0;
-        
-        // Return to home screen
-        this.isSpectating = false;
-        this.ui.resetStakeState();
-        this.ui.showStartScreen();
-      } else {
-        // Transaction failed
-        this.ui.showLoadingWithRetry('Transaction failed. Please try again.');
-      }
-    } catch (error: any) {
-      console.error('Error tapping out:', error);
-      
-      // Check if user rejected the transaction
-      if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
-        this.ui.showLoadingWithRetry('Transaction rejected. Click retry to sign again.');
-      } else {
-        this.ui.showLoadingWithRetry('Transaction failed. Click retry to try again.');
-      }
+    const playerSnake = this.game.getPlayerSnake();
+    if (!playerSnake) return;
+
+    const currentPelletTokens = playerSnake.pelletTokens || 0;
+
+    // Update UI if pellet tokens changed
+    if (currentPelletTokens !== this.lastPelletTokens) {
+      this.lastPelletTokens = currentPelletTokens;
+      this.ui.updateCurrentScore(currentPelletTokens.toFixed(2));
     }
   }
 
@@ -463,111 +372,6 @@ class GameClient {
     return this.isSpectating || !this.isPlaying;
   }
 
-  /**
-   * Initialize score once when gameplay starts (fetches stake from blockchain)
-   */
-  private async initializeScore(): Promise<void> {
-    if (!this.wallet || !this.walletAddress || !CURRENT_MATCH_ID) return;
-
-    try {
-      const stakeString = await this.wallet.getCurrentStake(CURRENT_MATCH_ID);
-      this.currentStake = parseFloat(stakeString);
-      this.lastPelletTokens = 0;
-      this.lastSnakeLength = 5; // Initial snake length
-      
-      // Display initial score (stake only, no pellet tokens yet)
-      this.ui.updateCurrentScore(this.currentStake.toFixed(2));
-      console.log('Initial score initialized:', this.currentStake);
-    } catch (error) {
-      console.error('Error initializing score:', error);
-    }
-  }
-
-  /**
-   * Event-based score update triggered by game state changes
-   * Updates UI when pellet tokens change or when we eat another snake
-   */
-  private updateScoreFromGameState(): void {
-    if (!this.game) return;
-
-    const playerSnake = this.game.getPlayerSnake();
-    if (!playerSnake) return;
-
-    const currentPelletTokens = playerSnake.pelletTokens || 0;
-    const currentLength = playerSnake.segments.length;
-
-    // Detect if we ate another snake (significant length increase)
-    // Pellets give ~2-4 segments, snakes give much more
-    const lengthIncrease = currentLength - this.lastSnakeLength;
-    const ateAnotherSnake = lengthIncrease > 10; // Threshold for snake consumption
-
-    if (ateAnotherSnake) {
-      // Snake was eaten - their stake was transferred to us
-      // Refetch stake from blockchain
-      console.log('Detected snake consumption, refetching stake from blockchain');
-      this.refetchStake();
-    }
-
-    // Update length tracking
-    this.lastSnakeLength = currentLength;
-
-    // Update UI if pellet tokens changed (happens on pellet eat or snake eat)
-    if (currentPelletTokens !== this.lastPelletTokens) {
-      this.lastPelletTokens = currentPelletTokens;
-      
-      // Combined score = stake + pellet tokens
-      const totalScore = this.currentStake + currentPelletTokens;
-      
-      this.ui.updateCurrentScore(totalScore.toFixed(2));
-    }
-  }
-
-  /**
-   * Refetch stake from blockchain (when eating another snake)
-   */
-  private async refetchStake(): Promise<void> {
-    if (!this.wallet || !this.walletAddress || !CURRENT_MATCH_ID) return;
-
-    try {
-      const stakeString = await this.wallet.getCurrentStake(CURRENT_MATCH_ID);
-      const newStake = parseFloat(stakeString);
-      
-      if (newStake !== this.currentStake) {
-        console.log(`Stake updated: ${this.currentStake.toFixed(2)} → ${newStake.toFixed(2)} SSS`);
-        this.currentStake = newStake;
-        
-        // Update UI with new total score
-        const playerSnake = this.game?.getPlayerSnake();
-        const pelletTokens = playerSnake?.pelletTokens || 0;
-        const totalScore = this.currentStake + pelletTokens;
-        this.ui.updateCurrentScore(totalScore.toFixed(2));
-      }
-    } catch (error) {
-      console.error('Error refetching stake:', error);
-    }
-  }
-
-  private async updateScoreAfterDeath(finalScore: number): Promise<void> {
-    if (!this.wallet || !this.walletAddress || !CURRENT_MATCH_ID) return;
-
-    try {
-      const bestScoreFromChain = await this.wallet.getBestScore();
-      const currentStake = await this.wallet.getCurrentStake(CURRENT_MATCH_ID);
-      
-      // Display the higher of the final score or the on-chain best score
-      const displayScore = Math.max(finalScore, bestScoreFromChain);
-      
-      console.log(`Final score: ${finalScore}, On-chain best: ${bestScoreFromChain}, Displaying: ${displayScore}`);
-      
-      // Score is just the stake after death (pellet tokens are settled)
-      this.ui.updateCurrentScore(currentStake);
-      
-      // Update death screen with best score info
-      this.ui.updateDeathScreenWithBestScore(finalScore, displayScore);
-    } catch (error) {
-      console.error('Error updating on-chain stats after death:', error);
-    }
-  }
 
   private gameLoop = (): void => {
     this.update();

@@ -28,7 +28,7 @@ export class GameServer {
   private lastTickTime = Date.now();
   private gameLoop: NodeJS.Timeout | null = null;
   private blockchain: BlockchainService | null = null;
-  private matchId: string | null = null;
+  private permanentMatchId: string = `permanent-match-${Date.now()}`; // Unique match ID per server restart
   private entropyBridge: EntropyBridgeService | null = null;
   private matchRNG: DeterministicRNG | null = null;
   private entropyRequestId: string | null = null;
@@ -38,6 +38,10 @@ export class GameServer {
   private consumedPelletsThisTick: Set<string> = new Set();
   private pelletTokensDistributed: boolean = false;
   
+  // Track player stakes for kill rewards (deposited via vault)
+  private playerStakes: Map<string, number> = new Map(); // address -> stake amount
+  private readonly FIXED_STAKE_AMOUNT = 1; // Fixed 1 SSS stake per player
+  
   // Atomic operation queues - processed at start of each tick
   private pendingAdds: PendingSnakeAdd[] = [];
   private pendingRemoves: string[] = [];
@@ -45,36 +49,54 @@ export class GameServer {
   constructor() {
     // Pellet manager will be initialized after entropy is available
     this.pelletManager = new PelletManager(PELLET_COUNT);
+    console.log(`🎮 Game server initialized with permanent match ID: ${this.permanentMatchId}`);
   }
 
-  setBlockchainService(blockchain: BlockchainService, matchId: string): void {
+  setBlockchainService(blockchain: BlockchainService): void {
     this.blockchain = blockchain;
-    this.matchId = matchId;
     
     // Initialize entropy bridge service
     this.entropyBridge = new EntropyBridgeService();
     
-    // Request entropy for this match in the background
+    // Request entropy for the permanent match in the background
     this.initializeMatchEntropy();
+  }
+
+  /**
+   * Get the permanent match ID for this continuous game
+   */
+  getMatchId(): string {
+    return this.permanentMatchId;
+  }
+
+  /**
+   * Register a player's stake when they join (for kill reward tracking)
+   * @param address Player's address
+   * @param amount Stake amount (default: 1 SSS)
+   */
+  registerPlayerStake(address: string, amount: number = 1): void {
+    this.playerStakes.set(address, amount);
+    console.log(`💰 Registered stake: ${amount} SSS for ${address.slice(0, 8)}`);
   }
 
   /**
    * Initialize match entropy (non-blocking)
    * Requests randomness from Base Sepolia and initializes RNG when available
+   * Uses permanent match ID for continuous gameplay
    */
   private async initializeMatchEntropy(): Promise<void> {
-    if (!this.entropyBridge || !this.entropyBridge.isEnabled() || !this.matchId) {
+    if (!this.entropyBridge || !this.entropyBridge.isEnabled()) {
       console.warn('⚠️  Entropy bridge not available, using fallback RNG');
       this.devFallbackMode = true;
       return;
     }
 
-    console.log('🎲 Initializing match entropy...');
+    console.log('🎲 Initializing match entropy for permanent match...');
     this.entropyPending = true;
 
     try {
       // Request entropy and wait for reveal (non-blocking, runs in background)
-      const seed = await this.entropyBridge.requestAndWaitForSeed(this.matchId, 60000);
+      const seed = await this.entropyBridge.requestAndWaitForSeed(this.permanentMatchId, 60000);
       
       if (seed) {
         console.log('✅ Entropy seed received:', seed);
@@ -99,13 +121,13 @@ export class GameServer {
         
         // Commit seed hash to Saga
         if (this.blockchain && this.entropyRequestId) {
-          await this.blockchain.commitEntropyToSaga(this.matchId, this.entropyRequestId, seed);
+          await this.blockchain.commitEntropyToSaga(this.permanentMatchId, this.entropyRequestId, seed);
           console.log('✅ Seed hash committed to Saga');
         }
         
         this.entropyPending = false;
         this.devFallbackMode = false;
-        console.log('🎮 Match ready with fair RNG!');
+        console.log('🎮 Continuous match ready with fair RNG!');
       } else {
         console.error('⏱️  Entropy timeout - falling back to non-cryptographic RNG');
         this.devFallbackMode = true;
@@ -254,31 +276,48 @@ export class GameServer {
         const victimScore = victim.getScore();
         victim.kill();
         
-        // If killed by another snake (not self-collision), transfer points
+        // If killed by another snake (not self-collision), transfer rewards
         if (collision.killerId && collision.killerId !== collision.victimId) {
           const killer = this.snakes.get(collision.killerId);
           if (killer && killer.alive) {
             // Killer gains the victim's score
             killer.grow(victimScore);
             
-            // Transfer victim's pellet tokens to killer
-            const victimTokens = victim.getPelletTokens();
-            killer.addPelletTokens(victimTokens);
+            // Transfer victim's pellet tokens to killer (internal balance)
+            const victimPelletTokens = victim.getPelletTokens();
+            killer.addPelletTokens(victimPelletTokens);
             
-            console.log(`${killer.name} ate ${victim.name} and gained ${victimScore} points and ${victimTokens.toFixed(2)} SSS tokens!`);
+            console.log(`${killer.name} ate ${victim.name} and gained ${victimScore} points and ${victimPelletTokens.toFixed(2)} pellet tokens!`);
             
-            // Report to blockchain if both have addresses
-            if (this.blockchain && this.matchId && killer.address && victim.address) {
-              this.blockchain.reportEat(this.matchId, killer.address, victim.address)
+            // VAULT MODE: Transfer victim's STAKE from server wallet to killer immediately
+            if (this.blockchain && killer.address && victim.address) {
+              const victimStake = this.playerStakes.get(victim.address) || this.FIXED_STAKE_AMOUNT;
+              
+              // Transfer stake reward from server wallet to killer
+              this.blockchain.transferKillReward(killer.address, victimStake)
+                .catch(err => console.error('Error transferring kill reward:', err));
+              
+              // Update stake tracking: killer gets victim's stake, victim loses it
+              const killerCurrentStake = this.playerStakes.get(killer.address) || this.FIXED_STAKE_AMOUNT;
+              this.playerStakes.set(killer.address, killerCurrentStake + victimStake);
+              this.playerStakes.delete(victim.address); // Victim loses their stake
+              
+              console.log(`💰 Kill reward: ${victimStake} SSS transferred from server wallet to ${killer.address.slice(0, 8)}`);
+              
+              // Report eat to blockchain for stats/leaderboard (no stake transfer on-chain)
+              this.blockchain.reportEat(this.permanentMatchId, killer.address, victim.address)
                 .catch(err => console.error('Error reporting eat to blockchain:', err));
             }
           }
         } else {
           // Self-collision or no killer - report self death to blockchain
           console.log(`${victim.name} died from self-collision with score ${victimScore}`);
-          if (this.blockchain && this.matchId && victim.address) {
+          if (this.blockchain && victim.address) {
+            // Remove victim's stake tracking (server keeps it)
+            this.playerStakes.delete(victim.address);
+            
             console.log(`Reporting self-collision death for ${victim.address} to blockchain`);
-            this.blockchain.reportSelfDeath(this.matchId, victim.address, victimScore)
+            this.blockchain.reportSelfDeath(this.permanentMatchId, victim.address, victimScore)
               .catch(err => console.error('Error reporting self death:', err));
           }
         }
@@ -293,9 +332,12 @@ export class GameServer {
         snake.kill();
         
         // Report wall collision death to blockchain
-        if (this.blockchain && this.matchId && snake.address) {
+        if (this.blockchain && snake.address) {
+          // Remove victim's stake tracking (server keeps it)
+          this.playerStakes.delete(snake.address);
+          
           console.log(`Reporting wall collision death for ${snake.address} to blockchain`);
-          this.blockchain.reportSelfDeath(this.matchId, snake.address, snakeScore)
+          this.blockchain.reportSelfDeath(this.permanentMatchId, snake.address, snakeScore)
             .catch(err => console.error('Error reporting wall death:', err));
         }
       }
@@ -392,7 +434,7 @@ export class GameServer {
       snakes,
       pellets,
       leaderboard: leaderboard.map(entry => [entry.name, entry.score, entry.address] as [string, number, string?]),
-      matchId: this.matchId || undefined,
+      matchId: this.permanentMatchId,
       entropyPending: this.entropyPending,
       entropyRequestId: this.entropyRequestId || undefined,
       useFairRNG: !this.devFallbackMode,
