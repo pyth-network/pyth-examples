@@ -1,0 +1,225 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "getPrice",
+      "inputs": [
+        { "name": "id", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct PythStructs.Price",
+          "components": [
+            { "name": "price", "type": "int64", "internalType": "int64" },
+            { "name": "conf", "type": "uint64", "internalType": "uint64" },
+            { "name": "expo", "type": "int32", "internalType": "int32" },
+            {
+              "name": "publishTime",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getPriceUnsafe",
+      "inputs": [
+        { "name": "id", "type": "bytes32", "internalType": "bytes32" }
+      ],
+      "outputs": [
+        {
+          "name": "",
+          "type": "tuple",
+          "internalType": "struct PythStructs.Price",
+          "components": [
+            { "name": "price", "type": "int64", "internalType": "int64" },
+            { "name": "conf", "type": "uint64", "internalType": "uint64" },
+            { "name": "expo", "type": "int32", "internalType": "int32" },
+            {
+              "name": "publishTime",
+              "type": "uint256",
+              "internalType": "uint256"
+            }
+          ]
+        }
+      ],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "setPrice",
+      "inputs": [
+        { "name": "id", "type": "bytes32", "internalType": "bytes32" },
+        { "name": "price", "type": "int64", "internalType": "int64" },
+        { "name": "expo", "type": "int32", "internalType": "int32" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080806040523460155761025d908161001a8239f35b5f80fdfe60806040526004361015610011575f80fd5b5f3560e01c806330c41c9d1461003f57806331d98b3f1461003a576396834ad31461003a575f80fd5b6100ff565b346100fb5760603660031901126100fb576024358060070b8091036100fb576044358060030b8091036100fb576001906100776101f3565b928352602083015f815260408401918252606084019167ffffffffffffffff421683526004355f525f60205260405f2094519167ffffffffffffffff6fffffffffffffffff00000000000000008754925160401b16925160801b63ffffffff60801b169316906bffffffffffffffffffffffff60a01b161717178355519101555f80f35b5f80fd5b346100fb5760203660031901126100fb575f606061011b6101f3565b82815282602082015282604082015201526004355f525f60205260405f206101416101f3565b9080548060070b83526001602084019267ffffffffffffffff8360401c168452604085019260801c60030b83520154916060840192808452156101ae5760408051945160070b8552905167ffffffffffffffff166020850152905160030b90830152516060820152608090f35b60405162461bcd60e51b815260206004820152601760248201527f4d6f636b507974683a207072696365206e6f74207365740000000000000000006044820152606490fd5b604051906080820182811067ffffffffffffffff82111761021357604052565b634e487b7160e01b5f52604160045260245ffdfea2646970667358221220c18d2a3764d98e4a6f1b2ee492d5ce1b5d23d23600d8db53f31a44029397ae3464736f6c634300081a0033",
+    "sourceMap": "201:1214:78:-:0;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x60806040526004361015610011575f80fd5b5f3560e01c806330c41c9d1461003f57806331d98b3f1461003a576396834ad31461003a575f80fd5b6100ff565b346100fb5760603660031901126100fb576024358060070b8091036100fb576044358060030b8091036100fb576001906100776101f3565b928352602083015f815260408401918252606084019167ffffffffffffffff421683526004355f525f60205260405f2094519167ffffffffffffffff6fffffffffffffffff00000000000000008754925160401b16925160801b63ffffffff60801b169316906bffffffffffffffffffffffff60a01b161717178355519101555f80f35b5f80fd5b346100fb5760203660031901126100fb575f606061011b6101f3565b82815282602082015282604082015201526004355f525f60205260405f206101416101f3565b9080548060070b83526001602084019267ffffffffffffffff8360401c168452604085019260801c60030b83520154916060840192808452156101ae5760408051945160070b8552905167ffffffffffffffff166020850152905160030b90830152516060820152608090f35b60405162461bcd60e51b815260206004820152601760248201527f4d6f636b507974683a207072696365206e6f74207365740000000000000000006044820152606490fd5b604051906080820182811067ffffffffffffffff82111761021357604052565b634e487b7160e01b5f52604160045260245ffdfea2646970667358221220c18d2a3764d98e4a6f1b2ee492d5ce1b5d23d23600d8db53f31a44029397ae3464736f6c634300081a0033",
+    "sourceMap": "201:1214:78:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;-1:-1:-1;;201:1214:78;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;605:180;;201:1214;;;;605:180;;201:1214;;;;605:180;;758:15;201:1214;758:15;201:1214;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;201:1214:78;;;;-1:-1:-1;201:1214:78;;;:::i;:::-;;;;;;;;;;;;;;;;;;-1:-1:-1;201:1214:78;-1:-1:-1;201:1214:78;;;-1:-1:-1;201:1214:78;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1026:18;201:1214;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;201:1214:78;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;-1:-1:-1;201:1214:78;;;;;-1:-1:-1;201:1214:78",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "getPrice(bytes32)": "31d98b3f",
+    "getPriceUnsafe(bytes32)": "96834ad3",
+    "setPrice(bytes32,int64,int32)": "30c41c9d"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"id\",\"type\":\"bytes32\"}],\"name\":\"getPrice\",\"outputs\":[{\"components\":[{\"internalType\":\"int64\",\"name\":\"price\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"conf\",\"type\":\"uint64\"},{\"internalType\":\"int32\",\"name\":\"expo\",\"type\":\"int32\"},{\"internalType\":\"uint256\",\"name\":\"publishTime\",\"type\":\"uint256\"}],\"internalType\":\"struct PythStructs.Price\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"id\",\"type\":\"bytes32\"}],\"name\":\"getPriceUnsafe\",\"outputs\":[{\"components\":[{\"internalType\":\"int64\",\"name\":\"price\",\"type\":\"int64\"},{\"internalType\":\"uint64\",\"name\":\"conf\",\"type\":\"uint64\"},{\"internalType\":\"int32\",\"name\":\"expo\",\"type\":\"int32\"},{\"internalType\":\"uint256\",\"name\":\"publishTime\",\"type\":\"uint256\"}],\"internalType\":\"struct PythStructs.Price\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"id\",\"type\":\"bytes32\"},{\"internalType\":\"int64\",\"name\":\"price\",\"type\":\"int64\"},{\"internalType\":\"int32\",\"name\":\"expo\",\"type\":\"int32\"}],\"name\":\"setPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"details\":\"Minimal mock for IPyth.getPrice used by ChaosHook tests.\",\"kind\":\"dev\",\"methods\":{\"setPrice(bytes32,int64,int32)\":{\"params\":{\"expo\":\"Exponent, usually -8 for USD feeds\",\"id\":\"Pyth price feed id\",\"price\":\"Price value in Pyth format (e.g. 2000 * 1e8 for expo -8)\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"getPrice(bytes32)\":{\"notice\":\"Minimal subset of IPyth.getPrice used in ChaosHook.\"},\"getPriceUnsafe(bytes32)\":{\"notice\":\"Minimal subset of IPyth: ChaosHook calls getPriceUnsafe.\"},\"setPrice(bytes32,int64,int32)\":{\"notice\":\"Set a mock price with given value and exponent.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"test/mocks/MockPyth.sol\":\"MockPyth\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=lib/v4-core/node_modules/@ensdomains/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@pythnetwork/entropy-sdk-solidity/=node_modules/@pythnetwork/entropy-sdk-solidity/\",\":@pythnetwork/pyth-sdk-solidity/=node_modules/@pythnetwork/pyth-sdk-solidity/\",\":@uniswap/v4-core/=lib/v4-core/\",\":@uniswap/v4-periphery/=lib/v4-periphery/\",\":ds-test/=lib/v4-core/lib/forge-std/lib/ds-test/src/\",\":erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/\",\":forge-gas-snapshot/=lib/v4-periphery/lib/permit2/lib/forge-gas-snapshot/src/\",\":forge-std/=lib/forge-std/src/\",\":halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/\",\":hardhat/=lib/v4-core/node_modules/hardhat/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":permit2/=lib/v4-periphery/lib/permit2/\",\":pyth-sdk-solidity/=lib/pyth-sdk-solidity/\",\":solmate/=lib/v4-core/lib/solmate/\",\":v4-core/=lib/v4-core/\",\":v4-periphery/=lib/v4-periphery/\"],\"viaIR\":true},\"sources\":{\"node_modules/@pythnetwork/pyth-sdk-solidity/PythStructs.sol\":{\"keccak256\":\"0x474436bf0d558cc9b2c00a9d0ce318147acdf7963f34ef4acadb9248e65bbc7b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://2b8f9bd9de35e67c7bdbf04d8c2e771718fcc8666456ca5f92dbd914e4a5f2b3\",\"dweb:/ipfs/QmNP3ShBYRp4RiVbAudMB7rNHAqgtwn8pPBzb8JTUaViRh\"]},\"test/mocks/MockPyth.sol\":{\"keccak256\":\"0x6be911032b79259bfdc7737d5f2079c5d65daef56b252820e332c10e67bdafdb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://9da002cbbfe5f2bb8255818895aeb166f88dba7e9d90c6fb17577b80d43db117\",\"dweb:/ipfs/QmYjw1BDDWD1G4rnPAG76eNH288vbVxWTaeyv4YT8mNYeY\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": { "version": "0.8.26+commit.8a97fa7a" },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            { "internalType": "bytes32", "name": "id", "type": "bytes32" }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getPrice",
+          "outputs": [
+            {
+              "internalType": "struct PythStructs.Price",
+              "name": "",
+              "type": "tuple",
+              "components": [
+                { "internalType": "int64", "name": "price", "type": "int64" },
+                { "internalType": "uint64", "name": "conf", "type": "uint64" },
+                { "internalType": "int32", "name": "expo", "type": "int32" },
+                {
+                  "internalType": "uint256",
+                  "name": "publishTime",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            { "internalType": "bytes32", "name": "id", "type": "bytes32" }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "getPriceUnsafe",
+          "outputs": [
+            {
+              "internalType": "struct PythStructs.Price",
+              "name": "",
+              "type": "tuple",
+              "components": [
+                { "internalType": "int64", "name": "price", "type": "int64" },
+                { "internalType": "uint64", "name": "conf", "type": "uint64" },
+                { "internalType": "int32", "name": "expo", "type": "int32" },
+                {
+                  "internalType": "uint256",
+                  "name": "publishTime",
+                  "type": "uint256"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "inputs": [
+            { "internalType": "bytes32", "name": "id", "type": "bytes32" },
+            { "internalType": "int64", "name": "price", "type": "int64" },
+            { "internalType": "int32", "name": "expo", "type": "int32" }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setPrice"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "setPrice(bytes32,int64,int32)": {
+            "params": {
+              "expo": "Exponent, usually -8 for USD feeds",
+              "id": "Pyth price feed id",
+              "price": "Price value in Pyth format (e.g. 2000 * 1e8 for expo -8)"
+            }
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {
+          "getPrice(bytes32)": {
+            "notice": "Minimal subset of IPyth.getPrice used in ChaosHook."
+          },
+          "getPriceUnsafe(bytes32)": {
+            "notice": "Minimal subset of IPyth: ChaosHook calls getPriceUnsafe."
+          },
+          "setPrice(bytes32,int64,int32)": {
+            "notice": "Set a mock price with given value and exponent."
+          }
+        },
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        "@ensdomains/=lib/v4-core/node_modules/@ensdomains/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@pythnetwork/entropy-sdk-solidity/=node_modules/@pythnetwork/entropy-sdk-solidity/",
+        "@pythnetwork/pyth-sdk-solidity/=node_modules/@pythnetwork/pyth-sdk-solidity/",
+        "@uniswap/v4-core/=lib/v4-core/",
+        "@uniswap/v4-periphery/=lib/v4-periphery/",
+        "ds-test/=lib/v4-core/lib/forge-std/lib/ds-test/src/",
+        "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+        "forge-gas-snapshot/=lib/v4-periphery/lib/permit2/lib/forge-gas-snapshot/src/",
+        "forge-std/=lib/forge-std/src/",
+        "halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/",
+        "hardhat/=lib/v4-core/node_modules/hardhat/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "permit2/=lib/v4-periphery/lib/permit2/",
+        "pyth-sdk-solidity/=lib/pyth-sdk-solidity/",
+        "solmate/=lib/v4-core/lib/solmate/",
+        "v4-core/=lib/v4-core/",
+        "v4-periphery/=lib/v4-periphery/"
+      ],
+      "optimizer": { "enabled": true, "runs": 200 },
+      "metadata": { "bytecodeHash": "ipfs" },
+      "compilationTarget": { "test/mocks/MockPyth.sol": "MockPyth" },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "node_modules/@pythnetwork/pyth-sdk-solidity/PythStructs.sol": {
+        "keccak256": "0x474436bf0d558cc9b2c00a9d0ce318147acdf7963f34ef4acadb9248e65bbc7b",
+        "urls": [
+          "bzz-raw://2b8f9bd9de35e67c7bdbf04d8c2e771718fcc8666456ca5f92dbd914e4a5f2b3",
+          "dweb:/ipfs/QmNP3ShBYRp4RiVbAudMB7rNHAqgtwn8pPBzb8JTUaViRh"
+        ],
+        "license": "Apache-2.0"
+      },
+      "test/mocks/MockPyth.sol": {
+        "keccak256": "0x6be911032b79259bfdc7737d5f2079c5d65daef56b252820e332c10e67bdafdb",
+        "urls": [
+          "bzz-raw://9da002cbbfe5f2bb8255818895aeb166f88dba7e9d90c6fb17577b80d43db117",
+          "dweb:/ipfs/QmYjw1BDDWD1G4rnPAG76eNH288vbVxWTaeyv4YT8mNYeY"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "id": 78
+}
