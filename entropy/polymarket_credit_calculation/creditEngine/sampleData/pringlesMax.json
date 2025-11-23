@@ -1,0 +1,96 @@
+{
+  "user": {
+    "name": "PringlesMax",
+    "value": "175337"
+  },
+  "closedPositions": [
+    {
+      "realizedPnl": "416736",
+      "totalBought": "1190675",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000001"
+    },
+    {
+      "realizedPnl": "392857",
+      "totalBought": "892858",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000002"
+    },
+    {
+      "realizedPnl": "381360",
+      "totalBought": "681000",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000003"
+    },
+    {
+      "realizedPnl": "367856",
+      "totalBought": "943220",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000004"
+    },
+    {
+      "realizedPnl": "362543",
+      "totalBought": "1021552",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000005"
+    },
+    {
+      "realizedPnl": "340632",
+      "totalBought": "540686",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000006"
+    },
+    {
+      "realizedPnl": "331533",
+      "totalBought": "534732",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000007"
+    },
+    {
+      "realizedPnl": "312820",
+      "totalBought": "512821",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000008"
+    },
+    {
+      "realizedPnl": "301882",
+      "totalBought": "702002",
+      "asset": "0x0000000000000000000000000000000000000000000000000000000000000009"
+    },
+    {
+      "realizedPnl": "294081",
+      "totalBought": "599218",
+      "asset": "0x000000000000000000000000000000000000000000000000000000000000000a"
+    }
+  ],
+  "currentPositions": [
+    {
+      "size": "1263999",
+      "avgPrice": "0",
+      "initialValue": "303359",
+      "currentValue": "0",
+      "cashPnl": "-303360",
+      "percentPnl": "-100",
+      "totalBought": "1263999",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "-100",
+      "curPrice": "0"
+    },
+    {
+      "size": "1145983",
+      "avgPrice": "0",
+      "initialValue": "481313",
+      "currentValue": "0",
+      "cashPnl": "-481314",
+      "percentPnl": "-100",
+      "totalBought": "1145983",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "-101",
+      "curPrice": "0"
+    },
+    {
+      "size": "873938",
+      "avgPrice": "0",
+      "initialValue": "559699",
+      "currentValue": "0",
+      "cashPnl": "-559700",
+      "percentPnl": "-100",
+      "totalBought": "873938",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "-100",
+      "curPrice": "0"
+    }
+  ]
+}
