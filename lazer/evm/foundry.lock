@@ -1,0 +1,14 @@
+{
+  "lib/forge-std": {
+    "rev": "d3db4ef90a72b7d24aa5a2e5c649593eaef7801d"
+  },
+  "lib/openzeppelin-contracts-upgradeable": {
+    "rev": "e3deb4d2a5835f5dcb5bb6afbfa81be0061bfac8"
+  },
+  "lib/pyth-crosschain": {
+    "tag": {
+      "name": "v2.24.2",
+      "rev": "1fe680dfb8500186708301a99b5a07fe8cc46d04"
+    }
+  }
+}
