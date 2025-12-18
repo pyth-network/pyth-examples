@@ -46,15 +46,14 @@ The example uses three main components from the Pyth Lazer SDK:
 
 ### ExampleReceiver Contract (`src/ExampleReceiver.sol`)
 
-This contract demonstrates the recommended approach for receiving and processing Pyth Lazer price updates using the high-level struct-based parsing.
+This contract demonstrates how to receive, parse, and log Pyth Lazer price updates using the high-level struct-based parsing and the `PythLazerLib` helper methods.
 
 **Key Features:**
 - Verifies Pyth Lazer signatures on-chain via the PythLazer contract
 - Uses `parseUpdateFromPayload()` for clean, structured parsing
-- Extracts all available price feed properties using safe getter functions
+- Demonstrates the `hasX()`/`getX()` pattern to safely extract price feed properties
 - Handles verification fees and refunds excess payments
-- Filters updates by target feed ID and timestamp freshness
-- Emits events for price updates
+- Logs all parsed price data for demonstration
 
 **Main Function:**
 ```solidity
@@ -64,37 +63,70 @@ function updatePrice(bytes calldata update) public payable
 This function performs the following steps:
 1. Pays the verification fee to PythLazer and verifies the signature
 2. Parses the payload into a structured `Update` object
-3. Iterates through feeds to find the target feed
-4. Extracts available properties using safe getter functions like `hasPrice()` and `getPrice()`
-5. Updates contract state and emits a `PriceUpdated` event
+3. Iterates through all feeds and logs their properties
+4. Uses safe getter functions like `hasPrice()` and `getPrice()` to extract values
 
-**Helper Functions:**
-- `getCurrentPrice()` - Returns the current price and exponent
-- `getSpread()` - Returns the bid-ask spread
-- `isPriceFresh(maxAge)` - Checks if the price is within the specified age
-- `setTargetFeedId(feedId)` - Updates the target feed ID
+**Using PythLazerLib Helper Methods:**
+
+The contract demonstrates the recommended pattern for safely extracting feed properties:
+
+```solidity
+// Use hasPrice/getPrice pattern to safely extract price
+if (PythLazerLib.hasPrice(feed)) {
+    int64 price = PythLazerLib.getPrice(feed);
+}
+
+// Use hasExponent/getExponent pattern to get decimal places
+if (PythLazerLib.hasExponent(feed)) {
+    int16 exponent = PythLazerLib.getExponent(feed);
+}
+
+// Use hasPublisherCount/getPublisherCount pattern for data quality
+if (PythLazerLib.hasPublisherCount(feed)) {
+    uint16 publisherCount = PythLazerLib.getPublisherCount(feed);
+}
+
+// Use hasConfidence/getConfidence pattern for confidence interval
+if (PythLazerLib.hasConfidence(feed)) {
+    uint64 confidence = PythLazerLib.getConfidence(feed);
+}
+
+// Use hasBestBidPrice/getBestBidPrice pattern for bid price
+if (PythLazerLib.hasBestBidPrice(feed)) {
+    int64 bestBidPrice = PythLazerLib.getBestBidPrice(feed);
+}
+
+// Use hasBestAskPrice/getBestAskPrice pattern for ask price
+if (PythLazerLib.hasBestAskPrice(feed)) {
+    int64 bestAskPrice = PythLazerLib.getBestAskPrice(feed);
+}
+```
 
 ### Test Suite (`test/ExampleReceiver.t.sol`)
 
-Comprehensive tests demonstrating the contract functionality with real signed price data.
+Tests demonstrating the contract functionality with real signed price data.
 
 **Test Cases:**
-- `test_updatePrice_structBased()` - Tests the main price update flow
+- `test_updatePrice_parseAndLog()` - Tests parsing and logging price data
 - `test_revert_insufficientFee()` - Verifies fee requirement
-- `test_nonTargetFeed_noUpdate()` - Ensures non-target feeds don't update state
-- `test_setTargetFeedId()` - Tests feed ID configuration
-- `test_helperFunctions()` - Tests utility functions
 
 **How to run:**
 ```bash
-forge test -vv
+forge test -vvv
 ```
 
-**Expected output for the struct-based test:**
-- **Timestamp**: `1738270008001000` (microseconds since Unix epoch)
-- **Price**: `100000000` (raw price value)  
-- **Exponent**: `-8` (price = 100000000 × 10^-8 = $1.00)
-- **Publisher Count**: `1`
+**Expected output:**
+```
+Timestamp: 1738270008001000
+Channel: 1
+Number of feeds: 1
+--- Feed ID: 6 ---
+Price:
+100000000
+Exponent:
+-8
+Publisher count: 1
+```
 
 ## Understanding Price Data
 
@@ -164,14 +196,14 @@ function updatePrice(bytes calldata update) public payable {
     (bytes memory payload, ) = pythLazer.verifyUpdate{value: fee}(update);
     
     // Parse using helper (converts memory to calldata)
-    PythLazerStructs.Update memory parsedUpdate = this.parsePayloadExternal(payload);
+    PythLazerStructs.Update memory parsedUpdate = this.parsePayload(payload);
     
     // Process feeds...
 }
 
 // Helper to convert memory bytes to calldata for the library
-function parsePayloadExternal(bytes calldata payload) 
-    external view returns (PythLazerStructs.Update memory) {
+function parsePayload(bytes calldata payload) 
+    external pure returns (PythLazerStructs.Update memory) {
     return PythLazerLib.parseUpdateFromPayload(payload);
 }
 ```
@@ -183,15 +215,13 @@ for (uint256 i = 0; i < parsedUpdate.feeds.length; i++) {
     PythLazerStructs.Feed memory feed = parsedUpdate.feeds[i];
     uint32 feedId = PythLazerLib.getFeedId(feed);
     
-    if (feedId == targetFeedId) {
-        if (PythLazerLib.hasPrice(feed)) {
-            int64 price = PythLazerLib.getPrice(feed);
-        }
-        if (PythLazerLib.hasExponent(feed)) {
-            int16 exponent = PythLazerLib.getExponent(feed);
-        }
-        // ... extract other properties as needed
+    if (PythLazerLib.hasPrice(feed)) {
+        int64 price = PythLazerLib.getPrice(feed);
     }
+    if (PythLazerLib.hasExponent(feed)) {
+        int16 exponent = PythLazerLib.getExponent(feed);
+    }
+    // ... extract other properties as needed
 }
 ```
 
