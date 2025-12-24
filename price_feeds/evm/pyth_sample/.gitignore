@@ -12,3 +12,6 @@ docs/
 
 # Dotenv file
 .env
+
+lib/*
+price_update.txt
