@@ -41,9 +41,13 @@ forge create src/PythSample.sol:PythSample --private-key $PRIVATE_KEY --rpc-url 
 
 ```
 
+
+
 ## Interact with smart contract functions
 
 ```shell
+export DEPLOYMENT_ADDRESS=<ADDRESS_WHERE_CONTRACT_IS_DEPLOYED>
+
 cast call $DEPLOYMENT_ADDRESS "getPrice(bytes32)" 0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace --rpc-url $RPC_URL
 ```
 
@@ -59,7 +63,7 @@ noglob cast send --private-key $PRIVATE_KEY --rpc-url $RPC_URL --value 0.0005eth
 
 cast call $DEPLOYMENT_ADDRESS "getPrice(bytes32)" $ETH_USD_ID --rpc-url $RPC_URL
 
-cast --to-dec  <<Result>>
+cast --to-dec  <Result of getPrice>
 
 ### Testing
 
