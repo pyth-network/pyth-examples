@@ -59,7 +59,7 @@ curl -s "https://hermes.pyth.network/v2/updates/price/latest?&ids[]=$ETH_USD_ID"
 ### Update and get the price
 
 ```shell
-noglob cast send --private-key $PRIVATE_KEY --rpc-url $RPC_URL --value 0.0005ether $DEPLOYMENT_ADDRESS "getLatestPrice(bytes32,bytes[])" $ETH_USD_ID [0x$(cat price_update.txt)] 
+cast send --private-key $PRIVATE_KEY --rpc-url $RPC_URL --value 0.0005ether $DEPLOYMENT_ADDRESS "getLatestPrice(bytes32,bytes[])" $ETH_USD_ID "[0x$(cat price_update.txt)]"
 
 cast call $DEPLOYMENT_ADDRESS "getPrice(bytes32)" $ETH_USD_ID --rpc-url $RPC_URL
 
