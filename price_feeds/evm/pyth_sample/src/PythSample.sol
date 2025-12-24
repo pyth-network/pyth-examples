@@ -16,6 +16,14 @@ contract PythSample {
     }
 
     // @param priceId: Each price feed (e.g., ETH/USD) is identified by a price feed ID. The complete list of feed IDs is available at https://pyth.network/developers/price-feed-ids
+    // @return price: The current price of the price feed
+    function getPrice(bytes32 priceId) public view returns (uint256) {
+        
+        PythStructs.Price memory price = pyth.getPriceNoOlderThan(priceId, 180);
+        return uint256(int256(price.price));
+    }
+
+    // @param priceId: Each price feed (e.g., ETH/USD) is identified by a price feed ID. The complete list of feed IDs is available at https://pyth.network/developers/price-feed-ids
     // @param priceUpdate: The encoded data to update the contract with the latest pricecontract-addresses/evm
     function getLatestPrice(bytes32 priceId, bytes[] calldata priceUpdate) public payable returns (PythStructs.Price memory) {
 
