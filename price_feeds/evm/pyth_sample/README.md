@@ -65,6 +65,8 @@ cast call $DEPLOYMENT_ADDRESS "getPrice(bytes32)" $ETH_USD_ID --rpc-url $RPC_URL
 
 cast --to-dec  <Result of getPrice>
 
+```
+
 ### Testing
 
 Simply run `forge test` from root directory.
