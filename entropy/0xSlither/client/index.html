@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Slither.io Core</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Orbitron', monospace, -apple-system, sans-serif;
+      overflow: hidden;
+      background: #000000;
+      color: #00ff88;
+      letter-spacing: 0.5px;
+    }
+
+    #gameCanvas {
+      display: block;
+      background: #0a0e0a;
+    }
+
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #startScreen, #deathScreen {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 40px;
+      border-radius: 10px;
+      pointer-events: auto;
+    }
+
+    #startScreen h1, #deathScreen h1 {
+      font-size: 52px;
+      margin-bottom: 15px;
+      color: #00ff88;
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.8);
+      font-weight: 900;
+      letter-spacing: 3px;
+    }
+
+    #startScreen p, #deathScreen p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    #startScreen input {
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      width: 300px;
+    }
+
+    #startScreen button, #deathScreen button {
+      padding: 12px 40px;
+      font-size: 16px;
+      border: 2px solid #00ff88;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #003322 0%, #001a11 100%);
+      color: #00ff88;
+      cursor: pointer;
+      font-weight: 700;
+      transition: all 0.3s;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    #startScreen button:hover, #deathScreen button:hover {
+      background: linear-gradient(135deg, #004433 0%, #002211 100%);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+      transform: scale(1.05);
+    }
+
+    #startScreen button:active, #deathScreen button:active {
+      transform: scale(0.95);
+    }
+
+    #startScreen button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: rgba(0, 255, 136, 0.3);
+      background: linear-gradient(135deg, #001a11 0%, #000a05 100%);
+      box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+    }
+
+    #startScreen button:disabled:hover {
+      transform: none;
+      box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+    }
+
+    #walletSection {
+      margin-bottom: 15px;
+    }
+
+    #connectWalletButton {
+      padding: 12px 40px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #003322 0%, #001a11 100%);
+      border: 2px solid #00ff88;
+      margin-bottom: 15px;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    #connectWalletButton:hover {
+      background: linear-gradient(135deg, #004433 0%, #002211 100%);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+      transform: scale(1.05);
+    }
+
+    #connectWalletButton:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #walletStatus {
+      font-size: 14px;
+      color: #00ff88;
+      margin-top: 5px;
+      min-height: 20px;
+    }
+
+    #walletStatus.error {
+      color: #ff3366;
+    }
+
+    #walletStatus.success {
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    #stakeSection {
+      margin-bottom: 15px;
+    }
+
+    #balanceDisplay {
+      font-size: 18px;
+      color: #00ff88;
+      margin-bottom: 15px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+      letter-spacing: 1px;
+    }
+
+    #balanceDisplay .amount {
+      font-size: 22px;
+      font-weight: 700;
+      text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    }
+
+    #stakeButton {
+      padding: 12px 40px;
+      font-size: 16px;
+      background: linear-gradient(135deg, #003322 0%, #001a11 100%);
+      border: 2px solid #00ff88;
+      margin-bottom: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #00ff88;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    #stakeButton:hover:not(:disabled) {
+      background: linear-gradient(135deg, #004433 0%, #002211 100%);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+      transform: scale(1.05);
+    }
+
+    #stakeButton:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: rgba(0, 255, 136, 0.3);
+      background: linear-gradient(135deg, #001a11 0%, #000a05 100%);
+      box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+    }
+
+    #stakeButton:disabled:hover {
+      transform: none;
+      box-shadow: 0 0 5px rgba(0, 255, 136, 0.1);
+    }
+
+    .stake-info {
+      font-size: 14px;
+      color: #00ff88;
+      margin-top: 5px;
+      opacity: 0.7;
+      letter-spacing: 0.5px;
+    }
+
+    #gameControls {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+    }
+
+    #gameControls button {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: 2px solid #ff3366;
+      border-radius: 5px;
+      background: rgba(20, 5, 10, 0.9);
+      color: #ff3366;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+    }
+
+    #gameControls button:hover {
+      background: rgba(40, 10, 20, 1);
+      box-shadow: 0 0 20px rgba(255, 51, 102, 0.6);
+      transform: scale(1.05);
+    }
+
+    #gameControls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #onChainStats {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 12px 16px;
+      border-radius: 0 0 8px 8px;
+      border-top: 1px solid rgba(0, 255, 136, 0.2);
+      margin-top: 8px;
+    }
+
+    #onChainStats h3 {
+      font-size: 12px;
+      margin-bottom: 8px;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    #onChainStats .stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.08);
+    }
+
+    #onChainStats .stat:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    #onChainStats .label {
+      color: #00ff88;
+      opacity: 0.6;
+      font-size: 12px;
+    }
+
+    #onChainStats .value {
+      color: #00ff88;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+      font-variant-numeric: tabular-nums;
+    }
+
+    #leaderboard {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(10, 20, 15, 0.92);
+      padding: 0;
+      border-radius: 12px;
+      min-width: 220px;
+      border: 2px solid rgba(0, 255, 136, 0.5);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.25), 0 8px 32px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+    }
+
+    #leaderboard h2 {
+      font-size: 16px;
+      margin: 0;
+      padding: 14px 18px;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: rgba(0, 255, 136, 0.08);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .leaderboard-content {
+      padding: 14px 18px;
+    }
+
+    #leaderboard ol {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #leaderboard li {
+      padding: 6px 0;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.08);
+    }
+
+    #leaderboard li:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    #leaderboard li:first-child .name {
+      color: #FFD700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+      font-weight: 800;
+    }
+
+    #leaderboard li:first-child .score {
+      color: #FFD700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+
+    #leaderboard li:nth-child(2) .name {
+      color: #C0C0C0;
+      text-shadow: 0 0 8px rgba(192, 192, 192, 0.4);
+      font-weight: 700;
+    }
+
+    #leaderboard li:nth-child(2) .score {
+      color: #C0C0C0;
+      text-shadow: 0 0 6px rgba(192, 192, 192, 0.3);
+    }
+
+    #leaderboard li:nth-child(3) .name {
+      color: #CD7F32;
+      text-shadow: 0 0 6px rgba(205, 127, 50, 0.3);
+      font-weight: 700;
+    }
+
+    #leaderboard li:nth-child(3) .score {
+      color: #CD7F32;
+      text-shadow: 0 0 5px rgba(205, 127, 50, 0.2);
+    }
+
+    #leaderboard .name {
+      font-weight: 600;
+    }
+
+    #leaderboard .score {
+      color: #00ff88;
+      text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    #connectionStatus {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      border: 2px solid rgba(0, 255, 136, 0.3);
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+      color: #00ff88;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    #deathScreen p {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #deathScreen .score {
+      color: #00ff88;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+      font-size: 32px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      pointer-events: auto;
+    }
+
+    .loading-content {
+      text-align: center;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      border: 6px solid rgba(0, 255, 136, 0.2);
+      border-top: 6px solid #00ff88;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loadingMessage {
+      font-size: 18px;
+      color: #00ff88;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    #retryButton {
+      padding: 12px 40px;
+      font-size: 18px;
+      border: 2px solid #00ff88;
+      border-radius: 5px;
+      background: linear-gradient(135deg, #003322 0%, #001a11 100%);
+      color: #00ff88;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+      margin-top: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+    }
+
+    #retryButton:hover {
+      background: linear-gradient(135deg, #004433 0%, #002211 100%);
+      box-shadow: 0 0 25px rgba(0, 255, 136, 0.6);
+      transform: scale(1.05);
+    }
+
+    #retryButton:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  
+  <div id="ui">
+    <div id="startScreen">
+      <h1>0xSlither</h1>
+      <p style="color: #00ff88; text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);">Connect your wallet to play</p>
+      <div id="walletSection">
+        <button id="connectWalletButton">Connect Wallet</button>
+        <div id="walletStatus"></div>
+      </div>
+      <div id="stakeSection" class="hidden">
+        <div id="balanceDisplay">
+          Balance: <span class="amount" id="tokenBalance">0</span> SSS
+        </div>
+        <button id="stakeButton" disabled>Stake 1 SSS</button>
+        <div class="stake-info">Required to enter the game</div>
+      </div>
+      <button id="playButton" class="hidden" disabled>Play</button>
+    </div>
+
+    <div id="deathScreen" class="hidden">
+      <h1 id="deathScreenTitle">You Died!</h1>
+      <p>Final Score: <span class="score" id="finalScore">0</span></p>
+      <p id="bestScoreDisplay" style="font-size: 16px; margin-top: 10px; opacity: 0.8;">
+        Best Score: <span class="score" style="font-size: 20px;">--</span>
+      </p>
+      <button id="respawnButton">Play Again</button>
+    </div>
+
+    <div id="connectionStatus">Connecting...</div>
+
+    <div id="leaderboard" class="hidden">
+      <h2>Leaderboard</h2>
+      <div class="leaderboard-content">
+        <ol id="leaderboardList"></ol>
+      </div>
+      <div id="onChainStats" class="hidden">
+        <h3>Current Score</h3>
+        <div class="stat">
+          <span class="label">Score:</span>
+          <span class="value" id="currentScore">0 SSS</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="gameControls" class="hidden">
+      <button id="tapOutButton">Tap Out & Withdraw</button>
+    </div>
+
+    <div id="loadingOverlay" class="hidden">
+      <div class="loading-content">
+        <div class="spinner"></div>
+        <div id="loadingMessage">Loading...</div>
+        <button id="retryButton" class="hidden">Retry Transaction</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+
