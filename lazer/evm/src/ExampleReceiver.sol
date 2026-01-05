@@ -29,7 +29,7 @@ contract ExampleReceiver {
 
         // Refund excess payment
         if (msg.value > verificationFee) {
-            (bool success, ) = payable(msg.sender).call{value: msg.value - verificationFee}("");
+            (bool success,) = payable(msg.sender).call{value: msg.value - verificationFee}("");
             require(success, "Refund failed");
         }
 
@@ -89,5 +89,4 @@ contract ExampleReceiver {
             }
         }
     }
-
 }
