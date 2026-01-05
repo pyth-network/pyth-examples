@@ -195,16 +195,10 @@ function updatePrice(bytes calldata update) public payable {
     require(msg.value >= fee, "Insufficient fee");
     (bytes memory payload, ) = pythLazer.verifyUpdate{value: fee}(update);
     
-    // Parse using helper (converts memory to calldata)
-    PythLazerStructs.Update memory parsedUpdate = this.parsePayload(payload);
+    // Parse the payload directly (now accepts bytes memory)
+    PythLazerStructs.Update memory parsedUpdate = PythLazerLib.parseUpdateFromPayload(payload);
     
     // Process feeds...
-}
-
-// Helper to convert memory bytes to calldata for the library
-function parsePayload(bytes calldata payload) 
-    external pure returns (PythLazerStructs.Update memory) {
-    return PythLazerLib.parseUpdateFromPayload(payload);
 }
 ```
 
@@ -239,8 +233,6 @@ cd lib/pyth-crosschain && git fetch origin && git checkout origin/main
 ```
 
 **InvalidInitialization Error in Tests**: The PythLazer contract uses OpenZeppelin's upgradeable pattern. Deploy it via a TransparentUpgradeableProxy as shown in the test file.
-
-**Memory to Calldata Conversion**: The `parseUpdateFromPayload()` function expects calldata bytes, but `verifyUpdate()` returns memory bytes. Use the external helper pattern shown in the example to convert between them.
 
 **Gas Optimization**: For gas-sensitive applications, consider using the low-level parsing functions (`parsePayloadHeader`, `parseFeedHeader`, `parseFeedProperty`) to parse only the properties you need.
 

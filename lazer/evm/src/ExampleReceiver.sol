@@ -33,8 +33,8 @@ contract ExampleReceiver {
             require(success, "Refund failed");
         }
 
-        // Step 2: Parse the payload using the helper function (converts memory to calldata)
-        PythLazerStructs.Update memory parsedUpdate = this.parsePayload(payload);
+        // Step 2: Parse the payload directly (now accepts bytes memory)
+        PythLazerStructs.Update memory parsedUpdate = PythLazerLib.parseUpdateFromPayload(payload);
 
         console.log("Timestamp: %d", parsedUpdate.timestamp);
         console.log("Channel: %d", uint8(parsedUpdate.channel));
@@ -90,12 +90,4 @@ contract ExampleReceiver {
         }
     }
 
-    /// @notice Parse payload (converts memory bytes to calldata for library)
-    /// @dev Called via this.parsePayload() to convert memory to calldata, since
-    ///      PythLazerLib.parseUpdateFromPayload expects calldata bytes.
-    /// @param payload The payload bytes to parse
-    /// @return The parsed Update struct
-    function parsePayload(bytes calldata payload) external pure returns (PythLazerStructs.Update memory) {
-        return PythLazerLib.parseUpdateFromPayload(payload);
-    }
 }
