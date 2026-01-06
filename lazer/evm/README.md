@@ -38,7 +38,16 @@ The example uses three main components from the Pyth Lazer SDK:
 
 **PythLazer.sol** is the main contract that verifies ECDSA signatures from trusted signers. It manages trusted signer keys with expiration times and collects verification fees for each update.
 
-**PythLazerLib.sol** is a library that provides parsing functions for Lazer payloads. It includes both low-level parsing functions like `parsePayloadHeader()` and `parseFeedHeader()`, as well as a high-level `parseUpdateFromPayload()` function that returns a structured `Update` object.
+**PythLazerLib.sol** is a library that provides parsing functions for Lazer payloads:
+
+| Function | Use Case | When to Use |
+|----------|----------|-------------|
+| `parseUpdateFromPayload()` | High-level parsing | **Recommended for most integrations.** Returns a complete `Update` struct with all feeds and properties parsed. Easiest to use. |
+| `parsePayloadHeader()` | Low-level parsing | Use when you need fine-grained control or want to optimize gas by parsing only specific parts of the payload. |
+| `parseFeedHeader()` | Low-level parsing | Use with `parsePayloadHeader()` to iterate through feeds manually. Useful for gas optimization when you only need specific feeds. |
+| `parseFeedProperty()` | Low-level parsing | Use to parse individual properties from a feed. Most granular control for advanced gas optimization. |
+
+For most applications, use `parseUpdateFromPayload()` as it handles all the complexity for you. Only use the low-level functions if you have specific gas optimization requirements.
 
 **PythLazerStructs.sol** defines the data structures used by the library, including the `Update` struct containing timestamp, channel, and feeds array, the `Feed` struct with all price properties and a tri-state map, and enums for `Channel`, `PriceFeedProperty`, `PropertyState`, and `MarketSession`.
 
@@ -121,10 +130,9 @@ Timestamp: 1738270008001000
 Channel: 1
 Number of feeds: 1
 --- Feed ID: 6 ---
-Price:
-100000000
-Exponent:
--8
+Price: 100000000
+Exponent: 8
+(negative)
 Publisher count: 1
 ```
 
@@ -195,12 +203,19 @@ function updatePrice(bytes calldata update) public payable {
     require(msg.value >= fee, "Insufficient fee");
     (bytes memory payload, ) = pythLazer.verifyUpdate{value: fee}(update);
     
-    // Parse the payload directly (now accepts bytes memory)
-    PythLazerStructs.Update memory parsedUpdate = PythLazerLib.parseUpdateFromPayload(payload);
+    // Parse the payload using helper (converts memory to calldata)
+    PythLazerStructs.Update memory parsedUpdate = this.parsePayload(payload);
     
     // Process feeds...
 }
+
+// Helper to convert memory bytes to calldata for the library
+function parsePayload(bytes calldata payload) external pure returns (PythLazerStructs.Update memory) {
+    return PythLazerLib.parseUpdateFromPayload(payload);
+}
 ```
+
+> **Note:** The `parsePayload` helper function is needed because `verifyUpdate()` returns `bytes memory`, but `PythLazerLib.parseUpdateFromPayload()` expects `bytes calldata`. The external call pattern converts memory to calldata.
 
 ### Step 4: Extract price data using safe getters
 
