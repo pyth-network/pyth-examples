@@ -1,0 +1,20 @@
+{
+  "name": "hyperlinkgrid-pyth-entropy-example",
+  "version": "1.0.0",
+  "description": "Example of using Pyth Entropy for on-chain randomness",
+  "scripts": {
+    "test": "hardhat test",
+    "compile": "hardhat compile"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.22.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "@pythnetwork/entropy-sdk-solidity": "^1.5.0",
+    "dotenv": "^16.4.5"
+  }
+}
