@@ -33,8 +33,8 @@ contract ExampleReceiver {
             require(success, "Refund failed");
         }
 
-        // Step 2: Parse the payload directly (now accepts bytes memory)
-        PythLazerStructs.Update memory parsedUpdate = PythLazerLib.parseUpdateFromPayload(payload);
+        // Step 2: Parse the payload using the helper function (converts memory to calldata)
+        PythLazerStructs.Update memory parsedUpdate = this.parsePayload(payload);
 
         console.log("Timestamp: %d", parsedUpdate.timestamp);
         console.log("Channel: %d", uint8(parsedUpdate.channel));
@@ -51,15 +51,13 @@ contract ExampleReceiver {
             // Use hasPrice/getPrice pattern to safely extract price
             if (PythLazerLib.hasPrice(feed)) {
                 int64 price = PythLazerLib.getPrice(feed);
-                console.log("Price:");
-                console.logInt(price);
+                console.log("Price:", int256(price));
             }
 
             // Use hasExponent/getExponent pattern to get decimal places
             if (PythLazerLib.hasExponent(feed)) {
                 int16 exponent = PythLazerLib.getExponent(feed);
-                console.log("Exponent:");
-                console.logInt(exponent);
+                console.log("Exponent:", int256(exponent));
             }
 
             // Use hasPublisherCount/getPublisherCount pattern for data quality
@@ -77,16 +75,19 @@ contract ExampleReceiver {
             // Use hasBestBidPrice/getBestBidPrice pattern for bid price
             if (PythLazerLib.hasBestBidPrice(feed)) {
                 int64 bestBidPrice = PythLazerLib.getBestBidPrice(feed);
-                console.log("Best bid price:");
-                console.logInt(bestBidPrice);
+                console.log("Best bid price:", int256(bestBidPrice));
             }
 
             // Use hasBestAskPrice/getBestAskPrice pattern for ask price
             if (PythLazerLib.hasBestAskPrice(feed)) {
                 int64 bestAskPrice = PythLazerLib.getBestAskPrice(feed);
-                console.log("Best ask price:");
-                console.logInt(bestAskPrice);
+                console.log("Best ask price:", int256(bestAskPrice));
             }
         }
+    }
+
+    /// @notice Helper to convert memory bytes to calldata for the library
+    function parsePayload(bytes calldata payload) external pure returns (PythLazerStructs.Update memory) {
+        return PythLazerLib.parseUpdateFromPayload(payload);
     }
 }

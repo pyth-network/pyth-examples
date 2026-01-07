@@ -121,10 +121,8 @@ Timestamp: 1738270008001000
 Channel: 1
 Number of feeds: 1
 --- Feed ID: 6 ---
-Price:
-100000000
-Exponent:
--8
+Price: 100000000
+Exponent: -8
 Publisher count: 1
 ```
 
