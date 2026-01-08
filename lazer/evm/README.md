@@ -4,7 +4,9 @@ This directory contains Solidity smart contract examples demonstrating how to in
 
 ## What is Pyth Lazer?
 
-Pyth Lazer is a high-performance, low-latency price feed service that provides real-time financial market data to blockchain applications. It supports multiple blockchain networks and offers both JSON and binary message formats for optimal performance.
+Pyth Lazer is a high-performance, low-latency price feed protocol that provides real-time financial market data to blockchain applications. Unlike traditional pull-based oracles, Pyth Lazer uses ECDSA signatures for fast verification and delivers sub-second price updates via WebSocket streams.
+
+Key features of Pyth Lazer include support for multiple blockchain networks, a tri-state property system that distinguishes between present values, applicable but missing values, and not applicable properties, and support for various price feed properties including price, confidence, bid/ask prices, funding rates, and market session information.
 
 ## Prerequisites
 
@@ -30,130 +32,214 @@ Before running these examples, make sure you have the following installed:
    forge build
    ```
 
+## Contract Architecture
+
+The example uses three main components from the Pyth Lazer SDK:
+
+**PythLazer.sol** is the main contract that verifies ECDSA signatures from trusted signers. It manages trusted signer keys with expiration times and collects verification fees for each update.
+
+**PythLazerLib.sol** is a library that provides parsing functions for Lazer payloads. It includes both low-level parsing functions like `parsePayloadHeader()` and `parseFeedHeader()`, as well as a high-level `parseUpdateFromPayload()` function that returns a structured `Update` object.
+
+**PythLazerStructs.sol** defines the data structures used by the library, including the `Update` struct containing timestamp, channel, and feeds array, the `Feed` struct with all price properties and a tri-state map, and enums for `Channel`, `PriceFeedProperty`, `PropertyState`, and `MarketSession`.
+
 ## Examples
 
-### 1. ExampleReceiver Contract (`src/ExampleReceiver.sol`)
-Demonstrates how to receive and process Pyth Lazer price updates in a smart contract.
+### ExampleReceiver Contract (`src/ExampleReceiver.sol`)
 
-**What it does:**
-- Verifies Pyth Lazer signatures on-chain
-- Parses price feed payloads to extract price data
+This contract demonstrates how to receive, parse, and log Pyth Lazer price updates using the high-level struct-based parsing and the `PythLazerLib` helper methods.
+
+**Key Features:**
+- Verifies Pyth Lazer signatures on-chain via the PythLazer contract
+- Uses `parseUpdateFromPayload()` for clean, structured parsing
+- Demonstrates the `hasX()`/`getX()` pattern to safely extract price feed properties
 - Handles verification fees and refunds excess payments
-- Extracts multiple price feed properties (price, timestamps, exponents, etc.)
-- Filters updates by feed ID and timestamp
+- Logs all parsed price data for demonstration
 
-**Key Functions:**
+**Main Function:**
 ```solidity
 function updatePrice(bytes calldata update) public payable
 ```
 
-**How to run the test:**
-```bash
-forge test -v
+This function performs the following steps:
+1. Pays the verification fee to PythLazer and verifies the signature
+2. Parses the payload into a structured `Update` object
+3. Iterates through all feeds and logs their properties
+4. Uses safe getter functions like `hasPrice()` and `getPrice()` to extract values
+
+**Using PythLazerLib Helper Methods:**
+
+The contract demonstrates the recommended pattern for safely extracting feed properties:
+
+```solidity
+// Use hasPrice/getPrice pattern to safely extract price
+if (PythLazerLib.hasPrice(feed)) {
+    int64 price = PythLazerLib.getPrice(feed);
+}
+
+// Use hasExponent/getExponent pattern to get decimal places
+if (PythLazerLib.hasExponent(feed)) {
+    int16 exponent = PythLazerLib.getExponent(feed);
+}
+
+// Use hasPublisherCount/getPublisherCount pattern for data quality
+if (PythLazerLib.hasPublisherCount(feed)) {
+    uint16 publisherCount = PythLazerLib.getPublisherCount(feed);
+}
+
+// Use hasConfidence/getConfidence pattern for confidence interval
+if (PythLazerLib.hasConfidence(feed)) {
+    uint64 confidence = PythLazerLib.getConfidence(feed);
+}
+
+// Use hasBestBidPrice/getBestBidPrice pattern for bid price
+if (PythLazerLib.hasBestBidPrice(feed)) {
+    int64 bestBidPrice = PythLazerLib.getBestBidPrice(feed);
+}
+
+// Use hasBestAskPrice/getBestAskPrice pattern for ask price
+if (PythLazerLib.hasBestAskPrice(feed)) {
+    int64 bestAskPrice = PythLazerLib.getBestAskPrice(feed);
+}
 ```
 
-### 2. Test Suite (`test/ExampleReceiver.t.sol`)
-Comprehensive test demonstrating the contract functionality with real price data.
+### Test Suite (`test/ExampleReceiver.t.sol`)
 
-**What it does:**
-- Sets up a PythLazer contract with trusted signer
-- Creates and funds test accounts
-- Submits a price update with verification fee
-- Validates parsed price data and fee handling
+Tests demonstrating the contract functionality with real signed price data.
+
+**Test Cases:**
+- `test_updatePrice_parseAndLog()` - Tests parsing and logging price data
+- `test_revert_insufficientFee()` - Verifies fee requirement
 
 **How to run:**
 ```bash
-forge test -v
+forge test -vvv
 ```
 
 **Expected output:**
-- **Timestamp**: `1738270008001000` (microseconds since Unix epoch)
-- **Price**: `100000000` (raw price value)  
-- **Exponent**: `-8` (price = 100000000 × 10^-8 = $1.00)
-- **Publisher Count**: `1`
+```
+Timestamp: 1738270008001000
+Channel: 1
+Number of feeds: 1
+--- Feed ID: 6 ---
+Price: 100000000
+Exponent: -8
+Publisher count: 1
+```
 
 ## Understanding Price Data
 
-Pyth Lazer prices use a fixed-point representation:
-```
-actual_price = price × 10^exponent
-```
+Pyth Lazer prices use a fixed-point representation where the actual price equals the raw price multiplied by 10 raised to the power of the exponent.
 
 **Example from the test:**
 - Raw price: `100000000`
 - Exponent: `-8`
 - Actual price: `100000000 × 10^-8 = $1.00`
 
-### Feed Properties
+### Available Feed Properties
 
-The contract can extract multiple price feed properties:
+The `Feed` struct can contain the following properties, each with a tri-state indicating whether it's present, applicable but missing, or not applicable:
 
-- **Price**: Main price value
-- **BestBidPrice**: Highest bid price in the market
-- **BestAskPrice**: Lowest ask price in the market
-- **Exponent**: Decimal exponent for price normalization
-- **PublisherCount**: Number of publishers contributing to this price
+| Property | Type | Description |
+|----------|------|-------------|
+| Price | int64 | Main price value |
+| BestBidPrice | int64 | Highest bid price in the market |
+| BestAskPrice | int64 | Lowest ask price in the market |
+| Exponent | int16 | Decimal exponent for price normalization |
+| PublisherCount | uint16 | Number of publishers contributing to this price |
+| Confidence | uint64 | Confidence interval (1 standard deviation) |
+| FundingRate | int64 | Perpetual funding rate (optional) |
+| FundingTimestamp | uint64 | Timestamp of funding rate (optional) |
+| FundingRateInterval | uint64 | Funding rate interval in seconds (optional) |
+| MarketSession | enum | Market session status (Regular, PreMarket, PostMarket, OverNight, Closed) |
+
+### Tri-State Property System
+
+Each property in a feed has a tri-state that indicates its availability:
+
+- **Present**: The property has a valid value for this timestamp
+- **ApplicableButMissing**: The property was requested but no value is available
+- **NotApplicable**: The property was not included in this update
+
+Use the `has*()` functions (e.g., `hasPrice()`, `hasExponent()`) to check if a property is present before accessing it with the `get*()` functions.
 
 ## Integration Guide
 
 To integrate Pyth Lazer into your own contract:
 
-1. **Import the required libraries:**
-   ```solidity
-   import {PythLazer} from "pyth-lazer/PythLazer.sol";
-   import {PythLazerLib} from "pyth-lazer/PythLazerLib.sol";
-   ```
+### Step 1: Import the required contracts
 
-2. **Set up the PythLazer contract:**
-   ```solidity
-   PythLazer pythLazer;
-   constructor(address pythLazerAddress) {
-       pythLazer = PythLazer(pythLazerAddress);
-   }
-   ```
+```solidity
+import {PythLazer} from "pyth-lazer/PythLazer.sol";
+import {PythLazerLib} from "pyth-lazer/PythLazerLib.sol";
+import {PythLazerStructs} from "pyth-lazer/PythLazerStructs.sol";
+```
 
-3. **Handle verification fees:**
-   ```solidity
-   uint256 verification_fee = pythLazer.verification_fee();
-   require(msg.value >= verification_fee, "Insufficient fee");
-   ```
+### Step 2: Store the PythLazer contract reference
 
-4. **Verify and parse updates:**
-   ```solidity
-   (bytes memory payload,) = pythLazer.verifyUpdate{value: verification_fee}(update);
-   // Parse payload using PythLazerLib functions
-   ```
+```solidity
+PythLazer public pythLazer;
 
-## Configuration
+constructor(address pythLazerAddress) {
+    pythLazer = PythLazer(pythLazerAddress);
+}
+```
 
-### Feed IDs
+### Step 3: Verify updates and parse the payload
 
-The example filters for feed ID `6`. To use different feeds:
+```solidity
+function updatePrice(bytes calldata update) public payable {
+    // Pay fee and verify signature
+    uint256 fee = pythLazer.verification_fee();
+    require(msg.value >= fee, "Insufficient fee");
+    (bytes memory payload, ) = pythLazer.verifyUpdate{value: fee}(update);
+    
+    // Parse the payload directly (now accepts bytes memory)
+    PythLazerStructs.Update memory parsedUpdate = PythLazerLib.parseUpdateFromPayload(payload);
+    
+    // Process feeds...
+}
+```
 
-1. Update the feed ID check in `updatePrice()`:
-   ```solidity
-   if (feedId == YOUR_FEED_ID && _timestamp > timestamp) {
-       // Update logic
-   }
-   ```
+### Step 4: Extract price data using safe getters
 
-2. Obtain feed IDs from the Pyth Lazer documentation or API
+```solidity
+for (uint256 i = 0; i < parsedUpdate.feeds.length; i++) {
+    PythLazerStructs.Feed memory feed = parsedUpdate.feeds[i];
+    uint32 feedId = PythLazerLib.getFeedId(feed);
+    
+    if (PythLazerLib.hasPrice(feed)) {
+        int64 price = PythLazerLib.getPrice(feed);
+    }
+    if (PythLazerLib.hasExponent(feed)) {
+        int16 exponent = PythLazerLib.getExponent(feed);
+    }
+    // ... extract other properties as needed
+}
+```
+
+## Deployed Contract Addresses
+
+For production deployments, use the official PythLazer contract addresses. You can find the latest addresses in the [Pyth Network documentation](https://docs.pyth.network/price-feeds/contract-addresses).
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **Build Errors**: Make sure all dependencies are installed with `forge install`
+**Build Errors**: Make sure all dependencies are installed with `forge install`. If you see missing file errors, try updating the pyth-crosschain submodule:
+```bash
+cd lib/pyth-crosschain && git fetch origin && git checkout origin/main
+```
 
-2. **Test Failures**: Ensure you're using a compatible Foundry version and all submodules are properly initialized
+**InvalidInitialization Error in Tests**: The PythLazer contract uses OpenZeppelin's upgradeable pattern. Deploy it via a TransparentUpgradeableProxy as shown in the test file.
 
-3. **Gas Issues**: The contract includes gas optimization for parsing multiple feed properties
+**Gas Optimization**: For gas-sensitive applications, consider using the low-level parsing functions (`parsePayloadHeader`, `parseFeedHeader`, `parseFeedProperty`) to parse only the properties you need.
 
 ## Resources
 
 - [Pyth Network Documentation](https://docs.pyth.network/)
+- [Pyth Lazer Documentation](https://docs.pyth.network/lazer)
 - [Foundry Book](https://book.getfoundry.sh/)
-- [Pyth Lazer SDK](https://github.com/pyth-network/pyth-crosschain)
+- [Pyth Crosschain Repository](https://github.com/pyth-network/pyth-crosschain)
 
 ## License
 
