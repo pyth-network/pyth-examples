@@ -1,0 +1,14 @@
+{
+  "name": "@0xslither/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "../node_modules/.pnpm/node_modules/.bin/tsc",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}
+
