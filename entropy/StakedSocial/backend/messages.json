@@ -1,0 +1,434 @@
+{
+  "efcf9174bc64e0394e834dbe8d3bab2f": [
+    {
+      "id": "311f51ef-a330-4bfa-a7db-911ebe0a70ce",
+      "chat_id": "efcf9174bc64e0394e834dbe8d3bab2f",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wassup",
+      "timestamp": "2025-11-23T02:39:12.609100",
+      "status": "sent"
+    },
+    {
+      "id": "66e3578c-7591-4a59-9b66-ce5845d309d6",
+      "chat_id": "efcf9174bc64e0394e834dbe8d3bab2f",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "hey",
+      "timestamp": "2025-11-23T02:39:16.141027",
+      "status": "sent"
+    },
+    {
+      "id": "2d3fdeea-b9c1-4c92-8629-b6a1d3bf9a6b",
+      "chat_id": "efcf9174bc64e0394e834dbe8d3bab2f",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "e",
+      "timestamp": "2025-11-23T02:39:54.377052",
+      "status": "sent"
+    }
+  ],
+  "d7f041e777c98badfcba738278615bb1": [
+    {
+      "id": "67c62ac1-8079-4e63-b178-409454b0f5aa",
+      "chat_id": "d7f041e777c98badfcba738278615bb1",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "heh",
+      "timestamp": "2025-11-23T02:39:34.457922",
+      "status": "sent"
+    },
+    {
+      "id": "7b439e59-9209-4652-85a6-36bef9524eb4",
+      "chat_id": "d7f041e777c98badfcba738278615bb1",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "e",
+      "timestamp": "2025-11-23T02:39:59.200806",
+      "status": "sent"
+    }
+  ],
+  "6e08940237f3b26d718200dca62e482e": [
+    {
+      "id": "ed4eccc1-bc0f-494a-bdfe-8bd1098d51b5",
+      "chat_id": "6e08940237f3b26d718200dca62e482e",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "he",
+      "timestamp": "2025-11-23T02:43:22.673925",
+      "status": "sent"
+    },
+    {
+      "id": "cfd0d2e5-b54d-450c-a1ab-021aee9e73fb",
+      "chat_id": "6e08940237f3b26d718200dca62e482e",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "hey",
+      "timestamp": "2025-11-23T02:43:28.239948",
+      "status": "sent"
+    }
+  ],
+  "cc952e9caeffc8fbf74a8ff2ab7bf565": [
+    {
+      "id": "824f11a2-bb09-471c-922a-3b5c63674d81",
+      "chat_id": "cc952e9caeffc8fbf74a8ff2ab7bf565",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "hwy",
+      "timestamp": "2025-11-23T02:44:04.424836",
+      "status": "sent"
+    }
+  ],
+  "105434d2461e4cdb1e8b0f4656213c83": [
+    {
+      "id": "43fade97-6970-4221-b7da-dec97c645b13",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "hey",
+      "timestamp": "2025-11-23T02:45:38.276366",
+      "status": "sent"
+    },
+    {
+      "id": "6f25aa93-2664-4b71-9416-1fd9e591e75f",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wassup",
+      "timestamp": "2025-11-23T02:45:43.908845",
+      "status": "sent"
+    },
+    {
+      "id": "4c3ecdeb-64f2-4f72-9bf8-78169f1afe3d",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "cool!",
+      "timestamp": "2025-11-23T02:46:52.345681",
+      "status": "sent"
+    },
+    {
+      "id": "4d718063-0c35-42bb-8a4f-2eb69ea04d11",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "nice",
+      "timestamp": "2025-11-23T02:46:56.735859",
+      "status": "sent"
+    },
+    {
+      "id": "b1dfc3cb-b949-48d2-9b3b-2220790b354f",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "ok sure",
+      "timestamp": "2025-11-23T02:47:00.198213",
+      "status": "sent"
+    },
+    {
+      "id": "47f45d04-cbc7-4d9c-b760-d2c9fa804433",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "hey",
+      "timestamp": "2025-11-23T02:59:37.132979",
+      "status": "sent"
+    },
+    {
+      "id": "c268a2c5-97c5-4223-bf2c-7a747072bdd1",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wassup",
+      "timestamp": "2025-11-23T02:59:51.092168",
+      "status": "sent"
+    },
+    {
+      "id": "6e11ab00-fcb8-449f-97c6-b9ab8871c123",
+      "chat_id": "105434d2461e4cdb1e8b0f4656213c83",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wassup",
+      "timestamp": "2025-11-23T03:00:01.808209",
+      "status": "sent"
+    }
+  ],
+  "f9d92b2c9a2eb4949ca4f81fbb87f041": [
+    {
+      "id": "b27c45b7-fb1c-469d-bffd-cd96497a60f9",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wassup",
+      "timestamp": "2025-11-23T03:01:00.636144",
+      "status": "sent"
+    },
+    {
+      "id": "11d9208b-a992-48d3-abe3-85788a4c18e1",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "yo",
+      "timestamp": "2025-11-23T03:05:18.357471",
+      "status": "sent"
+    },
+    {
+      "id": "eb6ce235-827b-45b3-868e-c8804de5e0cc",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "yo",
+      "timestamp": "2025-11-23T03:05:27.107836",
+      "status": "sent"
+    },
+    {
+      "id": "1bb447a0-4f6e-48a3-861e-7cd1207edc39",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "HEY",
+      "timestamp": "2025-11-23T03:05:32.123255",
+      "status": "sent"
+    },
+    {
+      "id": "f457059c-b89c-478b-bbbe-6ae4b0c426bb",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "wassup",
+      "timestamp": "2025-11-23T03:05:36.963500",
+      "status": "sent"
+    },
+    {
+      "id": "5ae01a00-5c30-4491-8a32-438d33865e59",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "e",
+      "timestamp": "2025-11-23T03:09:25.550900",
+      "status": "sent"
+    },
+    {
+      "id": "7f9ae0e1-b901-41b9-8148-1f09772b39a1",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "w",
+      "timestamp": "2025-11-23T03:09:38.384051",
+      "status": "sent"
+    },
+    {
+      "id": "b43a17fe-7cff-430d-a97b-45c45f62917b",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "e",
+      "timestamp": "2025-11-23T03:09:43.032362",
+      "status": "sent"
+    },
+    {
+      "id": "43b17d32-e453-443b-93c7-ece6e9597a02",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "e",
+      "timestamp": "2025-11-23T03:11:18.888154",
+      "status": "sent"
+    },
+    {
+      "id": "1a962dab-5203-430e-8cba-2ad9120764a4",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "e",
+      "timestamp": "2025-11-23T03:11:21.136019",
+      "status": "sent"
+    },
+    {
+      "id": "d3a031a4-63f8-4312-ad10-e8a861937f3b",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "e",
+      "timestamp": "2025-11-23T03:11:25.931716",
+      "status": "sent"
+    },
+    {
+      "id": "e0e6f356-f250-4dec-9e23-51294caef912",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "RAH",
+      "timestamp": "2025-11-23T03:11:34.288174",
+      "status": "sent"
+    },
+    {
+      "id": "6fcf2b91-bfab-4029-bd5a-52225106a7c1",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "e",
+      "timestamp": "2025-11-23T03:12:20.971638",
+      "status": "sent"
+    },
+    {
+      "id": "2721483b-9592-437b-87f8-c843b6d7dc23",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "HEHE",
+      "timestamp": "2025-11-23T03:13:11.730507",
+      "status": "sent"
+    },
+    {
+      "id": "efad4d83-016e-40ba-9a9f-620c1520c838",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "sip",
+      "timestamp": "2025-11-23T03:14:49.899164",
+      "status": "sent"
+    },
+    {
+      "id": "e9c04c37-ef07-4a83-8a86-4921f3e93c46",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "was",
+      "timestamp": "2025-11-23T03:16:36.547759",
+      "status": "sent"
+    },
+    {
+      "id": "96b30772-691d-444b-bdf7-24da3ae245ba",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "hey",
+      "timestamp": "2025-11-23T03:16:43.163445",
+      "status": "sent"
+    },
+    {
+      "id": "59020d9f-259f-44dd-b0bc-f5af320c6bab",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "was",
+      "timestamp": "2025-11-23T03:16:47.474091",
+      "status": "sent"
+    },
+    {
+      "id": "dd3eeae2-3753-4fd3-a7c6-05f8f2f5af75",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "efeklnetierhtioerhtoehitoerhitoehiteriotheroitheio",
+      "timestamp": "2025-11-23T03:31:42.383741",
+      "status": "sent"
+    },
+    {
+      "id": "668e1659-e535-4bd5-b85a-1479f6a36c89",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "wlkweiorweuoihrtweuiohtoeuiwhtowehtowehreowhrowehiowerhriowehrow]",
+      "timestamp": "2025-11-23T03:31:51.606193",
+      "status": "sent"
+    },
+    {
+      "id": "d2ed8dbd-31a7-4515-972f-ca415655660c",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "hey",
+      "timestamp": "2025-11-23T05:51:49.631376",
+      "status": "sent"
+    },
+    {
+      "id": "7bf190db-b33f-4857-80d4-ba66d75d46ef",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "hey",
+      "timestamp": "2025-11-23T05:57:51.431819",
+      "status": "sent"
+    },
+    {
+      "id": "bb2898ea-dfa4-4f78-92dd-cbd69c52c42a",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "e",
+      "timestamp": "2025-11-23T06:19:03.321252",
+      "status": "sent"
+    },
+    {
+      "id": "35e0f112-0d4d-42bd-81df-be6e7764089b",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "Haha!",
+      "timestamp": "2025-11-23T08:05:25.898651",
+      "status": "sent"
+    },
+    {
+      "id": "b5e532c1-ac6e-42ef-a8b4-24c8cbb2ed7d",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "username": "pulkith",
+      "wallet": "0xE627CEb73a02d39CeD519c496Bf8C81fe6317005",
+      "content": "Ooh I have a bet!",
+      "timestamp": "2025-11-23T08:05:57.830939",
+      "status": "sent"
+    },
+    {
+      "id": "67c8014b-7081-4969-948e-9ff8c8e61286",
+      "chat_id": "f9d92b2c9a2eb4949ca4f81fbb87f041",
+      "user_id": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "username": "pragya",
+      "wallet": "0x65C88500a558C7f4F626C40D4a0487Bf510B3206",
+      "content": "me too!",
+      "timestamp": "2025-11-23T08:07:22.909041",
+      "status": "sent"
+    }
+  ]
+}
