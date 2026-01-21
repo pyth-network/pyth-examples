@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🔧 WhipHash Extension Test Page</h1>
+    
+    <div class="test-section">
+        <h2>1. Test Extension Button</h2>
+        <p>Click this button to test if the extension can open tabs:</p>
+        <button onclick="testExtension()">Test Extension</button>
+        <div id="extension-status" class="status info">Click the button to test...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test URLs</h2>
+        <p>Test if these URLs are accessible:</p>
+        <button onclick="testUrl('http://localhost:3000')">Test localhost:3000</button>
+        <button onclick="testUrl('http://127.0.0.1:3000')">Test 127.0.0.1:3000</button>
+        <button onclick="testUrl('http://localhost:3000/test')">Test /test page</button>
+        <div id="url-status" class="status info">Click buttons to test URLs...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Manual Links</h2>
+        <p>Try opening these links manually:</p>
+        <a href="http://localhost:3000" target="_blank">Open localhost:3000</a><br>
+        <a href="http://127.0.0.1:3000" target="_blank">Open 127.0.0.1:3000</a><br>
+        <a href="http://localhost:3000/test" target="_blank">Open /test page</a>
+    </div>
+
+    <script>
+        function testExtension() {
+            const status = document.getElementById('extension-status');
+            
+            if (typeof chrome !== 'undefined' && chrome.tabs) {
+                chrome.tabs.create({ url: 'http://localhost:3000' }, (tab) => {
+                    if (chrome.runtime.lastError) {
+                        status.className = 'status error';
+                        status.textContent = '❌ Extension Error: ' + chrome.runtime.lastError.message;
+                    } else {
+                        status.className = 'status success';
+                        status.textContent = '✅ Extension works! Tab opened successfully.';
+                    }
+                });
+            } else {
+                status.className = 'status error';
+                status.textContent = '❌ Chrome extension APIs not available. This page must be opened from the extension.';
+            }
+        }
+
+        async function testUrl(url) {
+            const status = document.getElementById('url-status');
+            status.className = 'status info';
+            status.textContent = '🔄 Testing ' + url + '...';
+            
+            try {
+                const response = await fetch(url, { mode: 'no-cors' });
+                status.className = 'status success';
+                status.textContent = '✅ ' + url + ' is accessible!';
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ ' + url + ' failed: ' + error.message;
+            }
+        }
+
+        // Log debug info
+        console.log('🔧 Test page loaded');
+        console.log('🔧 Chrome APIs available:', typeof chrome !== 'undefined');
+        console.log('🔧 User agent:', navigator.userAgent);
+    </script>
+</body>
+</html>
