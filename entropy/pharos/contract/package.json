@@ -1,0 +1,22 @@
+{
+  "name": "pharos-contract",
+  "version": "0.1.0",
+  "description": "Smart contracts for Pharos Raffle System",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat ignition deploy ignition/modules/App.ts --network blast-sepolia",
+    "deploy:local": "hardhat ignition deploy ignition/modules/App.ts --network localhost",
+    "test": "hardhat test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@pythnetwork/entropy-sdk-solidity": "^1.3.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.4"
+  },
+  "dependencies": {
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.4"
+  }
+}
+
