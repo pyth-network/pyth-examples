@@ -1,0 +1,11 @@
+torch>=2.0.0
+diffusers>=0.21.0
+transformers>=4.30.0
+scipy>=1.10.0
+flask>=2.3.0
+flask-cors>=4.0.0
+pillow>=9.5.0
+accelerate>=0.20.0
+# xformers>=0.0.20  # Commented out due to macOS compatibility issues
+pymongo
+python-dotenv
