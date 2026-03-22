@@ -107,7 +107,9 @@ factura_ya/
 ### Prerequisites
 
 - [Aiken](https://aiken-lang.org/) v1.1.21+
-- Node.js 20+ (required by Lucid Evolution)
+- Node.js 20+ (`nvm use 20`)
+- A CIP-30 wallet extension (Eternl, Nami, or Lace) set to **PreProd** testnet
+- Test ADA from the [Cardano faucet](https://docs.cardano.org/cardano-testnets/tools/faucet/)
 - Pyth API key (from hackathon organizers)
 
 ### Quick Start
