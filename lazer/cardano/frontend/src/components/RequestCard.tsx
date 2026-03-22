@@ -59,7 +59,7 @@ export function RequestCard({
         </p>
       ) : null}
 
-      {role === 'user' && isClaimable ? (
+      {role === 'applicant' && isClaimable ? (
         <button className="button button--primary" type="button" onClick={() => onClaim?.(request.id)}>
           Claim now
         </button>

@@ -27,7 +27,7 @@ function countByStatus(requests: PaymentRequest[], status: RequestStatus): numbe
 }
 
 export default function App(): JSX.Element {
-  const [role, setRole] = useState<Role>('user');
+  const [role, setRole] = useState<Role>('applicant');
   const [filter, setFilter] = useState<RequestFilter>('all');
   const wallet = useEternlWallet();
   const {
@@ -233,7 +233,7 @@ export default function App(): JSX.Element {
                 <strong>{formatAda(lockedAda)}</strong>
               </article>
             </section>
-            {role === 'user' ? (
+            {role === 'applicant' ? (
               <UserDashboard
                 requests={requests}
                 filter={filter}

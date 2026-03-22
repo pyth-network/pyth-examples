@@ -1,4 +1,4 @@
-export type Role = 'user' | 'sponsor';
+export type Role = 'applicant' | 'sponsor';
 
 export type RequestStatus = 'created' | 'ready_to_claim' | 'claimed' | 'cancelled';
 

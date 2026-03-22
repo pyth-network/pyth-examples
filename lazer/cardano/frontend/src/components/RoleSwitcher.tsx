@@ -10,10 +10,10 @@ export function RoleSwitcher({ value, onChange }: RoleSwitcherProps): JSX.Elemen
     <div className="role-switcher" role="tablist" aria-label="Role switcher">
       <button
         type="button"
-        className={`chip ${value === 'user' ? 'chip--active' : ''}`}
-        onClick={() => onChange('user')}
+        className={`chip ${value === 'applicant' ? 'chip--active' : ''}`}
+        onClick={() => onChange('applicant')}
       >
-        User
+        Applicant
       </button>
       <button
         type="button"

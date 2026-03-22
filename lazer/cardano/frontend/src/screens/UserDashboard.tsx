@@ -67,7 +67,7 @@ export function UserDashboard({
           <RequestList
             title="Requests"
             items={filteredRequests}
-            role="user"
+            role="applicant"
             adaUsd={adaUsd}
             emptyText="No requests in this state."
             embedded
