@@ -19,6 +19,7 @@ const PYTH_LAZER_WS_URL = "wss://pyth-lazer.dourolabs.app/v1/stream";
 export interface PythContext {
   stateUtxo: UTxO;
   withdrawScriptHash: string;
+  withdrawValidator: WithdrawalValidator;
   rewardAddress: string;
 }
 
@@ -52,7 +53,7 @@ export async function getPythContext(
   };
   const rewardAddress = validatorToRewardAddress(network, withdrawValidator);
 
-  return { stateUtxo, withdrawScriptHash, rewardAddress };
+  return { stateUtxo, withdrawScriptHash, withdrawValidator, rewardAddress };
 }
 
 /**

@@ -110,6 +110,7 @@ export async function buildUnlockTx(
     .newTx()
     .collectFrom([scriptUtxo], unlockRedeemer)
     .attach.SpendingValidator(params.validator)
+    .attach.WithdrawalValidator(pythCtx.withdrawValidator)
     .readFrom([pythCtx.stateUtxo])
     .withdraw(pythCtx.rewardAddress, 0n, withdrawRedeemer)
     // Explicit outputs — must satisfy the on-chain validator checks

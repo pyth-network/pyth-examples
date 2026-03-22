@@ -17,6 +17,10 @@
     "libsodium-sumo": "^0.8.2",
     "libsodium-wrappers-sumo": "^0.8.2"
   },
+  "overrides": {
+    "libsodium-wrappers-sumo": "^0.8.2",
+    "libsodium-sumo": "^0.8.2"
+  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
