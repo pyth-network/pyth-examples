@@ -1,0 +1,21 @@
+{
+  "name": "lazer-perps",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "open-position": "npx tsx src/open_position.ts",
+    "close-position": "npx tsx src/close_position.ts",
+    "liquidate": "npx tsx src/liquidate.ts",
+    "keeper": "npx tsx src/keeper.ts"
+  },
+  "dependencies": {
+    "@evolution-sdk/evolution": "^0.3.30",
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "@pythnetwork/pyth-lazer-sdk": "^5.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}

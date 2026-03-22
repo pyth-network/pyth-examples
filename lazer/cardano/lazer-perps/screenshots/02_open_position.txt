@@ -1,0 +1,19 @@
+
+> lazer-perps@1.0.0 open-position
+> npx tsx src/open_position.ts
+
+=== Open LONG 5x on XAUT/USD (Tether Gold) ===
+  Collateral: 100.00 ADA
+  Leverage cap: 10x
+
+1. Fetching price witness from Pyth Lazer...
+   Price: 452247704107 (exp: -8)
+   Payload: 151 bytes
+
+2. Building open position tx...
+3. Signing and submitting...
+   Tx: ccb967d2c1692a06fd293553ddce4d494718eebf81c25e647556b6e6fd343bb9
+   https://preprod.cardanoscan.io/transaction/ccb967d2c1692a06fd293553ddce4d494718eebf81c25e647556b6e6fd343bb9
+
+Waiting for confirmation...
+Position opened: LONG 5x XAUT/USD (Tether Gold) (100.00 ADA)
