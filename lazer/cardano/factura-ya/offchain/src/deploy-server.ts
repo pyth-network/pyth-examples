@@ -29,8 +29,8 @@ import * as CML from "@anastasia-labs/cardano-multiplatform-lib-nodejs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLUEPRINT_PATH = path.resolve(__dirname, "../../contracts/plutus.json");
-const WALLET_ADDRESS =
-  "addr_test1qpwmyvn3dkslusdhvq9lcae74qp7tn5qhnnzj4uc6dwjx7u64ztv4uur4qn0g8nekj2smva6xz2xj59vf0tc2gyy5u6sdhuckv";
+// Wallet address — set via env var or leave empty (CIP-30 provides it)
+const WALLET_ADDRESS = process.env.WALLET_ADDRESS || "";
 
 const blueprint = JSON.parse(fs.readFileSync(BLUEPRINT_PATH, "utf-8"));
 

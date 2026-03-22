@@ -18,8 +18,9 @@ import * as CML from "@anastasia-labs/cardano-multiplatform-lib-nodejs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLUEPRINT_PATH = path.resolve(__dirname, "../../contracts/plutus.json");
-const ADDR = "addr_test1qpwmyvn3dkslusdhvq9lcae74qp7tn5qhnnzj4uc6dwjx7u64ztv4uur4qn0g8nekj2smva6xz2xj59vf0tc2gyy5u6sdhuckv";
-const PKH = "5db232716da1fe41b7600bfc773ea003e5ce80bce6295798d35d237b";
+// Set via env: WALLET_ADDRESS=addr_test1q... npx tsx src/test-mint.ts
+const ADDR = process.env.WALLET_ADDRESS || "addr_test1qpwmyvn3dkslusdhvq9lcae74qp7tn5qhnnzj4uc6dwjx7u64ztv4uur4qn0g8nekj2smva6xz2xj59vf0tc2gyy5u6sdhuckv";
+const PKH = process.env.WALLET_PKH || "5db232716da1fe41b7600bfc773ea003e5ce80bce6295798d35d237b";
 
 async function main() {
   const bp = JSON.parse(fs.readFileSync(BLUEPRINT_PATH, "utf-8"));

@@ -23,7 +23,7 @@ const BLUEPRINT_PATH = path.resolve(__dirname, "../../contracts/plutus.json");
 const CONFIG_PATH = path.resolve(__dirname, "../deploy-config.json");
 
 const WALLET_ADDRESS =
-  "addr_test1qpwmyvn3dkslusdhvq9lcae74qp7tn5qhnnzj4uc6dwjx7u64ztv4uur4qn0g8nekj2smva6xz2xj59vf0tc2gyy5u6sdhuckv";
+  process.env.WALLET_ADDRESS || "";
 
 async function main() {
   const blueprint = JSON.parse(fs.readFileSync(BLUEPRINT_PATH, "utf-8"));
