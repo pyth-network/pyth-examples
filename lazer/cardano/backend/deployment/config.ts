@@ -34,6 +34,6 @@ export async function initLucid(config: Config): Promise<LucidEvolution> {
     new Blockfrost(config.blockfrostUrl, config.blockfrostProjectId),
     config.network,
   );
-  lucid.selectWallet.fromPrivateKey(config.sponsorSeedPhrase);
+  lucid.selectWallet.fromSeed(config.sponsorSeedPhrase);
   return lucid;
 }
