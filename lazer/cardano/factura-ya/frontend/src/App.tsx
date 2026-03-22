@@ -3,9 +3,11 @@ import { Marketplace } from "./components/Marketplace.tsx";
 import { RegisterInvoice } from "./components/RegisterInvoice.tsx";
 import { PriceDisplay } from "./components/PriceDisplay.tsx";
 import { WalletConnect } from "./components/WalletConnect.tsx";
+import { DemoGuide } from "./components/DemoGuide.tsx";
+import { Deploy } from "./components/Deploy.tsx";
 import type { ConnectedWallet } from "./lib/wallet.ts";
 
-type Tab = "marketplace" | "register";
+type Tab = "marketplace" | "register" | "deploy";
 
 export function App() {
   const [tab, setTab] = useState<Tab>("marketplace");
@@ -39,11 +41,21 @@ export function App() {
           >
             Register Invoice
           </button>
+          <button
+            className={tab === "deploy" ? "active" : ""}
+            onClick={() => setTab("deploy")}
+          >
+            Deploy
+          </button>
         </nav>
       </header>
+
+      <DemoGuide wallet={wallet} activeTab={tab} />
+
       <main>
         {tab === "marketplace" && <Marketplace />}
         {tab === "register" && <RegisterInvoice wallet={wallet} />}
+        {tab === "deploy" && <Deploy />}
       </main>
       <footer>
         <p>

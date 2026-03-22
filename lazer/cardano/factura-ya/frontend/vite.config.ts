@@ -10,6 +10,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      "/koios": {
+        target: "https://preprod.koios.rest",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/koios/, ""),
+      },
     },
   },
 });

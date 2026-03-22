@@ -152,21 +152,6 @@ function tryParseListingDatum(
   }
 }
 
-// --- Manual seeding (for demo) ---
-
-app.post("/invoices/seed", (req, res) => {
-  const invoice = req.body as IndexedInvoice;
-  if (!invoice.invoiceId) {
-    res.status(400).json({ error: "Missing invoiceId" });
-    return;
-  }
-  invoices.set(invoice.invoiceId, {
-    ...invoice,
-    updatedAt: Date.now(),
-  });
-  res.status(201).json({ ok: true, invoiceId: invoice.invoiceId });
-});
-
 // --- Start ---
 
 app.listen(PORT, () => {

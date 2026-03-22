@@ -37,13 +37,16 @@ export function RegisterInvoice({ wallet }: Props) {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await registerInvoice({
-        amountArs: Number(form.amountArs),
-        dueDateDays: Number(form.dueDateDays),
-        debtorName: form.debtorName,
-        debtorContact: form.debtorContact,
-        sellerAddress: wallet.address,
-      });
+      const result = await registerInvoice(
+        {
+          amountArs: Number(form.amountArs),
+          dueDateDays: Number(form.dueDateDays),
+          debtorName: form.debtorName,
+          debtorContact: form.debtorContact,
+          sellerAddress: wallet.address,
+        },
+        wallet.api,
+      );
       setTxResult(result);
       setSubmitted(true);
     } catch (err) {

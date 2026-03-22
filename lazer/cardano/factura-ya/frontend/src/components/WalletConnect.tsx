@@ -50,7 +50,7 @@ export function WalletConnect({ onConnect, onDisconnect, connected }: Props) {
         <div className="wallet-info">
           <img src={connected.info.icon} alt="" className="wallet-icon" />
           <span className="wallet-address">
-            {shortenAddress(connected.address)}
+            {shortenAddress(connected.addressBech32)}
           </span>
           <span className="wallet-balance">
             {lovelaceToAda(connected.balanceLovelace)} ADA
