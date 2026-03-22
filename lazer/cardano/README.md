@@ -21,4 +21,14 @@ Catalyst and other rounds of funding could optionally use this system to reduce 
 ## Codebase overview
 The project is divided into 2 main sections: backend and frontend. 
 * The **frontend** connects the user with their Eternl wallet and makes requests to Pyth off-chain API to track the current ADA and USD value in the market. It also handles user interactions and request to the backend for creating a Task, completing a Task and retrieving money if the task is aborted. It is divided in 2 screens "Applicant" and "Sponsor" where each role has a different view. 
-* The **backend** provides 3 endpoints for the 3 actions, which in this context correspond to **lock**, **unlock** and **cancel** scripts. Each of them handles the deploy of a different transaction in cardano, using the **Evolution** framework. It also contains the Aiken code that will regulate the **unlocking** of funds. It also contains a battery of Aiken and Typescript tests 
+* The **backend** provides 3 endpoints for the 3 actions, which in this context correspond to **lock**, **unlock** and **cancel** scripts. Each of them handles the deploy of a different transaction in cardano, using the **Evolution** framework. It also contains the Aiken code that will regulate the **unlocking** of funds. It also contains a battery of Aiken and Typescript tests. 
+
+## Try it yourself
+* Go to the ```frontend``` directory, run ```npm i``` and run the frontend with ```npm run dev```.
+* Go to the ```backend``` directory, run ```npm i``` and run the server with ```npm run api```.
+* Go to the ```backend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials.
+* To run the tests, run `aiken check` for the Aiken tests and `npm run test` for the backend tests.
+
+Note that the project must be run in Google Chrome, or any browser that supports Eternl Wallet extension (but it was tested in Chrome).  
+
+## Frontend overview
