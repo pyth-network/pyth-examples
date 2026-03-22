@@ -78,14 +78,13 @@ export function Deploy() {
           Validators verified on PreProd! Wallet connected with {status?.utxoCount} UTxOs.
         </p>
       ) : serverUp ? (
-        <a
-          href="http://localhost:3002"
-          target="_blank"
+          <button
           className="submit-btn"
-          style={{ display: "inline-block", textDecoration: "none", marginTop: "1rem" }}
+          style={{ marginTop: "1rem" }}
+          onClick={() => window.open("http://localhost:3002", "_blank")}
         >
           Open Deploy Page
-        </a>
+        </button>
       ) : (
         <p style={{ color: "#888", marginTop: "1rem", fontSize: "0.85rem" }}>
           Start the deploy server first.

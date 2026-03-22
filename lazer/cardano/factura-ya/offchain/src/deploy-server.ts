@@ -447,8 +447,6 @@ function signingPage(
 
         print("\\nDone! Closing in 3 seconds...", "ok");
         setTimeout(() => window.close(), 3000);
-        // Auto-close disabled — close manually or click:
-        print("\\nYou can close this tab.", "info");
 
       } catch(e) {
         print("Error: " + e.message, "err");
@@ -707,8 +705,6 @@ function registerPage(
 
         print("\\nDone! Closing in 3 seconds...", "ok");
         setTimeout(() => window.close(), 3000);
-        // Auto-close disabled — close manually or click:
-        print("\\nYou can close this tab.", "info");
 
       } catch(e) {
         print("Error: " + e.message, "err");
