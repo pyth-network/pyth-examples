@@ -31,6 +31,37 @@ The project integrates Pyth price feeds at two levels:
 
 Inspired by DeFi lending protocols: a user locks RWA-backed collateral and can only mint/borrow when the oracle price confirms the collateral value is sufficient. Closing a position is always allowed regardless of price.
 
+## Architecture
+
+```
+Pyth Lazer Server                    Cardano PreProd
+     │                                     │
+     │  WebSocket/HTTP                     │
+     │  "dame precio del RWA"              │
+     ▼                                     │
+ [bytes firmados del RWA]                  │
+     │                                     │
+     │     src/submit_tx_lazer_rwa.ts      │
+     │              │                      │
+     │    ┌─────────┴──────────┐           │
+     │    │ 1. fetch price     │           │
+     │    │ 2. resolve state ──┼──query──▶ │ Pyth State UTxO
+     │    │ 3. build tx        │           │
+     │    │ 4. sign + submit ──┼──tx────▶  │
+     │    └────────────────────┘           │
+     │                                     ▼
+     │                          ┌─────────────────────┐
+     │                          │ Pyth Withdraw Script │
+     │                          │ (verifica firma)     │
+     │                          └──────────┬──────────┘
+     │                                     │
+     │                          ┌──────────▼──────────┐
+     │                          │lazer_rwa_threshold.ak│
+     │                          │ (lee precio RWA,     │
+     │                          │  chequea threshold)  │
+     │                          └─────────────────────┘
+```
+
 ## How to run
 
 ### Prerequisites
@@ -66,9 +97,10 @@ aiken build
 ACCESS_TOKEN=<your-token> CARDANO_MNEMONIC="<your 24 words>" npm run submit-tx
 ```
 
-### Verified transaction on PreProd
+### Verified transactions on PreProd
 
-[caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0](https://preprod.cardanoscan.io/transaction/caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0)
+- [caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0](https://preprod.cardanoscan.io/transaction/caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0)
+- [8fca5fdd8e831c5e1ee0d8417cfedae480b6d2a7374647ded100b440fca49e43](https://preprod.cardanoscan.io/transaction/8fca5fdd8e831c5e1ee0d8417cfedae480b6d2a7374647ded100b440fca49e43)
 
 ## Project structure
 
@@ -78,11 +110,11 @@ lazer-rwa/
 ├── package.json
 ├── tsconfig.json
 ├── src/
-│   ├── fetch_prices.ts    — Stream XAU/USD & XAG/USD from Pyth Lazer
-│   └── submit_tx.ts       — Build & submit Cardano tx with Pyth price verification
+│   ├── fetch_prices_lazer_rwa.ts    — Stream XAU/USD & XAG/USD from Pyth Lazer
+│   └── submit_tx_lazer_rwa.ts       — Build & submit Cardano tx with Pyth price verification
 └── onchain/
     ├── aiken.toml
-    ├── plutus.json         — Compiled Plutus V3 blueprint
+    ├── plutus.json                   — Compiled Plutus V3 blueprint
     └── validators/
-        └── rwa_threshold.ak — Spending validator with price threshold logic
+        └── lazer_rwa_threshold.ak    — Spending validator with price threshold logic
 ```
