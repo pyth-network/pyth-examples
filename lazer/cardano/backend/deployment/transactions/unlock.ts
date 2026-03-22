@@ -104,8 +104,9 @@ function getValidatorScriptAndAddress(
   address: Address.Address;
   scriptAddressBech32: string;
 } {
+  const rawValidatorScript = unwrapDoubleCborScript(validatorScript);
   const script = new PlutusV3({
-    bytes: Buffer.from(validatorScript, "hex"),
+    bytes: Buffer.from(rawValidatorScript, "hex"),
   });
   const validator: SpendingValidator = {
     type: "PlutusV3",
@@ -114,6 +115,41 @@ function getValidatorScriptAndAddress(
   const scriptAddressBech32 = validatorToAddress(network, validator);
   const address = Address.fromBech32(scriptAddressBech32);
   return { script, address, scriptAddressBech32 };
+}
+
+function unwrapDoubleCborScript(scriptHex: string): string {
+  const bytes = Buffer.from(scriptHex, "hex");
+  if (bytes.length === 0) {
+    throw new Error("Validator script is empty.");
+  }
+
+  const header = bytes[0];
+  let offset = 0;
+  let payloadLength = -1;
+
+  // CBOR bytestring, definite length.
+  if (header >= 0x40 && header <= 0x57) {
+    offset = 1;
+    payloadLength = header - 0x40;
+  } else if (header === 0x58) {
+    offset = 2;
+    payloadLength = bytes[1];
+  } else if (header === 0x59) {
+    offset = 3;
+    payloadLength = bytes.readUInt16BE(1);
+  } else if (header === 0x5a) {
+    offset = 5;
+    payloadLength = bytes.readUInt32BE(1);
+  }
+
+  // Lucid validators are commonly "double-cbor encoded":
+  // the outer bytestring wraps the real Plutus script bytes once.
+  if (payloadLength >= 0 && offset + payloadLength === bytes.length) {
+    return bytes.subarray(offset, offset + payloadLength).toString("hex");
+  }
+
+  // If it's not wrapped in this shape, keep the original bytes.
+  return scriptHex;
 }
 
 function resolveValidatorScript(params: UnlockParams): string {
