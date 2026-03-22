@@ -9,10 +9,11 @@
  */
 
 // USDCx token identification on Cardano
-// PreProd: using ADA (lovelace) as collateral stand-in for testing
-// Mainnet: replace with actual USDCx policy ID
+// Mainnet policy ID: 1f3aec8bfe7ea4fe14c5f121e2a92e301afe414147860d557cac7e34
+// Mainnet asset name: 5553444378 ("USDCx")
+// PreProd: USDCx is not deployed, using ADA (lovelace) as collateral stand-in
 export const USDCX_POLICY_ID = process.env.USDCX_POLICY_ID || "";
-export const USDCX_ASSET_NAME = process.env.USDCX_ASSET_NAME || "555344437800"; // "USDCx" in hex
+export const USDCX_ASSET_NAME = process.env.USDCX_ASSET_NAME || "5553444378"; // "USDCx" in hex
 
 // When policy ID is empty, we use ADA (lovelace) as collateral
 export const USE_ADA_COLLATERAL = USDCX_POLICY_ID === "";
