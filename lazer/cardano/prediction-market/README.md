@@ -2,6 +2,8 @@
 
 A decentralized prediction market on Cardano that uses **Pyth Lazer** oracle for real-time price feeds. Users create markets on any Pyth-supported asset (BTC, ETH, ADA, etc.), place bets through a constant-product AMM, and settle based on verified on-chain prices.
 
+Includes a **market-maker bot** that continuously creates 1-minute markets and a **live frontend** with real-time Pyth price streaming and CIP-30 wallet integration for placing bets.
+
 ## Team Cliley
 
 - **Clark Alesna** (Captain) — clark@saib.dev
@@ -13,36 +15,44 @@ The contract integrates Pyth Lazer via the **withdraw-0 pattern** — the standa
 
 1. **Market Creation** — The creator sets a target price and a Pyth feed ID (e.g., BTC/USD = 1). The Pyth deployment policy ID is stored in the on-chain datum.
 
-2. **Market Resolution** — After the 5-minute window, anyone can resolve the market:
-   - The off-chain CLI fetches a signed price update from the Pyth Lazer REST API
-   - The signed message is included as a withdrawal redeemer in the transaction
-   - The Pyth State UTxO (holding the Pyth NFT + withdraw script) is added as a reference input
-   - On-chain, the validator calls `pyth.get_updates()` which:
-     - Finds the Pyth State UTxO via the stored policy ID
-     - Extracts the withdraw script hash from the Pyth state datum
-     - Reads the signed price update from the withdrawal redeemer
-     - Parses the Pyth Lazer message format to extract the verified price
-   - The contract compares `oracle_price > target_price` to determine the winning side
+2. **Market Resolution** — After the window closes, the bot resolves the market:
+   - Fetches a signed price update from the Pyth Lazer REST API
+   - Includes the signed message as a withdrawal redeemer in the transaction
+   - On-chain, the validator calls `pyth.get_updates()` to extract the verified price
+   - Compares `oracle_price > target_price` to determine the winning side
 
-3. **Key Pyth Integration Points:**
+3. **Real-time Price Streaming** — The frontend uses `@pythnetwork/pyth-lazer-sdk` WebSocket streaming for live BTC price display (sub-second updates).
+
+4. **Key Pyth Integration Points:**
    - `pyth-network/pyth-lazer-cardano` Aiken library (contract side)
-   - Pyth Lazer REST API at `https://pyth-lazer.dourolabs.app/v1/latest_price` (off-chain side)
+   - Pyth Lazer REST API — `POST /v1/latest_price` (resolve transactions)
+   - Pyth Lazer WebSocket — `wss://pyth-lazer-0.dourolabs.app/v1/stream` (live price feed)
    - Pyth State UTxO on Preprod: policy `d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6`
 
 ## Architecture
 
 ```
-contracts/           Aiken smart contracts (Plutus V3)
-├── lib/             Validation logic + types
-│   └── prediction_market/
-│       ├── types.ak              MarketDatum, redeemers, params
-│       └── market_validation.ak  Bet, Resolve, Claim, Mint/Burn
+contracts/               Aiken smart contracts (Plutus V3)
+├── lib/prediction_market/
+│   ├── types.ak             MarketDatum, redeemers, params
+│   └── market_validation.ak Bet, Resolve, Claim, Mint/Burn validation
 ├── validators/
-│   ├── market.ak                 Main validator (dual spend + mint)
-│   └── pyth_test.ak              Pyth integration test validator
-│   └── tests/                    Unit tests
-offchain/            TypeScript CLI (Bun + blaze-cardano)
-├── index.ts         Full CLI: create, bet, resolve, claim, price
+│   ├── market.ak            Main validator (dual spend + mint)
+│   ├── pyth_test.ak         Pyth integration test validator
+│   └── tests/               Unit tests
+
+offchain/                TypeScript (Bun + blaze-cardano)
+├── lib/
+│   ├── cardano.ts           Blaze setup, datum helpers, tx submission
+│   ├── pyth.ts              Pyth HTTP API + WebSocket streaming
+│   ├── market.ts            Market operations (create, resolve, bet, claim)
+│   ├── bifrost.ts           CIP-30 wallet connector (Nami, Eternl, Lace)
+│   └── types.ts             Shared types
+├── cli.ts                   CLI for manual operations
+├── bot.ts                   Market-maker bot (1-min cycles)
+├── server.ts                Bun.serve() — API, WebSocket, frontend
+├── index.html               Frontend shell
+└── frontend.tsx             React app with live price + wallet + betting
 ```
 
 ## Contract Design
@@ -55,8 +65,6 @@ offchain/            TypeScript CLI (Bun + blaze-cardano)
 | **Bet** | Constant-product AMM: `tokens = reserve - k / (other_reserve + amount)` |
 | **Resolve** | Pyth Lazer price check, set `resolved=True` + `winning_side` |
 | **Claim** | Burn winning tokens, receive proportional ADA payout |
-
-The state thread token (empty asset name) ensures continuity across transactions. The AMM uses `k = yes_reserve * no_reserve` invariant.
 
 ## Verified on Preprod
 
@@ -86,38 +94,29 @@ aiken build
 aiken check  # run tests
 ```
 
-### Run Off-chain CLI
+### Run the Frontend + Bot
 
 ```bash
 cd offchain
 cp .env.example .env   # fill in your keys
 bun install
-bun run index.ts help
+bun --hot server.ts    # starts bot + frontend at http://localhost:3000
 ```
 
-### Full Flow
+The bot automatically creates 1-minute BTC/USD markets, resolves them via Pyth, and loops. The frontend shows real-time prices and lets users bet via their browser wallet.
+
+### CLI (Manual Operations)
 
 ```bash
-# Check current BTC price
-bun run index.ts price BTC/USD
-
-# Create a 5-min market (10 ADA seed, BTC/USD)
-bun run index.ts create BTC/USD 10
-# → prints policy + oneshot params for subsequent commands
-
-# Place a bet (2 ADA on YES)
-bun run index.ts bet <policy> <oneshot_tx> <oneshot_idx> yes 2
-
-# Wait 5 minutes, then resolve
-bun run index.ts resolve <policy> <oneshot_tx> <oneshot_idx>
-
-# Claim winnings
-bun run index.ts claim <policy> <oneshot_tx> <oneshot_idx>
+bun cli.ts price BTC/USD
+bun cli.ts create BTC/USD 10
+bun cli.ts bet <policy> <oneshot_tx> <oneshot_idx> yes 2
+bun cli.ts resolve <policy> <oneshot_tx> <oneshot_idx>
 ```
 
 ## Supported Feeds
 
-Any Pyth Lazer feed ID works. Common ones:
+Any Pyth Lazer feed ID works:
 
 | Feed | ID |
 |------|----|
