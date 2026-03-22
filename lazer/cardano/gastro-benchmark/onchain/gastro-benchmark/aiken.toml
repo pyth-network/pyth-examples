@@ -1,7 +1,0 @@
-name = "gastro-benchmark"
-version = "0.1.0"
-
-[dependencies]
-[dependencies.pyth]
-version = "main"
-source = "github:pyth-network/aiken-pyth"
