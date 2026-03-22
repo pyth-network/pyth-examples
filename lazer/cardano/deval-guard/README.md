@@ -59,7 +59,7 @@ In Argentina and across LATAM, currency devaluation is a chronic reality. 1 in 3
 
 1. **On-chain verification:** The Aiken smart contracts consume Pyth price data via the **withdraw-script verification pattern** (Pyth Pro / Lazer on Cardano). Each transaction includes a signed price update as a withdraw redeemer, verified against Pyth's trusted signers.
 
-2. **Strike price at subscription:** When a user buys coverage, the contract reads the current ARS/USD rate from Pyth and stores it as the strike price.
+2. **Strike price at subscription:** When a user buys coverage, the contract reads the current price from Pyth and stores it as the strike price.
 
 3. **Claim verification:** When a claim is triggered, the contract reads the current price from Pyth and compares it to the strike price. If the devaluation exceeds the threshold, the payout executes automatically.
 
@@ -70,8 +70,12 @@ In Argentina and across LATAM, currency devaluation is a chronic reality. 1 in 3
 - **Aiken library:** `pyth-network/pyth-lazer-cardano` (on-chain)
 - **Off-chain SDK:** `@pythnetwork/pyth-lazer-cardano-js`
 - **PreProd Policy ID:** `d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6`
-- **Feed:** ADA/USD (feed #16) for MVP; USD/ARS (feed #2582) when available
+- **Feed:** ADA/USD (feed #16) for the MVP demo. The protocol is feed-agnostic — switching to USD/ARS (feed #2582) or any stablecoin pair is a one-line config change when the feed goes live on Pyth
 - **Pattern:** Withdraw-script verification (Plutus V3 staking validator)
+
+### Why ADA/USD for the Demo?
+
+The production vision for DevalGuard is to insure against **fiat currency devaluation** (ARS/USD, BRL/USD, etc.) with premiums and payouts in **stablecoins** (USDC, DJED). However, Pyth's USD/ARS feed (#2582) is not yet live on Cardano. Rather than faking the data, we use **ADA/USD** — a real, live Pyth feed — to demonstrate the full protocol end-to-end. The on-chain logic is **100% feed-agnostic**: switching to any currency pair is a single config change (`feed_id` in `ProtocolConfig`). The insurance math (basis-point thresholds, strike price comparison, reserve accounting) works identically regardless of which asset is being tracked.
 
 ## Project Structure
 
@@ -101,9 +105,16 @@ deval_guard/
 ## Prerequisites
 
 - [Aiken](https://aiken-lang.org) v1.1.21+
-- Node.js 18+ (24+ for off-chain SDK)
-- A Cardano PreProd testnet wallet (Nami, Eternl, etc.)
-- Pyth API key (`LAZER_TOKEN` env var)
+- Node.js 18+
+
+### For on-chain testing (optional)
+
+1. Install [Eternl](https://eternl.io) browser extension
+2. Create a wallet and switch to **PreProd** testnet (Settings > Network)
+3. Get tADA from the [Cardano Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet/) (paste your receive address)
+4. Set collateral in Eternl: **Settings > Collateral > Confirm** (locks 5 ADA for script execution fees)
+
+> No wallet needed for demo mode — click "Demo Mode" to try the full flow with simulated data.
 
 ## Setup & Run
 
@@ -117,21 +128,39 @@ aiken build
 aiken check
 ```
 
-### Frontend
+### Frontend (with real wallet)
+
+```bash
+cd frontend
+cp .env.example .env    # edit if needed
+npm install
+npm run dev
+# Open http://localhost:5177
+```
+
+Then:
+1. Click **Connect Wallet** → authorize in Eternl/Nami
+2. Click **Initialize Pool** (first time only, deposits 50 tADA)
+3. **Add Liquidity** to the pool if needed
+4. **Subscribe** to a policy (pick threshold, period, premium)
+5. Policies appear on-chain with CardanoScan links
+
+### Frontend (demo mode, no wallet needed)
 
 ```bash
 cd frontend
 npm install
 npm run dev
-# Open http://localhost:5173
+# Open http://localhost:5177
 ```
 
-### Off-chain
+Click **Demo Mode** → simulated pool, manual price slider to demonstrate the full insurance flow without any blockchain interaction.
+
+### Off-chain SDK
 
 ```bash
 cd offchain
 npm install
-export LAZER_TOKEN=your_pyth_api_key
 npm run build
 ```
 

@@ -13,7 +13,7 @@ const PERIODS = [
   { label: "30 days", days: 30 },
 ];
 
-const PAYOUT_MULTIPLIER = 10;
+const PAYOUT_MULTIPLIER = 2;
 
 interface Props {
   currentPrice: number;
@@ -46,6 +46,9 @@ export default function Subscribe({ currentPrice, connected, onSubscribe }: Prop
           <option key={i} value={i}>{t.label}</option>
         ))}
       </select>
+      <div style={{ fontSize: "0.8rem", color: "var(--text-dim)", marginTop: "-0.5rem", marginBottom: "0.75rem" }}>
+        Triggers at ~{(currentPrice * (1 - selectedThreshold.pct / 100)).toFixed(4)} USD/ADA
+      </div>
 
       <label className="price-label">Coverage Period</label>
       <select value={period} onChange={(e) => setPeriod(Number(e.target.value))}>
@@ -66,13 +69,14 @@ export default function Subscribe({ currentPrice, connected, onSubscribe }: Prop
 
       {premiumAda > 0 && (
         <div className="confirmation">
-          If ARS devalues {selectedThreshold.label}, you receive {payoutAda.toFixed(0)} ADA
+          If ADA drops {selectedThreshold.label}, you receive{" "}
+          <strong style={{ color: "var(--success)", fontSize: "1.1em" }}>{payoutAda.toFixed(0)} ADA</strong>
         </div>
       )}
 
       <div className="stat">
         <span className="stat-label">Strike price</span>
-        <span className="stat-value">{currentPrice.toFixed(2)} ARS/USD</span>
+        <span className="stat-value">{currentPrice.toFixed(4)} USD</span>
       </div>
       <div className="stat">
         <span className="stat-label">Payout multiplier</span>

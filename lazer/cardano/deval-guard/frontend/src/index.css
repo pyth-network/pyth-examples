@@ -102,6 +102,17 @@ select:focus, input:focus {
   border-color: var(--accent);
 }
 
+input[type="range"] {
+  -webkit-appearance: auto;
+  appearance: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  height: 24px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
 button {
   background: var(--accent);
   border: none;
@@ -176,4 +187,169 @@ button:disabled { opacity: 0.5; cursor: not-allowed; }
   height: 100%;
   border-radius: 4px;
   transition: width 0.3s;
+}
+
+/* --- Tx Status Bar --- */
+
+.tx-status {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.tx-pending {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent);
+  animation: pulse 1.5s infinite;
+}
+
+.tx-success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: var(--success);
+}
+
+.tx-success a {
+  color: var(--success);
+  text-decoration: underline;
+}
+
+.tx-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  cursor: pointer;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* --- Floating Hints --- */
+
+.hint-anchor {
+  position: relative;
+}
+
+.hint-glow > .card {
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.4), 0 0 32px rgba(250, 204, 21, 0.15);
+  border-color: rgba(250, 204, 21, 0.5);
+  transition: box-shadow 0.4s, border-color 0.4s;
+}
+
+.hint-glow-btn {
+  box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.4), 0 0 32px rgba(250, 204, 21, 0.18) !important;
+  border: 1px solid rgba(250, 204, 21, 0.5) !important;
+  transition: box-shadow 0.4s;
+}
+
+.floating-hint {
+  position: absolute;
+  right: calc(100% + 18px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.65rem 1.1rem;
+  border-radius: 10px;
+  background: rgba(250, 204, 21, 0.12);
+  border: 1px solid rgba(250, 204, 21, 0.5);
+  box-shadow: 0 0 24px rgba(250, 204, 21, 0.18), 0 0 6px rgba(250, 204, 21, 0.12);
+  backdrop-filter: blur(10px);
+  white-space: nowrap;
+  z-index: 10;
+  animation: hint-float-in 0.5s ease-out;
+  pointer-events: none;
+}
+
+.floating-hint-done {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.15), 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.floating-hint-arrow {
+  position: absolute;
+  right: -7px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background: rgba(250, 204, 21, 0.12);
+  border-right: 1px solid rgba(250, 204, 21, 0.5);
+  border-top: 1px solid rgba(250, 204, 21, 0.5);
+}
+
+.floating-hint-done .floating-hint-arrow {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.4);
+}
+
+.floating-hint-badge {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: rgba(250, 204, 21, 0.25);
+  color: #facc15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.floating-hint-badge-done {
+  background: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+}
+
+.floating-hint-text {
+  font-size: 0.9rem;
+  color: #fde047;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+@keyframes hint-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+/* On smaller screens or when hints would overflow, stack above instead */
+@media (max-width: 1300px) {
+  .floating-hint {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    margin-bottom: 0.5rem;
+    animation: hint-in-above 0.4s ease-out;
+  }
+
+  .floating-hint-arrow {
+    display: none;
+  }
+
+  @keyframes hint-in-above {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
