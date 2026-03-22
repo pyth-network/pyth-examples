@@ -1,36 +1,21 @@
 use aiken/math/rational
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Transaction}
+use lazer_perps/formulas
 use lazer_perps/oracle_gate
-use lazer_perps/types.{
-  Direction, Long, Short, MarketConfig, PositionDatum,
-  liquidation_bps, keeper_fee_bps,
-}
-
-/// Compute PnL as a rational number.
-fn compute_pnl(
-  direction: Direction,
-  collateral: Int,
-  leverage: Int,
-  entry_price: Int,
-  current_price: Int,
-) -> rational.Rational {
-  let size = collateral * leverage
-  let diff = when direction is {
-    Long -> current_price - entry_price
-    Short -> entry_price - current_price
-  }
-  expect Some(pnl) = rational.new(size * diff, entry_price)
-  pnl
-}
+use lazer_perps/types.{MarketConfig, PositionDatum, keeper_fee_bps}
 
 /// Liquidation validator.
 ///
-/// Anyone can trigger liquidation — no owner signature needed.
+/// Anyone can trigger — no owner signature needed.
 ///
-/// Liquidation check:
-///   remaining = collateral + PnL
-///   If remaining * 10000 < collateral * liquidation_bps (8000) → liquidatable
+/// Liquidation price formulas:
+///   Long:  liq_price = entry_price × (1 - 1/leverage + 0.01)
+///   Short: liq_price = entry_price × (1 + 1/leverage - 0.01)
+///
+/// Trigger condition:
+///   Long:  current_price <= liq_price
+///   Short: current_price >= liq_price
 ///
 /// On liquidation:
 ///   - Keeper receives 1% of collateral as fee
@@ -49,28 +34,12 @@ validator liquidate(config: MarketConfig) {
     let (current_price, _exponent) =
       oracle_gate.read_price(config.pyth_id, config.feed_id, self)
 
-    // Compute PnL using position's leverage
-    let pnl =
-      compute_pnl(
-        position.direction,
-        position.collateral,
-        position.leverage,
-        position.entry_price,
-        current_price,
-      )
-
-    // remaining = collateral + pnl
-    let collateral_r = rational.from_int(position.collateral)
-    let remaining = rational.add(collateral_r, pnl)
-
-    // Undercollateralization check:
-    // remaining * 10000 < collateral * liquidation_bps
-    let remaining_scaled =
-      rational.mul(remaining, rational.from_int(10000))
-    expect Some(threshold) =
-      rational.new(position.collateral * liquidation_bps, 1)
-
-    // Position must be undercollateralized to allow liquidation
-    rational.compare(remaining_scaled, threshold) == Less
+    // Check if position has crossed the liquidation price
+    formulas.is_liquidatable(
+      position.direction,
+      position.entry_price,
+      position.leverage,
+      current_price,
+    )
   }
 }
