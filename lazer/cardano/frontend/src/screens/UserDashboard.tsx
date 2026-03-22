@@ -14,7 +14,7 @@ interface UserDashboardProps {
   coverageMultiplier: number;
   onFilterChange: (filter: RequestFilter) => void;
   onCreate: (payload: CreateRequestPayload) => Promise<void>;
-  onClaim: (requestId: string) => void;
+  onClaim: (requestId: string) => Promise<void>;
   isCreating: boolean;
 }
 

@@ -1,8 +1,7 @@
-import { Address, Data, UPLC, createClient } from "@evolution-sdk/evolution";
+import { Address, createClient } from "@evolution-sdk/evolution";
+import { paymentCredentialOf } from "@lucid-evolution/lucid";
 import { loadConfig } from "../config.js";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { buildValidator } from "../validator.js";
 import { unlock } from "../transactions/unlock.js";
 
 function toEvolutionNetwork(network: "Preprod" | "Mainnet"): "preprod" | "mainnet" {
@@ -10,63 +9,16 @@ function toEvolutionNetwork(network: "Preprod" | "Mainnet"): "preprod" | "mainne
 }
 
 function requirePaymentCredentialHash(address: string): string {
-  const credential = Address.getPaymentCredential(address);
-  if (!credential) {
-    throw new Error("Invalid bech32 address");
+  if (address.startsWith("addr")) {
+    return paymentCredentialOf(address).hash;
   }
-  if (credential._tag !== "KeyHash") {
-    throw new Error("Address must use key payment credential");
+
+  const details = Address.getAddressDetails(address);
+  if (!details) {
+    throw new Error("Address must be bech32 or hex bytes.");
   }
-  return credential.hash;
-}
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const blueprintPath = resolve(__dirname, "../../plutus.json");
-const VALIDATOR_TITLE = "pay_with_pyth.pay_with_pyth.spend";
-
-interface Blueprint {
-  validators: Array<{
-    title: string;
-    compiledCode: string;
-    hash: string;
-  }>;
-}
-
-function getCompiledCode(): string {
-  const raw = readFileSync(blueprintPath, "utf-8");
-  const blueprint = JSON.parse(raw) as Blueprint;
-  const validator = blueprint.validators.find((v) => v.title === VALIDATOR_TITLE);
-  if (!validator) {
-    throw new Error(`Validator '${VALIDATOR_TITLE}' not found in blueprint`);
-  }
-  return validator.compiledCode;
-}
-
-function encodeAddress(paymentKeyHash: string, stakeKeyHash?: string): Data.Data {
-  const paymentCredential = Data.constr(0n, [Data.bytearray(paymentKeyHash)]);
-  const stakeCredential = stakeKeyHash
-    ? Data.constr(0n, [Data.constr(0n, [Data.constr(0n, [Data.bytearray(stakeKeyHash)])])])
-    : Data.constr(1n, []);
-  return Data.constr(0n, [paymentCredential, stakeCredential]);
-}
-
-function buildUnlockValidatorScript(params: {
-  usdAmountCents: bigint;
-  userPaymentKeyHash: string;
-  sponsorPaymentKeyHash: string;
-  pythPolicyId: string;
-}): string {
-  const compiledCode = getCompiledCode();
-  const userAddress = encodeAddress(params.userPaymentKeyHash);
-  const sponsorAddress = encodeAddress(params.sponsorPaymentKeyHash);
-  const parameterizedScript = UPLC.applyParamsToScript(compiledCode, [
-    params.usdAmountCents,
-    userAddress,
-    sponsorAddress,
-    Data.bytearray(params.pythPolicyId),
-  ]);
-
-  return UPLC.applyDoubleCborEncoding(parameterizedScript);
+  const rawAddress = Buffer.from(details.address.hex, "hex");
+  return rawAddress.subarray(1, 29).toString("hex");
 }
 
 async function main() {
@@ -93,11 +45,16 @@ async function main() {
     mnemonic: config.sponsorSeedPhrase,
   });
 
-  const sponsorAddress = await client.address();
+  const sponsorAddress = Address.toBech32(await client.address());
+  const details = Address.getAddressDetails(userAddress);
+  if (!details) {
+    throw new Error("User address must be a valid bech32 or hex Cardano address.");
+  }
+  const normalizedUserAddress = details.address.bech32;
   const sponsorPaymentKeyHash = requirePaymentCredentialHash(sponsorAddress);
   const userPaymentKeyHash = requirePaymentCredentialHash(userAddress);
 
-  const validatorScript = buildUnlockValidatorScript({
+  const validator = buildValidator({
     usdAmountCents,
     userPaymentKeyHash,
     sponsorPaymentKeyHash,
@@ -108,10 +65,10 @@ async function main() {
   console.log(`  USD amount: $${Number(usdAmountCents) / 100}`);
   console.log("  Fetching Pyth oracle price...");
 
-  const txHash = await unlock(client, config, {
-    validatorScript,
+  const txHash = await unlock(client as any, config, {
+    validator,
     usdAmountCents,
-    userAddress,
+    userAddress: normalizedUserAddress,
     sponsorAddress,
   });
 

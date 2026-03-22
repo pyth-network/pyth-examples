@@ -10,6 +10,7 @@ import {
   type UTxO,
 } from "@evolution-sdk/evolution";
 import { PlutusV3 } from "@evolution-sdk/evolution/PlutusV3";
+import { validatorToAddress, type SpendingValidator } from "@lucid-evolution/lucid";
 import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
 import { parseAdaUsdPrice } from "../pyth.js";
 import { getPythScriptHash, getPythState } from "../pyth_example/index.js";
@@ -28,6 +29,8 @@ export interface UnlockParams {
   sponsorAddress: string;
   /** The UTxO at the script address to spend (if known). If not provided, will be looked up. */
   scriptUtxo?: unknown;
+  /** Optional lock tx hash to target a specific script UTxO. */
+  expectedLockTxId?: string;
 }
 
 /**
@@ -83,7 +86,7 @@ async function fetchPriceUpdateLikeExample(lazerToken: string): Promise<string> 
     formats: ["solana"],
     jsonBinaryEncoding: "hex",
     priceFeedIds: [ADA_USD_FEED_ID],
-    properties: ["price", "bestBidPrice", "bestAskPrice", "exponent"],
+    properties: ["price", "exponent"],
   });
 
   if (!latestPrice.solana?.data) {
@@ -93,26 +96,24 @@ async function fetchPriceUpdateLikeExample(lazerToken: string): Promise<string> 
   return latestPrice.solana.data;
 }
 
-function toNetworkId(network: Config["network"]): number {
-  return network === "Mainnet" ? 1 : 0;
-}
-
 function getValidatorScriptAndAddress(
   validatorScript: string,
   network: Config["network"],
 ): {
   script: PlutusV3;
   address: Address.Address;
+  scriptAddressBech32: string;
 } {
   const script = new PlutusV3({
     bytes: Buffer.from(validatorScript, "hex"),
   });
-  const scriptHash = ScriptHash.fromScript(script);
-  const address = new Address.Address({
-    networkId: toNetworkId(network),
-    paymentCredential: scriptHash,
-  });
-  return { script, address };
+  const validator: SpendingValidator = {
+    type: "PlutusV3",
+    script: validatorScript,
+  };
+  const scriptAddressBech32 = validatorToAddress(network, validator);
+  const address = Address.fromBech32(scriptAddressBech32);
+  return { script, address, scriptAddressBech32 };
 }
 
 function resolveValidatorScript(params: UnlockParams): string {
@@ -121,6 +122,52 @@ function resolveValidatorScript(params: UnlockParams): string {
     throw new Error("Missing validatorScript (or validator.script)");
   }
   return script;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function findScriptUtxoWithRetry(
+  client: UnlockClient,
+  scriptAddress: Address.Address,
+  scriptAddressBech32: string,
+  expectedLockTxId?: string,
+  attempts = 8,
+  delayMs = 2500,
+): Promise<UTxO.UTxO> {
+  const normalizedExpectedLockTxId = expectedLockTxId?.toLowerCase();
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const utxos = await client.getUtxos(scriptAddress);
+    if (utxos.length > 0) {
+      if (!normalizedExpectedLockTxId) {
+        return utxos[0];
+      }
+
+      const matched = utxos.find(
+        (utxo) =>
+          TransactionHash.toHex((utxo as UTxO.UTxO).transactionId).toLowerCase() ===
+          normalizedExpectedLockTxId,
+      );
+      if (matched) {
+        return matched;
+      }
+    }
+    if (attempt < attempts) {
+      await sleep(delayMs);
+    }
+  }
+
+  if (normalizedExpectedLockTxId) {
+    throw new Error(
+      `No unspent script UTxO found for lock tx ${normalizedExpectedLockTxId} at ${scriptAddressBech32} after ${attempts} attempts.`,
+    );
+  }
+
+  throw new Error(
+    `No UTxOs found at script address ${scriptAddressBech32} after ${attempts} attempts.`,
+  );
 }
 
 /**
@@ -138,16 +185,20 @@ export async function buildUnlockTxFromData(
   currentTime?: number,
 ) {
   const validatorScriptHex = resolveValidatorScript(params);
-  const { script: validatorScript, address: scriptAddress } = getValidatorScriptAndAddress(
+  const { script: validatorScript, address: scriptAddress, scriptAddressBech32 } =
+    getValidatorScriptAndAddress(
     validatorScriptHex,
     config.network,
   );
 
   let scriptUtxo = params.scriptUtxo;
   if (!scriptUtxo) {
-    const utxos = await client.getUtxos(scriptAddress);
-    if (utxos.length === 0) throw new Error("No UTxOs found at script address");
-    scriptUtxo = utxos[0];
+    scriptUtxo = await findScriptUtxoWithRetry(
+      client,
+      scriptAddress,
+      scriptAddressBech32,
+      params.expectedLockTxId,
+    );
   }
 
   const { numerator, denominator } = parseAdaUsdPrice(priceUpdateHex);

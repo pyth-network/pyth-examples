@@ -24,6 +24,8 @@ interface ApiRequestRecord {
   dueDate: string | null;
   createdAt: string;
   lockTxId?: string;
+  cancelTxId?: string;
+  unlockTxId?: string;
   lockTxDraft?: LockTransactionDraft;
 }
 
@@ -80,6 +82,8 @@ function toPaymentRequest(record: ApiRequestRecord): PaymentRequest {
     adaUsdAtCreation: record.adaUsd,
     coverageMultiplier: record.coverageMultiplier,
     lockTxId: record.lockTxId,
+    cancelTxId: record.cancelTxId,
+    unlockTxId: record.unlockTxId,
     lockTxDraft: record.lockTxDraft,
   };
 }
@@ -134,6 +138,25 @@ export async function cancelRequestApi(
     requestId: string;
     status: RequestStatus;
     cancelTxId: string;
+  };
+  return data;
+}
+
+export async function claimRequestApi(
+  requestId: string,
+): Promise<{ requestId: string; status: RequestStatus; unlockTxId: string }> {
+  const response = await fetch(`/api/requests/${encodeURIComponent(requestId)}/claim`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  const data = (await response.json()) as {
+    requestId: string;
+    status: RequestStatus;
+    unlockTxId: string;
   };
   return data;
 }

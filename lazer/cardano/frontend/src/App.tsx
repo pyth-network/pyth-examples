@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { cancelRequestApi, createRequestApi, fetchRequestsApi } from './api/requests';
+import { cancelRequestApi, claimRequestApi, createRequestApi, fetchRequestsApi } from './api/requests';
 import { EternlWalletPanel } from './components/EternlWalletPanel';
 import { LivePricePanel } from './components/LivePricePanel';
 import { RoleSwitcher } from './components/RoleSwitcher';
@@ -121,22 +121,32 @@ export default function App(): JSX.Element {
     }
   };
 
-  const handleClaim = (requestId: string): void => {
+  const handleClaim = async (requestId: string): Promise<void> => {
     if (!adaUsd || !canUseApp) {
       return;
     }
-    setRequests((prev) =>
-      prev.map((request) => {
-        if (request.id !== requestId || request.status !== 'ready_to_claim') {
-          return request;
-        }
-        return {
-          ...request,
-          status: 'claimed',
-          settlement: executeSettlement(request, adaUsd),
-        };
-      }),
-    );
+
+    setApiError(null);
+    try {
+      const claimResult = await claimRequestApi(requestId);
+      setRequests((prev) =>
+        prev.map((request) => {
+          if (request.id !== requestId || request.status !== 'ready_to_claim') {
+            return request;
+          }
+          return {
+            ...request,
+            status: claimResult.status,
+            unlockTxId: claimResult.unlockTxId,
+            settlement: executeSettlement(request, adaUsd),
+          };
+        }),
+      );
+    } catch (claimError) {
+      const message = claimError instanceof Error ? claimError.message : 'Could not claim request.';
+      setApiError(message);
+      throw new Error(message);
+    }
   };
 
   const handleCancel = async (requestId: string): Promise<void> => {
@@ -146,10 +156,12 @@ export default function App(): JSX.Element {
 
     setApiError(null);
     try {
-      await cancelRequestApi(requestId);
+      const cancelResult = await cancelRequestApi(requestId);
       setRequests((prev) =>
         prev.map((request) =>
-          request.id === requestId ? { ...request, status: 'cancelled' } : request,
+          request.id === requestId
+            ? { ...request, status: 'cancelled', cancelTxId: cancelResult.cancelTxId }
+            : request,
         ),
       );
     } catch (cancelError) {

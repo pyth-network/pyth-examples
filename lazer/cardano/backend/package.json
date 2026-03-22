@@ -12,12 +12,14 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@evolution-sdk/evolution": "^0.3.29",
+    "@evolution-sdk/evolution": "^0.3.30",
     "@lucid-evolution/lucid": "^0.4.0",
-    "@pythnetwork/pyth-lazer-sdk": "^5.2.0",
+    "@pythnetwork/pyth-lazer-sdk": "^5.2.1",
+    "bech32": "^2.0.0",
     "dotenv": "^16.4.0",
     "libsodium-sumo": "^0.8.2",
-    "libsodium-wrappers-sumo": "^0.8.2"
+    "libsodium-wrappers-sumo": "^0.8.2",
+    "yargs": "^17.7.2"
   },
   "overrides": {
     "libsodium-wrappers-sumo": "^0.8.2",
