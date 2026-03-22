@@ -30,7 +30,7 @@ The project is divided into 2 main sections: backend and frontend.
 ## Try it yourself
 * Go to the ```frontend``` directory, run ```npm i``` and run the frontend with ```npm run dev```.
 * Go to the ```backend``` directory, run ```npm i``` and run the server with ```npm run api```.
-* Go to the ```backend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials.
+* Go to the ```backend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials. Give funds to the sponsor address.
 * Go to the ```frontend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials.
 * To run the tests, run `aiken check` for the Aiken tests and `npm run test` for the backend tests.
 
