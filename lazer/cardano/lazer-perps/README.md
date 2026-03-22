@@ -164,6 +164,14 @@ ACCESS_TOKEN=<token> npm run keeper
 - [ ] Funding rate mechanism
 - [ ] Frontend UI
 
+## Limitations (Stage 1 MVP)
+
+- Only one market live: XAU/USD 10x
+- No funding rate — positions don't accrue fees over time
+- No frontend — CLI scripts only
+- Only USDCx collateral (ADA stand-in on PreProd)
+- Deployed on PreProd testnet only — not mainnet
+
 ## Project structure
 
 ```
