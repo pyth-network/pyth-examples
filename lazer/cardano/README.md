@@ -1,5 +1,12 @@
 # Proof Of Pyth or Pay With Pyth
 
+## Resumen en una frase
+
+Una dApp en Cardano para acuerdos de pago donde el proveedor cotiza en USD y el cliente bloquea fondos en ADA, 
+permitiendo que el settlement final preserve el valor pactado gracias a un oráculo de precios on-chain.
+
+## Idea de producto final
+
 Tenemos 2 agentes: alguien que paga y alguien que recibe la plata. Asumimos que el que paga tiene plata suficiente en todo momento. El usuario es el que recibe la plata, el que paga lo vamos a tratar como una sponsor wallet. 
 
 El usuario se loguea con Ethernal/Metamask/Lace/Loquesea
