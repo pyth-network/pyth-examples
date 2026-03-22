@@ -9,14 +9,30 @@
 
 ## Project Description
 
-A Cardano spending validator that consumes Pyth Lazer price feeds on-chain to enforce a collateral threshold on RWA (Real World Asset) prices — specifically gold (XAU/USD) and silver (XAG/USD).
+A Cardano spending validator that consumes Pyth Lazer price feeds on-chain to enforce a collateral threshold on RWA (Real World Asset) prices. Supports configurable feeds — any RWA asset available on Pyth Lazer can be used (metals, FX, energy, crypto-backed RWAs).
+
+### Supported RWA feeds
+
+| Symbol | Asset | Feed ID | Status |
+|--------|-------|---------|--------|
+| XAU/USD | Gold | 346 | stable |
+| XAG/USD | Silver | 345 | stable |
+| XAUT/USD | Tether Gold | 172 | stable |
+| XPD/USD | Palladium | 1780 | coming soon |
+| XPT/USD | Platinum | 1781 | coming soon |
+| XCU/USD | Copper | 2949 | coming soon |
+| XTI/USD | Oil (WTI) | 2950 | coming soon |
+| EUR/USD | Euro | 62 | inactive |
+| GBP/USD | British Pound | 132 | inactive |
+
+Feeds are configurable via env vars — both by symbol name or numeric ID. The on-chain validator accepts any feed ID via its datum, so new feeds work without recompiling.
 
 ### How Pyth is used
 
 The project integrates Pyth price feeds at two levels:
 
 **Off-chain (TypeScript):**
-- Connects to Pyth Lazer WebSocket to stream real-time XAU/USD and XAG/USD prices
+- Connects to Pyth Lazer WebSocket to stream real-time RWA prices
 - Fetches the latest signed price update in `solana` binary format (shared by Cardano)
 - Resolves the on-chain Pyth State UTxO and withdraw script hash via `@pythnetwork/pyth-lazer-cardano-js`
 - Builds and submits Cardano transactions with the price update as a zero-withdrawal redeemer
@@ -24,7 +40,7 @@ The project integrates Pyth price feeds at two levels:
 **On-chain (Aiken):**
 - Uses `pyth.get_updates(pyth_id, self)` from `pyth-network/pyth-lazer-cardano` to read verified price data from the transaction
 - Extracts the price for a specific feed ID and checks it against a configurable threshold
-- If collateral price (e.g. gold) is above the threshold → allows minting/borrowing
+- If collateral price is above the threshold → allows minting/borrowing
 - If below → transaction fails on-chain
 
 ### Use case
@@ -81,7 +97,14 @@ npm install
 ### 1. Stream RWA prices
 
 ```bash
+# Default feeds (XAU/USD + XAG/USD)
 ACCESS_TOKEN=<your-token> npm run fetch-prices
+
+# Custom feeds by symbol
+ACCESS_TOKEN=<your-token> FEEDS=XAUT/USD,XAU/USD npm run fetch-prices
+
+# Custom feeds by ID
+ACCESS_TOKEN=<your-token> FEEDS=172,346,345 npm run fetch-prices
 ```
 
 ### 2. Compile the Aiken validator
@@ -94,13 +117,20 @@ aiken build
 ### 3. Submit a price verification transaction
 
 ```bash
+# Default feed (XAU/USD)
 ACCESS_TOKEN=<your-token> CARDANO_MNEMONIC="<your 24 words>" npm run submit-tx
+
+# Specific feed
+ACCESS_TOKEN=<your-token> CARDANO_MNEMONIC="<your 24 words>" FEED=XAUT/USD npm run submit-tx
 ```
 
 ### Verified transactions on PreProd
 
-- [caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0](https://preprod.cardanoscan.io/transaction/caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0)
-- [8fca5fdd8e831c5e1ee0d8417cfedae480b6d2a7374647ded100b440fca49e43](https://preprod.cardanoscan.io/transaction/8fca5fdd8e831c5e1ee0d8417cfedae480b6d2a7374647ded100b440fca49e43)
+| Feed | Tx Hash |
+|------|---------|
+| XAU/USD | [caaf9db7...](https://preprod.cardanoscan.io/transaction/caaf9db719e015031bf4b6164184b95226b433d4eb29c80a8a4960f02c309be0) |
+| XAU/USD | [8fca5fdd...](https://preprod.cardanoscan.io/transaction/8fca5fdd8e831c5e1ee0d8417cfedae480b6d2a7374647ded100b440fca49e43) |
+| XAUT/USD | [2d646b1f...](https://preprod.cardanoscan.io/transaction/2d646b1fdd24e864b2c70d0c6428a87931e51ef3029f5b70f5710e787ac14a10) |
 
 ## Project structure
 
@@ -110,11 +140,12 @@ lazer-rwa/
 ├── package.json
 ├── tsconfig.json
 ├── src/
-│   ├── fetch_prices_lazer_rwa.ts    — Stream XAU/USD & XAG/USD from Pyth Lazer
-│   └── submit_tx_lazer_rwa.ts       — Build & submit Cardano tx with Pyth price verification
+│   ├── feeds.ts                      — RWA feed catalog (configurable by symbol or ID)
+│   ├── fetch_prices_lazer_rwa.ts     — Stream RWA prices from Pyth Lazer
+│   └── submit_tx_lazer_rwa.ts        — Build & submit Cardano tx with Pyth price verification
 └── onchain/
     ├── aiken.toml
-    ├── plutus.json                   — Compiled Plutus V3 blueprint
+    ├── plutus.json                    — Compiled Plutus V3 blueprint
     └── validators/
-        └── lazer_rwa_threshold.ak    — Spending validator with price threshold logic
+        └── lazer_rwa_threshold.ak     — Spending validator with price threshold logic
 ```
