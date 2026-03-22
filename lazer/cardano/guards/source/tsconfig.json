@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "baseUrl": ".",
+    "paths": {
+      "@anaconda/core": [
+        "packages/core/src/index.ts"
+      ],
+      "@anaconda/cardano": [
+        "packages/cardano/src/index.ts"
+      ],
+      "@anaconda/blockchain": [
+        "apps/blockchain/src/index.ts"
+      ],
+      "@anaconda/blockchain/cardano": [
+        "apps/blockchain/src/cardano.ts"
+      ],
+      "@anaconda/blockchain/cardano/offchain": [
+        "apps/blockchain/cardano/offchain/index.ts"
+      ],
+      "@anaconda/svm": [
+        "packages/svm/src/index.ts"
+      ],
+      "@anaconda/evm": [
+        "packages/evm/src/index.ts"
+      ]
+    }
+  },
+  "include": [
+    "packages/**/*.ts",
+    "apps/backend/**/*.ts",
+    "apps/blockchain/**/*.ts"
+  ]
+}

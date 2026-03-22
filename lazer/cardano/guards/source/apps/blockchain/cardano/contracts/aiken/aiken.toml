@@ -1,0 +1,13 @@
+name = "guards-one-cardano-aiken"
+version = "0.1.0"
+description = "Bounded Aiken scaffold for the guards.one PolicyVault and hot-bucket model"
+
+# This scaffold mirrors the current TypeScript simulator and custody docs.
+# Aiken tooling is not installed in this workspace, so the validator bodies are intentionally skeletal.
+
+[dependencies]
+# Intentionally empty for now. Add official Aiken packages when the real on-chain port starts.
+
+[config]
+# Deployment scaffold config for the policy-vault port.
+policy_id = "d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6"
