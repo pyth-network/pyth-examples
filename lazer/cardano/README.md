@@ -4,7 +4,7 @@ This project aims to bring Pyth to Cardano with a simple, small and yet useful u
 
 ## Project description
 
-The idea is pretty basic: a user, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
+The idea is pretty basic: an applicant, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
 
 When both actors agree the task is complete, Bill proceeds to **unlock** the funds. How much? Well, the amount of ADA corresponding to the USD agreed, but using the current relation between USD and ADA. This is where **Pyth** comes in to compute on-chain how much ADA should be sent to Anne and how much should return to Bill. 
 
@@ -32,3 +32,18 @@ The project is divided into 2 main sections: backend and frontend.
 Note that the project must be run in Google Chrome, or any browser that supports Eternl Wallet extension (but it was tested in Chrome).  
 
 ## Frontend overview
+Here you can see the header of the page after connecting the wallet
+
+![header.png](images/header.png)
+
+Then you can choose which role are you on:
+
+![role.png](images/role.png)
+
+If you are an applicant, you can create your request
+
+![create.png](images/create.png)
+
+and then see a list of created requests
+
+![tasks.png](images/tasks.png)
