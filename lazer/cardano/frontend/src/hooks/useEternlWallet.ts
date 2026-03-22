@@ -13,7 +13,7 @@ function mapNetworkIdToName(networkId: number | null): string {
     return 'Mainnet';
   }
   if (networkId === 0) {
-    return 'Testnet';
+    return 'Preprod';
   }
   if (networkId === null) {
     return 'Unknown network';

@@ -19,6 +19,7 @@ import { computeLockAda, executeSettlement } from './utils/settlement';
 
 const COVERAGE_MULTIPLIER = 2;
 const INITIAL_ADA_USD = 0.65;
+const REQUIRED_NETWORK_ID = 0;
 
 function countByStatus(requests: PaymentRequest[], status: RequestStatus): number {
   return requests.filter((request) => request.status === status).length;
@@ -44,7 +45,8 @@ export default function App(): JSX.Element {
   } = usePythAdaUsdPrice();
   const [requests, setRequests] = useState<PaymentRequest[]>(() => createSeedRequests(INITIAL_ADA_USD));
   const pendingReadyTimers = useRef<number[]>([]);
-  const canUseApp = wallet.isConnected;
+  const isRequiredNetwork = wallet.networkId === REQUIRED_NETWORK_ID;
+  const canUseApp = wallet.isConnected && isRequiredNetwork;
   const canSettle = canUseApp && adaUsd !== null;
 
   useEffect(() => {
@@ -71,7 +73,7 @@ export default function App(): JSX.Element {
   );
 
   const handleCreate = (payload: CreateRequestPayload): void => {
-    if (!adaUsd) {
+    if (!adaUsd || !canUseApp) {
       return;
     }
     const requestId = `request-${Date.now().toString(36)}-${Math.floor(Math.random() * 999)}`;
@@ -106,7 +108,7 @@ export default function App(): JSX.Element {
   };
 
   const handleClaim = (requestId: string): void => {
-    if (!adaUsd) {
+    if (!adaUsd || !canUseApp) {
       return;
     }
     setRequests((prev) =>
@@ -137,7 +139,7 @@ export default function App(): JSX.Element {
           </div>
           <div className="hero-controls">
             <EternlWalletPanel wallet={wallet} />
-            {wallet.isConnected ? <RoleSwitcher value={role} onChange={setRole} /> : null}
+            {canUseApp ? <RoleSwitcher value={role} onChange={setRole} /> : null}
             <LivePricePanel
               adaUsd={adaUsd}
               isLoading={isPriceLoading}
@@ -148,10 +150,18 @@ export default function App(): JSX.Element {
           </div>
         </header>
 
-        {!canUseApp ? (
+        {!wallet.isConnected ? (
           <section className="panel">
             <h2>Connect Eternl to continue</h2>
             <p className="muted">Login is required before creating and claiming payment requests.</p>
+          </section>
+        ) : !isRequiredNetwork ? (
+          <section className="panel">
+            <h2>Wrong network selected</h2>
+            <p className="muted">
+              This dApp is configured for <strong>Preprod</strong>. Please switch Eternl from
+              Mainnet to Preprod/Testnet and reconnect.
+            </p>
           </section>
         ) : !canSettle ? (
           <section className="panel">
