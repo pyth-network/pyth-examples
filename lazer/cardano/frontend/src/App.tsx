@@ -165,19 +165,14 @@ export default function App(): JSX.Element {
       <main className="app-shell">
         <header className="hero panel">
           <div className="hero-intro">
-            <p className="eyebrow">Proof of Pyth</p>
-            <h1>Pay With Pyth on Cardano</h1>
+            <p className="eyebrow">Payth</p>
+            <h1>Request USD Payments on Cardano</h1>
             <p className="hero-copy">
-              A visual prototype where payment requests are quoted in USD, locked in ADA, and
-              settled with live ADA/USD updates from Pyth Pro at claim time.
+              Applicants request in USD, sponsors lock ADA, and claims settle using live ADA/USD
+              rates.
             </p>
           </div>
           <div className="hero-controls">
-            {canUseApp ? (
-              <div className="hero-controls__top">
-                <RoleSwitcher value={role} onChange={setRole} />
-              </div>
-            ) : null}
             <div className="hero-controls__grid hero-controls__grid--utility">
               <EternlWalletPanel wallet={wallet} compact />
               <LivePricePanel
@@ -189,6 +184,11 @@ export default function App(): JSX.Element {
                 compact
               />
             </div>
+            {canUseApp ? (
+              <div className="hero-controls__top">
+                <RoleSwitcher value={role} onChange={setRole} />
+              </div>
+            ) : null}
           </div>
         </header>
 

@@ -116,7 +116,7 @@ export function RequestForm({
         {error ? <p className="error-text">{error}</p> : null}
 
         <button className="button button--primary" type="submit" disabled={isCreating}>
-          {isCreating ? 'Creating lock transaction...' : 'Create & Auto-Fund'}
+          {isCreating ? 'Creating lock transaction...' : 'Create'}
         </button>
       </form>
     </section>
