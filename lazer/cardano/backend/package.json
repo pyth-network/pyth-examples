@@ -7,16 +7,20 @@
     "build": "tsc",
     "lock": "tsx deployment/scripts/lock.ts",
     "unlock": "tsx deployment/scripts/unlock.ts",
-    "cancel": "tsx deployment/scripts/cancel.ts"
+    "cancel": "tsx deployment/scripts/cancel.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@lucid-evolution/lucid": "^0.4.0",
     "@pythnetwork/pyth-lazer-sdk": "^2.0.0",
-    "dotenv": "^16.4.0"
+    "dotenv": "^16.4.0",
+    "libsodium-sumo": "^0.8.2",
+    "libsodium-wrappers-sumo": "^0.8.2"
   },
   "devDependencies": {
+    "@types/node": "^22.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.5.0",
-    "@types/node": "^22.0.0"
+    "vitest": "^4.1.0"
   }
 }
