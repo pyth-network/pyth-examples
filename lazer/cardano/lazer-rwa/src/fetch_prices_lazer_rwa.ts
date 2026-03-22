@@ -7,27 +7,37 @@
  * for on-chain verification via pyth.get_updates().
  *
  * Usage:
- *   ACCESS_TOKEN=<pyth-lazer-token> npx tsx src/fetch_prices_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> npx tsx src/fetch_prices_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> FEEDS=346,345 npx tsx src/fetch_prices_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> FEEDS=XAU/USD,XAG/USD npx tsx src/fetch_prices_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> FEEDS=XPD/USD,XPT/USD,XCU/USD npx tsx src/fetch_prices_lazer_rwa.ts
  */
 
 import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
+import { parseFeeds, feedName, CATALOG } from "./feeds.js";
 
-// RWA feed IDs — metals on Pyth Lazer
-const XAU_USD = 346; // Gold spot price
-const XAG_USD = 345; // Silver spot price
-
-const FEED_NAMES: Record<number, string> = {
-  [XAU_USD]: "XAU/USD (Gold)",
-  [XAG_USD]: "XAG/USD (Silver)",
-};
-
-const RWA_FEEDS = [XAU_USD, XAG_USD];
+// Default feeds if FEEDS env var is not set
+const DEFAULT_FEEDS = [346, 345]; // XAU/USD, XAG/USD
 
 const main = async () => {
   const token = process.env.ACCESS_TOKEN;
   if (!token) {
     console.error("ERROR: set ACCESS_TOKEN env var");
     console.error("  export ACCESS_TOKEN=<your-pyth-lazer-token>");
+    process.exit(1);
+  }
+
+  // Parse feed IDs from env or use defaults
+  const feedIds = process.env.FEEDS
+    ? parseFeeds(process.env.FEEDS)
+    : DEFAULT_FEEDS;
+
+  if (feedIds.length === 0) {
+    console.error("ERROR: no feeds specified");
+    console.error("Available feeds:");
+    for (const f of CATALOG) {
+      console.error(`  ${f.id} — ${f.symbol} (${f.name}) [${f.category}]`);
+    }
     process.exit(1);
   }
 
@@ -55,8 +65,7 @@ const main = async () => {
 
         // JSON parsed feeds — human-readable price data
         for (const feed of val.parsed?.priceFeeds ?? []) {
-          const name =
-            FEED_NAMES[feed.priceFeedId] ?? `Feed ${feed.priceFeedId}`;
+          const name = feedName(feed.priceFeedId);
           const parts = [];
           if (feed.price !== undefined) parts.push(`price=${feed.price}`);
           if (feed.exponent !== undefined)
@@ -84,12 +93,11 @@ const main = async () => {
     console.log("WARNING: All WebSocket connections are down");
   });
 
-  // Subscribe to RWA feeds in solana format (shared by Cardano)
-  // Properties match what the on-chain validator expects
+  // Subscribe to configured feeds in solana format (shared by Cardano)
   client.subscribe({
     type: "subscribe",
     subscriptionId: 1,
-    priceFeedIds: RWA_FEEDS,
+    priceFeedIds: feedIds,
     properties: ["price", "exponent", "bestBidPrice", "bestAskPrice"],
     formats: ["solana"],
     deliveryFormat: "json",
@@ -97,7 +105,7 @@ const main = async () => {
     jsonBinaryEncoding: "hex",
   });
 
-  const feedList = RWA_FEEDS.map((id) => FEED_NAMES[id]).join(", ");
+  const feedList = feedIds.map((id) => feedName(id)).join(", ");
   console.log(`Subscribed to: ${feedList}`);
   console.log("Streaming for 10 seconds...\n");
 

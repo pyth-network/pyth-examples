@@ -10,7 +10,9 @@
  * lazer_rwa_threshold validator via pyth.get_updates().
  *
  * Usage:
- *   ACCESS_TOKEN=<pyth-token> CARDANO_MNEMONIC="<24 words>" npx tsx src/submit_tx_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> CARDANO_MNEMONIC="<24 words>" npx tsx src/submit_tx_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> CARDANO_MNEMONIC="..." FEED=XAU/USD npx tsx src/submit_tx_lazer_rwa.ts
+ *   ACCESS_TOKEN=<token> CARDANO_MNEMONIC="..." FEED=1780 npx tsx src/submit_tx_lazer_rwa.ts
  */
 
 import { createClient, ScriptHash, TransactionHash } from "@evolution-sdk/evolution";
@@ -19,12 +21,13 @@ import {
   getPythScriptHash,
   getPythState,
 } from "@pythnetwork/pyth-lazer-cardano-js";
+import { parseFeeds, feedName } from "./feeds.js";
 
 // Pyth deployment on Cardano PreProd
 const POLICY_ID = "d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6";
 
-// RWA feed — XAU/USD (Gold)
-const XAU_USD = 346;
+// Default feed if FEED env var is not set
+const DEFAULT_FEED = 346; // XAU/USD
 
 async function main() {
   const lazerToken = process.env.ACCESS_TOKEN;
@@ -36,14 +39,21 @@ async function main() {
     throw new Error("Set CARDANO_MNEMONIC env var (24-word seed phrase)");
   }
 
+  // Parse feed from env or use default
+  const feedId = process.env.FEED
+    ? parseFeeds(process.env.FEED)[0]
+    : DEFAULT_FEED;
+
+  const name = feedName(feedId);
+
   // Step 1: Fetch latest RWA price from Pyth Lazer
-  console.log("Step 1 — Fetching latest XAU/USD price from Pyth Lazer...");
+  console.log(`Step 1 — Fetching latest ${name} price from Pyth Lazer...`);
   const lazer = await PythLazerClient.create({ token: lazerToken });
   const latestPrice = await lazer.getLatestPrice({
     channel: "fixed_rate@200ms",
     formats: ["solana"],
     jsonBinaryEncoding: "hex",
-    priceFeedIds: [XAU_USD],
+    priceFeedIds: [feedId],
     properties: ["price", "bestBidPrice", "bestAskPrice", "exponent"],
   });
 
@@ -102,7 +112,7 @@ async function main() {
 
   console.log("Waiting for confirmation...");
   await wallet.awaitTx(digest);
-  console.log("Transaction confirmed on Cardano PreProd!");
+  console.log(`Transaction confirmed on Cardano PreProd! (${name})`);
 }
 
 main().catch((err) => {
