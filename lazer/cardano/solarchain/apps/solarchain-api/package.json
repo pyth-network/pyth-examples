@@ -1,0 +1,20 @@
+{
+  "name": "@apps/solarchain-api",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@fastify/cors": "^10.0.2",
+    "fastify": "^5.2.1",
+    "pg": "^8.14.1",
+    "@packages/cardano-core": "file:../../packages/cardano-core",
+    "@packages/solarchain-domain": "file:../../packages/solarchain-domain",
+    "@packages/shared-types": "file:../../packages/shared-types"
+  }
+}
