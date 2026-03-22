@@ -13,7 +13,7 @@ export interface ListingDatumFields {
   invoice_id: string;
   seller: string;
   asking_price_lovelace: number;
-  original_amount_ars: number;
+  original_amount_usd: number;
   pyth_price_at_listing: number;
   pyth_exponent_at_listing: number;
   due_date_posix_ms: number;
@@ -84,7 +84,7 @@ export function buildListInvoiceParams(
   invoicePolicyId: string,
   sellerPkh: string,
   askingPriceLovelace: number,
-  originalAmountArs: number,
+  originalAmountUsd: number,
   pythPrice: number,
   pythExponent: number,
   dueDatePosixMs: number,
@@ -95,7 +95,7 @@ export function buildListInvoiceParams(
       invoice_id: invoiceId,
       seller: sellerPkh,
       asking_price_lovelace: askingPriceLovelace,
-      original_amount_ars: originalAmountArs,
+      original_amount_usd: originalAmountUsd,
       pyth_price_at_listing: pythPrice,
       pyth_exponent_at_listing: pythExponent,
       due_date_posix_ms: dueDatePosixMs,

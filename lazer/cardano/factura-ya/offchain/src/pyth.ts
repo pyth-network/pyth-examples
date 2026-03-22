@@ -30,7 +30,7 @@ export const PYTH_PREPROD_POLICY_ID =
 /** ADA/USD feed ID on Pyth Pro. */
 export const ADA_USD_FEED_ID = 16;
 
-/** USD/ARS feed ID (coming soon on Pyth Pro). */
+/** USD/ARS feed ID (not yet available on Pyth Pro — invoices use USD directly). */
 export const USD_ARS_FEED_ID = 2582;
 
 /** Default WebSocket endpoint for Pyth Pro. */

@@ -13,8 +13,8 @@ import { createHash } from "node:crypto";
 export interface InvoiceInput {
   /** Unique identifier for the invoice. */
   invoiceId: string;
-  /** Invoice amount in ARS (integer, e.g. cents or smallest unit). */
-  amountArs: number;
+  /** Invoice amount in USD (integer, e.g. cents or smallest unit). */
+  amountUsd: number;
   /** Due date as POSIX milliseconds. */
   dueDatePosixMs: number;
   /** Debtor company/person name. */
@@ -26,7 +26,7 @@ export interface InvoiceInput {
 export interface InvoiceDatumFields {
   invoice_id: string;
   seller: string;
-  amount_ars: number;
+  amount_usd: number;
   due_date_posix_ms: number;
   debtor_name: string;
   debtor_contact_hash: string;
@@ -89,7 +89,7 @@ export function buildMintInvoiceParams(
     datum: {
       invoice_id: assetName,
       seller: sellerPkh,
-      amount_ars: invoice.amountArs,
+      amount_usd: invoice.amountUsd,
       due_date_posix_ms: invoice.dueDatePosixMs,
       debtor_name: toHex(invoice.debtorName),
       debtor_contact_hash: contactHash,

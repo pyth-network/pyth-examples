@@ -25,7 +25,7 @@ pub type InvoiceMintRedeemer {
 pub type InvoiceDatum {
   invoice_id: ByteArray,
   seller: VerificationKeyHash,
-  amount_ars: Int,
+  amount_usd: Int,
   due_date_posix_ms: Int,
   debtor_name: ByteArray,
   debtor_contact_hash: ByteArray,
@@ -66,7 +66,7 @@ pub type ListingDatum {
   invoice_id: ByteArray,
   seller: VerificationKeyHash,
   asking_price_lovelace: Int,
-  original_amount_ars: Int,
+  original_amount_usd: Int,
   pyth_price_at_listing: Int,
   pyth_exponent_at_listing: Int,
   due_date_posix_ms: Int,

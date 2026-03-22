@@ -28,11 +28,13 @@ SMEs in Argentina wait 60-90 days to collect on invoices. Traditional factoring 
 Pyth is **central** to the invoice valuation pipeline:
 
 - **On-chain**: The `pyth_oracle.ak` module calls `pyth.get_updates()` to read the verified ADA/USD price feed (feed ID 16) from the Pyth withdraw-script redeemer. Price freshness is validated (max 60 seconds).
-- **Conversion**: `usd_to_lovelace()` converts invoice values from ARS/USD to ADA using the real-time Pyth price, enabling accurate marketplace pricing.
+- **Conversion**: `usd_to_lovelace()` converts invoice values from USD to ADA using the real-time Pyth price, enabling accurate marketplace pricing.
 - **Listing**: When an invoice is listed, the current Pyth price is snapshotted into the listing datum as a reference.
 - **Off-chain**: `PythPriceClient` subscribes to Pyth Pro WebSocket for live price updates, feeding them into transaction construction via the official `@pythnetwork/pyth-lazer-cardano-js` SDK.
 
 **PreProd Policy ID**: `d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6`
+
+> **Note on currency**: Invoices are denominated in USD (not ARS) because Pyth's ADA/USD feed (ID 16) is live, while the ARS/USD feed (ID 2582) is "coming soon". This lets us demonstrate real oracle integration today. Switching to ARS requires only adding a second oracle call when the feed goes live. See [currency-decision.md](custom_docs/currency-decision.md) for details.
 
 ## Architecture
 
@@ -105,7 +107,7 @@ factura_ya/
 ### Prerequisites
 
 - [Aiken](https://aiken-lang.org/) v1.1.21+
-- Node.js 18+
+- Node.js 20+ (required by Lucid Evolution)
 - Pyth API key (from hackathon organizers)
 
 ### Build Contracts
@@ -113,7 +115,7 @@ factura_ya/
 ```bash
 cd contracts
 aiken build
-aiken check  # runs 25 tests
+aiken check  # runs 32 tests
 ```
 
 ### Run Indexer
@@ -124,6 +126,16 @@ npm install
 npm start  # starts on port 3001
 ```
 
+### Run Transaction Server
+
+```bash
+cd offchain
+npm install
+npx tsx src/deploy-server.ts  # starts on port 3002
+```
+
+This server computes parameterized script hashes from the Aiken blueprint and serves standalone HTML pages for wallet interaction (deploy, register invoice). The frontend on :5173 opens these pages when the user triggers on-chain actions.
+
 ### Run Frontend
 
 ```bash
@@ -131,6 +143,33 @@ cd frontend
 npm install
 npm run dev  # starts on port 5173, proxies /api to indexer
 ```
+
+## Architecture Decision: Transaction Server
+
+### Problem
+
+Cardano transaction construction requires [Lucid Evolution](https://github.com/Anastasia-Labs/lucid-evolution), which depends on `libsodium-wrappers-sumo` (WASM cryptography). This library has a known ESM packaging bug: its ESM entry (`modules-sumo-esm/libsodium-wrappers.mjs`) imports `./libsodium-sumo.mjs`, but that file ships in a separate package (`libsodium-sumo`) and isn't resolvable via the relative import.
+
+### What We Tried
+
+| Approach | Result |
+|----------|--------|
+| Lucid in Vite with `vite-plugin-wasm` + `top-level-await` | `libsodium-sumo.mjs` import fails |
+| Vite `resolve.alias` to CJS build | Vite package export resolver blocks subpath |
+| Include Lucid in `optimizeDeps` | `lodash` CJS/ESM mismatch, `safe-buffer` crash |
+| Load Lucid from CDN (`unpkg`) | No ESM build published for `@lucid-evolution/lucid` |
+| Bundle with `esbuild` for browser | WASM imports + `libsodium` + Node builtins all fail |
+| Node 18 → Node 20 upgrade | `libsodium` ESM bug persists across Node versions |
+
+### Current Solution
+
+Transaction construction runs on a **Node.js server** (`offchain/src/deploy-server.ts`, port 3002) where Lucid works natively. The frontend opens standalone HTML pages served by this server for wallet interaction (CIP-30 signing). The server and frontend communicate via a `/status` REST endpoint.
+
+### Path to Production
+
+- **Short term**: Replace Lucid with [MeshJS](https://meshjs.dev/), which is browser-native and avoids the `libsodium` dependency entirely.
+- **Medium term**: Wait for Lucid Evolution to fix their ESM/WASM packaging ([related issue](https://github.com/nicholasgasior/npm-libsodium-sumo/issues)).
+- **Alternative**: Backend-signs architecture where a custodial server key constructs and signs transactions, and the user only confirms intent.
 
 ## License
 

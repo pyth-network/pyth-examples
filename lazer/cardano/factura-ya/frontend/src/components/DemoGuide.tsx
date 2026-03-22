@@ -27,7 +27,7 @@ const steps: Step[] = [
     id: 2,
     title: "Browse the marketplace",
     description:
-      'Check out the listed invoices. Each card shows the original amount (ARS), the discounted price (ADA), the discount percentage, and days until the due date. These are real invoices tokenized as NFTs on Cardano.',
+      'Check out the listed invoices. Each card shows the original amount (USD), the discounted price (ADA), the discount percentage, and days until the due date. These are real invoices tokenized as NFTs on Cardano.',
     action: 'Click "Marketplace" tab',
     completed: (_w, tab) => tab === "marketplace",
   },
@@ -51,7 +51,7 @@ const steps: Step[] = [
     id: 5,
     title: "Submit the invoice",
     description:
-      'Fill in the amount (e.g., 500000 ARS), days to due date (e.g., 90), debtor name (e.g., "TechCorp"), and debtor contact. Click "Tokenize & List". This triggers: NFT mint + collateral lock + marketplace listing in one transaction.',
+      'Fill in the amount (e.g., 5000 USD), days to due date (e.g., 90), debtor name (e.g., "TechCorp"), and debtor contact. Click "Tokenize & List". This triggers: NFT mint + collateral lock + marketplace listing in one transaction.',
     action: "Fill the form and submit",
     completed: () => false,
   },

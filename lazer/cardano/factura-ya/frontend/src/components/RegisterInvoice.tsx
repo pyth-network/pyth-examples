@@ -1,13 +1,13 @@
 import { useState, type FormEvent } from "react";
 import type { ConnectedWallet } from "../lib/wallet.ts";
-import { registerInvoice, type TxResult } from "../lib/transactions.ts";
+import { registerInvoice } from "../lib/transactions.ts";
 
 interface Props {
   wallet: ConnectedWallet | null;
 }
 
 interface InvoiceFormData {
-  amountArs: string;
+  amountUsd: string;
   dueDateDays: string;
   debtorName: string;
   debtorContact: string;
@@ -15,14 +15,11 @@ interface InvoiceFormData {
 
 export function RegisterInvoice({ wallet }: Props) {
   const [form, setForm] = useState<InvoiceFormData>({
-    amountArs: "",
+    amountUsd: "",
     dueDateDays: "90",
     debtorName: "",
     debtorContact: "",
   });
-  const [submitted, setSubmitted] = useState(false);
-  const [txResult, setTxResult] = useState<TxResult | null>(null);
-  const [loading, setLoading] = useState(false);
 
   if (!wallet) {
     return (
@@ -33,65 +30,29 @@ export function RegisterInvoice({ wallet }: Props) {
     );
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const result = await registerInvoice(
-        {
-          amountArs: Number(form.amountArs),
-          dueDateDays: Number(form.dueDateDays),
-          debtorName: form.debtorName,
-          debtorContact: form.debtorContact,
-          sellerAddress: wallet.address,
-        },
-        wallet.api,
-      );
-      setTxResult(result);
-      setSubmitted(true);
-    } catch (err) {
-      setTxResult({
-        success: false,
-        error: err instanceof Error ? err.message : "Transaction failed",
-      });
-    } finally {
-      setLoading(false);
-    }
+    registerInvoice({
+      amountUsd: Number(form.amountUsd),
+      dueDateDays: Number(form.dueDateDays),
+      debtorName: form.debtorName,
+      debtorContact: form.debtorContact,
+      sellerAddress: wallet.address,
+    });
   };
-
-  if (submitted) {
-    return (
-      <div className="success">
-        <h3>Invoice Registered!</h3>
-        <p>
-          Your invoice for {Number(form.amountArs).toLocaleString()} ARS has
-          been tokenized and listed on the marketplace.
-        </p>
-        {txResult?.txHash && (
-          <p className="tx-info">
-            Tx: <code>{txResult.txHash}</code>
-          </p>
-        )}
-        <p className="tx-info">
-          Collateral locked. NFT minted. Listed for investors.
-        </p>
-        <button onClick={() => setSubmitted(false)}>Register Another</button>
-      </div>
-    );
-  }
 
   return (
     <div>
       <h2>Register Invoice</h2>
       <form onSubmit={handleSubmit} className="invoice-form">
         <div className="form-field">
-          <label htmlFor="amountArs">Invoice Amount (ARS)</label>
+          <label htmlFor="amountUsd">Invoice Amount (USD)</label>
           <input
-            id="amountArs"
+            id="amountUsd"
             type="number"
-            placeholder="100000"
-            value={form.amountArs}
-            onChange={(e) => setForm({ ...form, amountArs: e.target.value })}
+            placeholder="1000"
+            value={form.amountUsd}
+            onChange={(e) => setForm({ ...form, amountUsd: e.target.value })}
             required
           />
         </div>
@@ -133,12 +94,12 @@ export function RegisterInvoice({ wallet }: Props) {
           <p>Collateral: ~10% of invoice value will be locked as guarantee</p>
           <p>Wallet: {wallet.info.name} connected</p>
         </div>
-        <button type="submit" className="submit-btn" disabled={loading}>
-          {loading ? "Submitting..." : "Tokenize & List"}
+        <button type="submit" className="submit-btn">
+          Tokenize & List
         </button>
-        {txResult && !txResult.success && (
-          <p className="wallet-error">{txResult.error}</p>
-        )}
+        <p style={{ marginTop: "0.5rem", color: "#666", fontSize: "0.8rem" }}>
+          Opens the signing page to authorize the transaction with your wallet.
+        </p>
       </form>
     </div>
   );

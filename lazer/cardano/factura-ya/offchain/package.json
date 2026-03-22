@@ -8,6 +8,7 @@
     "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@emurgo/cardano-serialization-lib-nodejs": "^15.0.3",
     "@evolution-sdk/evolution": "^0.3.30",
     "@lucid-evolution/lucid": "^0.4.29",
     "@lucid-evolution/provider": "^0.1.90",

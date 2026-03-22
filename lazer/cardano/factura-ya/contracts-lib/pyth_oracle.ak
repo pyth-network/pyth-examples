@@ -63,8 +63,7 @@ pub fn get_price(
 /// ADA/USD price means: 1 ADA = (ada_usd_price * 10^exponent) USD
 /// lovelace = (usd_amount * 10^(6 - exponent)) / ada_usd_price
 ///
-/// For the MVP we treat ARS ≈ USD. With a real ARS/USD feed,
-/// first convert ARS→USD, then use this function for USD→ADA.
+/// Invoices are denominated in USD, matching the available Pyth ADA/USD feed (feed 16).
 pub fn usd_to_lovelace(
   usd_amount: Int,
   ada_usd_price: Int,

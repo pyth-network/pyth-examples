@@ -46,7 +46,7 @@ fn validate_mint(policy_id: PolicyId, tx: Transaction) -> Bool {
   expect list.has(tx.extra_signatories, datum.seller)
 
   // Amount must be positive
-  expect datum.amount_ars > 0
+  expect datum.amount_usd > 0
 
   // Due date must be in the future (after tx validity range start)
   let lower_bound = get_validity_start(tx)

@@ -1,6 +1,34 @@
+import { useEffect, useState } from "react";
 import { DEPLOY } from "../lib/transactions.ts";
 
+interface DeployStatus {
+  deployed: boolean;
+  walletConnected: boolean;
+  walletAddress: string;
+  networkId: number;
+  utxoCount: number;
+}
+
 export function Deploy() {
+  const [status, setStatus] = useState<DeployStatus | null>(null);
+
+  useEffect(() => {
+    const poll = async () => {
+      try {
+        const res = await fetch("http://localhost:3002/status");
+        if (res.ok) setStatus(await res.json());
+      } catch {
+        setStatus(null);
+      }
+    };
+    poll();
+    const interval = setInterval(poll, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const serverUp = status !== null;
+  const deployed = status?.deployed ?? false;
+
   return (
     <div>
       <h2>Deploy Validators</h2>
@@ -22,22 +50,47 @@ export function Deploy() {
           <code>{DEPLOY.marketplace.scriptHash.slice(0, 16)}...</code>
         </div>
         <div className="deploy-row">
-          <span className="deploy-label">Cost</span>
-          <span>~40 tADA (locked in UTxOs, recoverable)</span>
+          <span className="deploy-label">Deploy Server</span>
+          <span style={{ color: serverUp ? "#4caf50" : "#ef5350" }}>
+            {serverUp ? "Running on :3002" : "Not running — start with: cd offchain && npx tsx src/deploy-server.ts"}
+          </span>
         </div>
+        {deployed && (
+          <>
+            <div className="deploy-row">
+              <span className="deploy-label">Status</span>
+              <span style={{ color: "#4caf50" }}>Verified on PreProd</span>
+            </div>
+            <div className="deploy-row">
+              <span className="deploy-label">Wallet</span>
+              <code>{status?.walletAddress?.slice(0, 20)}...</code>
+            </div>
+            <div className="deploy-row">
+              <span className="deploy-label">UTxOs</span>
+              <span>{status?.utxoCount}</span>
+            </div>
+          </>
+        )}
       </div>
 
-      <a
-        href="/deploy.html"
-        target="_blank"
-        className="submit-btn"
-        style={{ display: "inline-block", textDecoration: "none", marginTop: "1rem" }}
-      >
-        Open Deploy Page
-      </a>
-      <p style={{ marginTop: "0.75rem", color: "#666", fontSize: "0.85rem" }}>
-        Opens a standalone page that connects your wallet directly and deploys to PreProd.
-      </p>
+      {deployed ? (
+        <p className="deploy-success">
+          Validators verified on PreProd! Wallet connected with {status?.utxoCount} UTxOs.
+        </p>
+      ) : serverUp ? (
+        <a
+          href="http://localhost:3002"
+          target="_blank"
+          className="submit-btn"
+          style={{ display: "inline-block", textDecoration: "none", marginTop: "1rem" }}
+        >
+          Open Deploy Page
+        </a>
+      ) : (
+        <p style={{ color: "#888", marginTop: "1rem", fontSize: "0.85rem" }}>
+          Start the deploy server first.
+        </p>
+      )}
     </div>
   );
 }

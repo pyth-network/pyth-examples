@@ -1,8 +1,23 @@
 /**
  * Transaction config and deploy addresses for Factura Ya on PreProd.
  *
- * Actual tx construction happens in deploy.html (standalone page)
- * using Lucid Evolution loaded from CDN.
+ * ARCHITECTURE NOTE:
+ * Lucid Evolution (the Cardano tx builder) cannot run inside Vite due to
+ * incompatible WASM/ESM dependencies (libsodium-wrappers-sumo ships a broken
+ * ESM build that references a missing .mjs file). We tried:
+ * - vite-plugin-wasm + top-level-await (libsodium ESM import fails)
+ * - Alias rewrites to CJS build (Vite package export resolver blocks it)
+ * - Including Lucid in optimizeDeps (lodash CJS/ESM mismatch, safe-buffer crash)
+ * - CDN via unpkg (no ESM build published)
+ * - esbuild bundle for browser (WASM imports + libsodium + Node builtins fail)
+ *
+ * SOLUTION: All tx construction runs on a Node server (deploy-server.ts on :3002)
+ * that can use Lucid natively. The frontend opens standalone HTML pages served
+ * by that server, which connect the CIP-30 wallet directly for signing.
+ *
+ * FOR PRODUCTION: Use MeshJS (browser-native Cardano tx builder) or wait for
+ * Lucid Evolution to fix their ESM/WASM packaging. Alternatively, use a
+ * backend-signs architecture with a custodial key.
  */
 
 export const PYTH_PREPROD_POLICY_ID =
@@ -24,6 +39,8 @@ export const DEPLOY = {
   },
 };
 
+const TX_SERVER = "http://localhost:3002";
+
 export interface TxResult {
   success: boolean;
   txHash?: string;
@@ -31,7 +48,7 @@ export interface TxResult {
 }
 
 export interface InvoiceRegistration {
-  amountArs: number;
+  amountUsd: number;
   dueDateDays: number;
   debtorName: string;
   debtorContact: string;
@@ -39,15 +56,14 @@ export interface InvoiceRegistration {
 }
 
 /**
- * Register an invoice — opens the standalone tx page.
- * Full on-chain tx construction requires Lucid which runs in deploy.html.
+ * Register an invoice — opens the tx server page for wallet signing.
  */
-export async function registerInvoice(
-  _params: InvoiceRegistration,
-  _walletApi: unknown,
-): Promise<TxResult> {
-  return {
-    success: false,
-    error: "Use the Deploy page first, then register invoices from the standalone tx page.",
-  };
+export function registerInvoice(params: InvoiceRegistration): void {
+  const qs = new URLSearchParams({
+    amount: String(params.amountUsd),
+    days: String(params.dueDateDays),
+    debtor: params.debtorName,
+    contact: params.debtorContact,
+  });
+  window.open(`${TX_SERVER}/register?${qs}`, "_blank");
 }

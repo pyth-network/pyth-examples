@@ -72,6 +72,25 @@
       "hash": "30268933aae8a060641fa0fb2417b675159dd2e74cc6eae65ad3b813"
     },
     {
+      "title": "invoice_mint_demo.invoice_mint_demo.mint",
+      "redeemer": {
+        "title": "_redeemer",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "compiledCode": "58f601010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748000c01cdd500144c8c966002601a00313259800acc004cdc3800a400514a313370e0029000a0128992513758601a601c601c601c601c601c601c601c601c60166ea80122c8048dd698051806000c5900b1919198008009bab300d300e300e300e300e300b375400844b3001001801c4c8cc896600266e4401c00a2b30013371e00e0051001803201a8998028029809002201a375c60180026eacc034004c03800500d0a5eb7bdb180dd7180518041baa0028b200c180380098019baa0078a4d1365640041",
+      "hash": "279bffe6dc48291aa974d387b9ae36e3c4977b28b27726e998049971"
+    },
+    {
+      "title": "invoice_mint_demo.invoice_mint_demo.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "58f601010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cc01c0092225980099b8748000c01cdd500144c8c966002601a00313259800acc004cdc3800a400514a313370e0029000a0128992513758601a601c601c601c601c601c601c601c601c60166ea80122c8048dd698051806000c5900b1919198008009bab300d300e300e300e300e300b375400844b3001001801c4c8cc896600266e4401c00a2b30013371e00e0051001803201a8998028029809002201a375c60180026eacc034004c03800500d0a5eb7bdb180dd7180518041baa0028b200c180380098019baa0078a4d1365640041",
+      "hash": "279bffe6dc48291aa974d387b9ae36e3c4977b28b27726e998049971"
+    },
+    {
       "title": "marketplace.marketplace.spend",
       "datum": {
         "title": "datum",
@@ -128,6 +147,10 @@
   "definitions": {
     "ByteArray": {
       "dataType": "bytes"
+    },
+    "Data": {
+      "title": "Data",
+      "description": "Any Plutus data."
     },
     "Int": {
       "dataType": "integer"
@@ -273,7 +296,7 @@
               "$ref": "#/definitions/Int"
             },
             {
-              "title": "original_amount_ars",
+              "title": "original_amount_usd",
               "$ref": "#/definitions/Int"
             },
             {
