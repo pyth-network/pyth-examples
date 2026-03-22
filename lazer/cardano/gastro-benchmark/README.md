@@ -1,97 +1,157 @@
-# GastroBenchmark — Fair Price Procurement on Cardano
+# GastroBenchmark
 
-## Summary
-A procurement platform for **restaurants** that validates supplier prices against Pyth Network's real-time commodity price feeds on Cardano.
+`GastroBenchmark` es el microservicio de `Cuqui` para comparar ofertas de proveedores contra referencias internacionales de mercado.
 
-## Problem
-Restaurants overpay for ingredients because they lack transparent price benchmarks. Suppliers charge arbitrary markups with no market reference.
+La idea del sistema es simple: cuando un comerciante busca un producto dentro de `Cuqui`, no solo ve qué proveedor lo vende más barato, sino también cuánto está pagando por encima o por debajo del mercado internacional de la materia prima o commodity relacionada. Esa referencia se construye con Pyth sobre Cardano, con una arquitectura preparada para operar tanto off-chain como on-chain.
 
-## Solution
-GastroBenchmark compares food supplier prices against Pyth Network commodity feeds (wheat, soybean oil, live cattle) and validates fair pricing on-chain.
+## Rol dentro de Cuqui
+`Cuqui` es la plataforma principal.
 
-## Demo
+`Cuqui` se encarga de:
+- ingerir listas de precios de proveedores
+- parsear PDFs, XLSX, DOCX, imágenes y mensajes
+- normalizar productos y ofertas
+- construir el catálogo comprador y la experiencia frontend
 
+`GastroBenchmark` se encarga de:
+- recibir productos u ofertas ya normalizadas desde `Cuqui`
+- mapearlas a benchmarks internacionales de commodities cuando exista cobertura
+- consultar precios Pyth
+- calcular markup contra mercado internacional
+- devolver snapshots, historial en USD y explicaciones listas para UI
+
+En otras palabras: `Cuqui` es la plataforma; `GastroBenchmark` es la capa backend especializada que le agrega contexto de mercado internacional.
+
+## Por qué Cardano + Pyth
+Este proyecto nació para una hackathon y su base conceptual y técnica está en Cardano.
+
+La intención del diseño es que esta capacidad de benchmark internacional viva sobre una arquitectura Cardano + Pyth:
+- hoy, como microservicio backend que consulta y expone información útil para `Cuqui`
+- mañana, también con validaciones y flujos on-chain más fuertes a medida que la cobertura de commodities en Pyth/Cardano madure
+
+Por eso este repo conserva tanto la base on-chain como la capa off-chain:
+- helpers e integración Cardano
+- validadores Aiken
+- cliente de precios Pyth
+- servicio REST para consumo desde `Cuqui`
+
+## Qué resuelve para el comerciante
+Supongamos que un comerciante busca harina.
+
+`Cuqui` puede mostrarle:
+- qué proveedores la ofrecen
+- a qué precio la ofrece cada uno
+- cuál es el precio unitario normalizado
+
+`GastroBenchmark` agrega:
+- cuál es la referencia internacional relevante
+- a qué valor está esa referencia en USD
+- si el comerciante está pagando por encima, cerca o por debajo de esa referencia
+
+La conclusión buscada no es “este proveedor es el más barato” solamente, sino:
+
+“estoy pagando X% por encima o por debajo del mercado internacional para este insumo”.
+
+## Limitación real hoy
+La cobertura actual de commodities en Pyth/Cardano no incluye todos los productos gastronómicos que `Cuqui` puede parsear.
+
+Eso significa que:
+- algunos productos sí tendrán benchmark internacional
+- otros solo podrán compararse con un proxy commodity
+- muchos todavía no tendrán benchmark disponible
+
+Eso no es un bug ni una inconsistencia del proyecto. Es parte explícita del diseño. El microservicio está preparado para crecer con la cobertura real de Pyth/Cardano sin prometer una precisión que hoy todavía no existe.
+
+## Estado técnico actual
+- Base Cardano preservada en `src/contract.ts`, `src/onchain-update.ts`, `src/transaction.ts` y los validadores Aiken
+- Capa benchmark off-chain en `src/pyth.ts`, `src/benchmark-catalog.ts` y `src/benchmark-service.ts`
+- API REST en `src/server.ts`
+- Dashboard CLI para demo en `src/dashboard.ts`
+
+## Flujo entre Cuqui y GastroBenchmark
+1. `Cuqui` ingiere documentos de proveedores y extrae productos.
+2. `Cuqui` normaliza nombres, unidades, precios y ofertas.
+3. `Cuqui` consulta este microservicio con esa información normalizada.
+4. `GastroBenchmark` responde con benchmark internacional, historial y comparación.
+5. `Cuqui` renderiza ese resultado en el frontend para el comerciante.
+
+## API
+```text
+GET  /health
+GET  /feeds
+GET  /benchmarks/latest
+GET  /benchmarks/history?benchmarkId=3018&points=24
+POST /compare/products
+POST /compare/offers
+```
+
+### Input esperado desde Cuqui
+```json
+{
+  "items": [
+    {
+      "catalogProductId": "prod_123",
+      "productName": "Harina de maiz amarilla",
+      "categoryRoot": "Harinas",
+      "baseUnit": "kg",
+      "baseUnitPrice": 0.22,
+      "currency": "USD",
+      "supplierName": "Molino Norte"
+    }
+  ]
+}
+```
+
+### Respuesta ejemplo
+```json
+{
+  "results": [
+    {
+      "benchmarkStatus": "matched",
+      "comparisonStatus": "watch",
+      "benchmarkKind": "direct_match",
+      "comparisonUnit": "usd/kg",
+      "comparisonPriceUsd": 0.177157,
+      "markupPercent": 24.18,
+      "explanation": "La comparacion usa un benchmark commodity disponible hoy en Pyth/Cardano y lo proyecta a la unidad normalizada del producto."
+    }
+  ]
+}
+```
+
+## Estados relevantes de respuesta
+- `matched`: hay benchmark internacional utilizable
+- `market_closed_fallback_used`: se usó un punto histórico reciente
+- `unit_not_comparable`: existe benchmark, pero no hay comparación confiable con la unidad normalizada actual
+- `no_pyth_cardano_coverage`: el producto todavía no tiene cobertura en Pyth/Cardano
+- `future_mapping_candidate`: existe idea de mapping, pero todavía no hay precio comparable útil
+
+## Desarrollo
 ```bash
 npm install
+npm run serve
+```
+
+Dashboard:
+```bash
 npm run dashboard
 ```
 
-**Output:**
-```
-🍽️  GastroBenchmark — Fair Price Procurement for Restaurants
-
-📊 MARKET BENCHMARKS (Pyth Network):
-   Harina 000     | WHEAT/USD     | $0.82
-   Aceite Soja   | SOYBEAN_OIL/  | $1.22
-   Carne Vacuna  | LIVE_CATTLE/  | $4.10
-
-📋 SUPPLIER PRICE COMPARISON:
-────────────────────────────────────────────────────────────
-Proveedor                 Producto      Precio    Ref. Pyth   Markup
-────────────────────────────────────────────────────────────
-Molinos Río de la Plata   Harina 000    $0.87     $0.82       🟢 +6.1%
-Proveedor Norte           Harina 000    $0.95     $0.82       🟡 +15.9%
-La Serenísima             Aceite Soja   $1.31     $1.22       🟢 +7.4%
-Premium Meat              Carne Vacuna  $5.50     $4.10       🔴 +34.1%
-────────────────────────────────────────────────────────────
+Verificación:
+```bash
+npm test
+npm run check
 ```
 
-**Green 🟢** = Fair price (≤10% premium)
-**Yellow 🟡** = Acceptable (≤25% premium)
-**Red 🔴** = Overpriced (>25% premium)
+## Variables de entorno
+- `PYTH_API_KEY`: requerida para snapshots e historial vía Pyth Lazer
+- `PORT`: puerto HTTP del microservicio, por defecto `8080`
+- `BLOCKFROST_KEY`: integración Cardano cuando se use la capa Lucid
+- `WALLET_SEED`: integración Cardano para flujos on-chain
 
-## How it works
-1. **Pyth Network** provides real-time commodity price feeds
-2. **Smart contract** validates: `supplier_price ≤ market_price × 1.30`
-3. **Purchase orders** settled on Cardano with price attestation
-
-## Food Commodities
-| Commodity | Pyth Feed | Use in Restaurants |
-|-----------|-----------|-------------------|
-| Harina 000 | WHEAT/USD (XW) | Bread, pasta, pastries |
-| Aceite Soja | SOYBEAN_OIL/USD (XB) | Cooking, frying |
-| Carne Vacuna | LIVE_CATTLE/USD (GF) | Steaks, cuts |
-
-## Pyth Integration
-- **Feeds:** Wheat (XW/USD), Soybean Oil (XB/USD), Live Cattle (GF/USD)
-- **Network:** Cardano PreProd
-- **Policy ID:** `d799d287105dea9377cdf9ea8502a83d2b9eb2d2050a8aea800a21e6`
-- **SDK:** `@pythnetwork/pyth-lazer-cardano-js`
-
-## Project Structure
-```
-lazer/cardano/gastro-benchmark/
-├── src/
-│   ├── index.ts          # Pyth Lazer client setup
-│   ├── onchain-update.ts # Price validation functions
-│   └── dashboard.ts      # CLI dashboard demo
-├── onchain/gastro_benchmark_working/
-│   ├── validators/
-│   │   └── gastro_benchmark.ak  # Aiken smart contract
-│   └── plutus.json      # Compiled validator blueprint
-└── README.md
-```
-
-## Tech Stack
-- **Off-chain:** TypeScript, Node.js
-- **On-chain:** Aiken (Cardano Plutus V3)
-- **Oracle:** Pyth Network Lazer
-- **Network:** Cardano PreProd Testnet
-
-## Team: Cuqui
-- **Pablo Cardozo** — Smart contracts & integration
-- **Nashira Oropeza** — Data & dashboard
-
-## Business Value
-- Restaurants stop overpaying for ingredients
-- Transparent price validation on-chain
-- Suppliers compete on fair pricing
-
-## Future Work
-- [ ] Connect to live Pyth Lazer WebSocket API
-- [ ] Deploy smart contract to Cardano PreProd
-- [ ] Add more commodities (corn, coffee, sugar)
-- [ ] Web UI for restaurant managers
-
-## License
-Apache-2.0
+## Roadmap
+- ampliar el catálogo de mappings producto -> commodity
+- guardar historial persistente en USD por feed
+- reforzar integración on-chain con Cardano
+- consumir más commodities a medida que Pyth/Cardano se acerque a la cobertura del mercado web2
+- mostrar estas comparaciones directamente dentro de `Cuqui` para comerciantes finales

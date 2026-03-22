@@ -1,11 +1,14 @@
 {
   "name": "gastro-benchmark",
   "version": "1.0.0",
-  "description": "",
+  "description": "Backend microservice for Cuqui that compares supplier offers against international commodity benchmarks using Pyth and Cardano.",
   "main": "index.js",
   "scripts": {
+    "serve": "ts-node src/server.ts",
+    "start": "ts-node src/server.ts",
     "dashboard": "ts-node src/dashboard.ts",
-    "test": "ts-node test.ts"
+    "test": "ts-node test.ts",
+    "check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",

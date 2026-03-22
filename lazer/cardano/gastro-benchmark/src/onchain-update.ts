@@ -1,11 +1,13 @@
-import { client, FEEDS } from "./index";
+import { BenchmarkService } from "./benchmark-service";
+import { GASTRONOMY_BENCHMARKS } from "./benchmark-catalog";
 
-// Mapea productos a sus correspondientes Pyth feeds
-function mapProductToFeed(product: string): string {
+const service = new BenchmarkService();
+
+function mapProductToFeed(product: string): number {
   const lower = product.toLowerCase();
-  if (lower.includes("harina") || lower.includes("trigo")) return FEEDS.WHEAT;
-  if (lower.includes("aceite") || lower.includes("soja")) return FEEDS.SOY_OIL;
-  return FEEDS.CATTLE;
+  if (lower.includes("azucar")) return 3015;
+  if (lower.includes("forward")) return 3019;
+  return 3018;
 }
 
 /**
@@ -16,11 +18,23 @@ function mapProductToFeed(product: string): string {
 export async function getPythUpdatesForTx(supplierProducts: string[]) {
   const feedIds = supplierProducts.map(mapProductToFeed);
   const uniqueFeedIds = [...new Set(feedIds)]; // Deduplicar feeds
-
-  const updates = await client.getLatestPriceUpdate({ feedIds: uniqueFeedIds });
+  const updates = await Promise.all(
+    uniqueFeedIds.map(async (feedId) => {
+      const benchmark = GASTRONOMY_BENCHMARKS.find((item) => item.id === feedId);
+      if (!benchmark) {
+        return null;
+      }
+      const { history } = await service.getBenchmarkHistory(feedId, 1);
+      return {
+        feedId,
+        benchmark: benchmark.symbol,
+        latestUsd: history[history.length - 1]?.price ?? null,
+      };
+    }),
+  );
 
   return {
-    updates,
+    updates: updates.filter(Boolean),
     feedIds: uniqueFeedIds
   };
 }
@@ -36,11 +50,19 @@ export async function isFairPrice(
   supplierPriceUSD: number,
   maxMarkupPercentage: number = 30
 ): Promise<boolean> {
-  const feedId = mapProductToFeed(product);
-  const update = await client.getLatestPriceUpdate({ feedIds: [feedId] });
+  const [comparison] = await service.compareOffers([
+    {
+      productName: product,
+      baseUnitPrice: supplierPriceUSD,
+      currency: "USD",
+      baseUnit: product.toLowerCase().includes("azucar") ? "lb" : "bushel",
+    },
+  ]);
 
-  const pythPrice = Number(update.price.price) / 10**update.price.expo;
-  const maxAllowed = pythPrice * (1 + maxMarkupPercentage / 100);
+  if (!comparison?.comparisonPriceUsd) {
+    return false;
+  }
 
+  const maxAllowed = comparison.comparisonPriceUsd * (1 + maxMarkupPercentage / 100);
   return supplierPriceUSD <= maxAllowed;
 }

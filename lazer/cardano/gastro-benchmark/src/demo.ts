@@ -6,14 +6,20 @@ import { Data, Constr, fromText } from "lucid-cardano";
 const WHEAT_FEED_ID = "0xe9d069730ab74e167cfbb4e8de6cf1a38c04a2c5f2f39a6800b5820ec9e3a19";
 
 // Datum: purchase order
-const PurchaseOrderDatum = Data.Object({
+const PurchaseOrderDatumSchema = Data.Object({
   supplier_id: Data.Bytes(),
   product_feed_id: Data.Bytes(),
   supplier_price: Data.Integer(),
   quantity: Data.Integer(),
   buyer_pkh: Data.Bytes(),
 });
-type PurchaseOrderDatum = Data.Static<typeof PurchaseOrderDatum>;
+type PurchaseOrderDatum = {
+  supplier_id: string;
+  product_feed_id: string;
+  supplier_price: bigint;
+  quantity: bigint;
+  buyer_pkh: string;
+};
 
 async function lockPurchaseOrder() {
   const lucid = await getLucid();
@@ -48,7 +54,7 @@ async function lockPurchaseOrder() {
     .newTx()
     .payToContract(
       getContractAddress(lucid),
-      { inline: Data.to(datum, PurchaseOrderDatum) },
+      { inline: Data.to(datum, PurchaseOrderDatumSchema) },
       { lovelace: 5_000_000n }   // 5 ADA deposit
     )
     .complete();
@@ -75,7 +81,7 @@ async function redeemWithPythValidation() {
   console.log("📡 Fetching Pyth price update...");
   try {
     const pythUpdates = await getPythUpdatesForTx([WHEAT_FEED_ID]);
-    console.log(`   Wheat price from Pyth: $${pythUpdates.updates.price || "N/A"} USD`);
+    console.log(`   Wheat price from Pyth: $${pythUpdates.updates[0]?.latestUsd ?? "N/A"} USD`);
   } catch (e) {
     console.log("   Note: Pyth fetch may fail without valid subscription");
   }

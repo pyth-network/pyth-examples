@@ -1,8 +1,9 @@
 import {
   fetchLatestGastronomyBenchmarks,
   shutdownPythClient,
-  type ResolvedBenchmark,
+  type PriceProvider,
 } from "./pyth";
+import type { BenchmarkSnapshot } from "./types";
 
 type SupplierQuote = {
   supplier: string;
@@ -47,7 +48,7 @@ function classifyMarkup(markup: number): string {
   return "GREEN";
 }
 
-function printBenchmarks(benchmarks: ResolvedBenchmark[]) {
+function printBenchmarks(benchmarks: BenchmarkSnapshot[]) {
   console.log("\nREAL-TIME PYTH BENCHMARKS (commodity only)");
   console.log("=".repeat(114));
   console.log(
@@ -64,7 +65,7 @@ function printBenchmarks(benchmarks: ResolvedBenchmark[]) {
     console.log(
       benchmark.displayName.padEnd(20) +
         benchmark.symbol.padEnd(26) +
-        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit).padEnd(22) +
+        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit ?? benchmark.benchmarkUnit).padEnd(22) +
         formatConfidence(benchmark.confidence).padEnd(18) +
         benchmark.marketSession.padEnd(10) +
         String(benchmark.publisherCount),
@@ -74,7 +75,7 @@ function printBenchmarks(benchmarks: ResolvedBenchmark[]) {
   console.log("-".repeat(114));
 }
 
-function printSupplierComparison(benchmarks: ResolvedBenchmark[]) {
+function printSupplierComparison(benchmarks: BenchmarkSnapshot[]) {
   const benchmarkMap = new Map(benchmarks.map((item) => [item.id, item]));
 
   let fairCount = 0;
@@ -100,7 +101,7 @@ function printSupplierComparison(benchmarks: ResolvedBenchmark[]) {
       continue;
     }
 
-    const quoteLabel = `$${quote.quotedPrice.toFixed(4)} ${benchmark.supplierUnit}`;
+    const quoteLabel = `$${quote.quotedPrice.toFixed(4)} ${benchmark.supplierUnit ?? benchmark.benchmarkUnit}`;
 
     if (benchmark.benchmarkPrice === null) {
       unavailableCount++;
@@ -126,7 +127,7 @@ function printSupplierComparison(benchmarks: ResolvedBenchmark[]) {
       quote.supplier.padEnd(22) +
         quote.product.padEnd(24) +
         quoteLabel.padEnd(22) +
-        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit).padEnd(20) +
+        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit ?? benchmark.benchmarkUnit).padEnd(20) +
         status.padEnd(14) +
         `${markup >= 0 ? "+" : ""}${markup.toFixed(1)}%`,
     );
@@ -138,7 +139,7 @@ function printSupplierComparison(benchmarks: ResolvedBenchmark[]) {
   );
 }
 
-function printNotes(benchmarks: ResolvedBenchmark[]) {
+function printNotes(benchmarks: BenchmarkSnapshot[]) {
   console.log("\nNOTES");
   console.log("=".repeat(114));
   console.log("1. All benchmark rows come from Pyth Pro `/v1/latest_price` using `PYTH_API_KEY` from `.env`.");

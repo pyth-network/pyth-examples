@@ -1,34 +1,43 @@
-import { PythLazerClient } from "@pythnetwork/pyth-lazer-cardano-js";
-import { PreProd } from "@pythnetwork/pyth-lazer-cardano-js/dist/networks";
+import { BenchmarkService } from "./benchmark-service";
+import { GASTRONOMY_BENCHMARKS } from "./benchmark-catalog";
 
-// Pyth Lazer API Key
-const API_KEY = "k26VoFRNUQ0LtXjTghKKOv7IZI0lXdC1KcH-cardano";
-
-// Commodity feed IDs (obtenidos de https://pyth.network/developers/price-feed-ids)
 const FEEDS = {
-  WHEAT: "0x6e5d9b6a7b3a9f8c2d1e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c",
-  SOY_OIL: "0x1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
-  CATTLE: "0x2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c"
-};
+  CORN_SPOT: GASTRONOMY_BENCHMARKS[0]?.id ?? 3018,
+  CORN_FORWARD: GASTRONOMY_BENCHMARKS[1]?.id ?? 3019,
+  RAW_SUGAR: GASTRONOMY_BENCHMARKS[2]?.id ?? 3015,
+} as const;
 
-const client = new PythLazerClient({
-  apiKey: API_KEY,
-  network: PreProd
-});
+async function validateSupplierPrice(
+  supplierPriceUSD: number,
+  commodity: keyof typeof FEEDS,
+): Promise<boolean> {
+  const service = new BenchmarkService();
+  const benchmarkId = FEEDS[commodity];
+  const benchmark = GASTRONOMY_BENCHMARKS.find((item) => item.id === benchmarkId);
+  if (!benchmark) {
+    throw new Error(`Unsupported commodity: ${commodity}`);
+  }
 
-async function validateSupplierPrice(supplierPriceUSD: number, commodity: keyof typeof FEEDS) {
-  const feedId = FEEDS[commodity];
-  const update = await client.getLatestPriceUpdate({ feedIds: [feedId] });
+  const [result] = await service.compareOffers([
+    {
+      productName: benchmark.displayName,
+      categoryRoot: benchmark.marketFocus,
+      baseUnit: benchmark.benchmarkUnit.replace("usd/", "") as "kg" | "lb" | "bushel" | "cwt" | "unit",
+      baseUnitPrice: supplierPriceUSD,
+      currency: "USD",
+    },
+  ]);
 
-  const pythPrice = Number(update.price.price) / 10**update.price.expo;
-  const maxMarkup = pythPrice * 1.3; // 30% max sobre mercado
+  if (!result || result.comparisonStatus === "no_benchmark" || result.comparisonPriceUsd === undefined) {
+    throw new Error("No benchmark available for validation");
+  }
 
-  console.log(`Pyth ${commodity}: $${pythPrice.toFixed(4)} USD`);
+  const maxAllowed = result.comparisonPriceUsd * 1.3;
+  console.log(`Pyth ${commodity}: $${result.comparisonPriceUsd.toFixed(4)} USD`);
   console.log(`Supplier: $${supplierPriceUSD} USD`);
-  console.log(`Max allowed: $${maxMarkup.toFixed(4)} USD`);
-  console.log(`Valid: ${supplierPriceUSD <= maxMarkup ? "✅ PASS" : "❌ FAIL"}`);
-
-  return supplierPriceUSD <= maxMarkup;
+  console.log(`Max allowed: $${maxAllowed.toFixed(4)} USD`);
+  console.log(`Valid: ${supplierPriceUSD <= maxAllowed ? "PASS" : "FAIL"}`);
+  return supplierPriceUSD <= maxAllowed;
 }
 
-export { validateSupplierPrice, FEEDS, client };
+export { validateSupplierPrice, FEEDS };
