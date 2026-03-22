@@ -1,8 +1,9 @@
 import {
   Constr,
   Data,
+  credentialToRewardAddress,
   fromText,
-  validatorToRewardAddress,
+  validatorToScriptHash,
   type LucidEvolution,
   type Network,
   type UTxO,
@@ -18,8 +19,9 @@ const PYTH_LAZER_WS_URL = "wss://pyth-lazer.dourolabs.app/v1/stream";
 
 export interface PythContext {
   stateUtxo: UTxO;
-  withdrawScriptHash: string;
-  withdrawValidator: WithdrawalValidator;
+  withdrawScriptHash: string;     // 28-byte hash hex (from datum.fields[3])
+  withdrawValidator?: WithdrawalValidator;  // Optional: compiled validator (for inline attach)
+  withdrawRefUtxo?: UTxO;         // Optional: UTxO with script as reference
   rewardAddress: string;
 }
 
@@ -46,14 +48,29 @@ export async function getPythContext(
   }
   const withdrawScriptHash = datum.fields[3] as string;
 
-  // Build the reward address for the zero-withdrawal
-  const withdrawValidator: WithdrawalValidator = {
-    type: "PlutusV3",
-    script: withdrawScriptHash,
-  };
-  const rewardAddress = validatorToRewardAddress(network, withdrawValidator);
+  // Build reward address directly from the 28-byte script hash
+  const rewardAddress = credentialToRewardAddress(network, {
+    type: "Script",
+    hash: withdrawScriptHash,
+  });
 
-  return { stateUtxo, withdrawScriptHash, withdrawValidator, rewardAddress };
+  // Look for the withdrawal validator reference script at the contract address
+  let withdrawRefUtxo: UTxO | undefined;
+  try {
+    const contractUtxos = await lucid.utxosAt(stateUtxo.address);
+    withdrawRefUtxo = contractUtxos.find((u) => {
+      if (!u.scriptRef) return false;
+      try {
+        return validatorToScriptHash(u.scriptRef as WithdrawalValidator) === withdrawScriptHash;
+      } catch {
+        return false;
+      }
+    });
+  } catch {
+    // Non-fatal: reference script lookup failed
+  }
+
+  return { stateUtxo, withdrawScriptHash, withdrawRefUtxo, rewardAddress };
 }
 
 /**

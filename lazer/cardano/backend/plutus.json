@@ -12,6 +12,25 @@
   },
   "validators": [
     {
+      "title": "mock_pyth_withdraw.mock_pyth_withdraw.withdraw",
+      "redeemer": {
+        "title": "_redeemer",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "compiledCode": "585301010029800aba2aba1aab9eaab9dab9a4888896600264653001300600198031803800cc0180092225980099b8748010c01cdd500144c928980498041baa0028b200c180300098019baa0068a4d13656400401",
+      "hash": "4ab26c95029067185f709d140300cccb15b0b20bbd62a7e9aa2e2e10"
+    },
+    {
+      "title": "mock_pyth_withdraw.mock_pyth_withdraw.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "585301010029800aba2aba1aab9eaab9dab9a4888896600264653001300600198031803800cc0180092225980099b8748010c01cdd500144c928980498041baa0028b200c180300098019baa0068a4d13656400401",
+      "hash": "4ab26c95029067185f709d140300cccb15b0b20bbd62a7e9aa2e2e10"
+    },
+    {
       "title": "pay_with_pyth.pay_with_pyth.spend",
       "datum": {
         "title": "_datum",
@@ -90,6 +109,10 @@
     }
   ],
   "definitions": {
+    "Data": {
+      "title": "Data",
+      "description": "Any Plutus data."
+    },
     "Int": {
       "dataType": "integer"
     },
