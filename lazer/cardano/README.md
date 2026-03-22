@@ -19,4 +19,9 @@ Aceptar la request significa que el sponsor lockea suficiente ADA (con margen) p
 * Hace la cuenta de cuantos ada tiene que transferir al usuario
 * Transfiere los ADA al usuario
 * Devuelve el resto, si sobra, al sponsor
-  * Si no alcanza le manda todo lo que se lockeo al usuario
+* Si no alcanza le manda todo lo que se lockeo al usuario
+
+Version inicial:
+
+El sponsor no acepta la request, sino que el usuario la genera y se acepta automaticamente con una cobertura fija del 100%.
+Una vez hecha la request el usuario debe tener forma de visualizarla y cobrarla en el momento que quiera.
