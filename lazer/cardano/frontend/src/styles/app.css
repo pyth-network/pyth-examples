@@ -29,6 +29,23 @@
   backdrop-filter: none;
 }
 
+.panel--utility {
+  padding: 1rem 1rem 0.9rem;
+  border-color: rgba(47, 70, 104, 0.6);
+  background: linear-gradient(140deg, rgba(12, 27, 45, 0.82), rgba(8, 18, 31, 0.9));
+  box-shadow: 0 10px 24px -18px rgba(8, 32, 59, 0.6);
+}
+
+.panel--primary-action {
+  border-color: rgba(198, 255, 26, 0.56);
+  box-shadow: 0 14px 30px -24px rgba(198, 255, 26, 0.34);
+}
+
+.panel--secondary-action {
+  border-color: rgba(47, 70, 104, 0.72);
+  box-shadow: 0 16px 40px -34px rgba(14, 56, 100, 0.45);
+}
+
 .panel__header {
   display: flex;
   align-items: baseline;
@@ -49,9 +66,12 @@
 
 .hero {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: var(--space-6);
-  align-items: start;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.hero-intro {
+  max-width: 70rem;
 }
 
 .eyebrow {
@@ -78,7 +98,24 @@
 
 .hero-controls {
   display: grid;
+  gap: var(--space-3);
+}
+
+.hero-controls__top {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero-controls__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
+  align-items: start;
+}
+
+.hero-controls__grid--utility {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
 }
 
 .top-metrics {
@@ -107,8 +144,13 @@
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 0.95fr 1.05fr;
+  grid-template-columns: 1.14fr 0.86fr;
   gap: var(--space-5);
+}
+
+.user-dashboard-stack {
+  display: grid;
+  gap: var(--space-4);
 }
 
 .dashboard-grid--single {
@@ -181,9 +223,17 @@
   gap: var(--space-3);
 }
 
+.live-price-panel--compact {
+  gap: 0.55rem;
+}
+
 .wallet-panel {
   display: grid;
   gap: var(--space-3);
+}
+
+.wallet-panel--compact {
+  gap: 0.6rem;
 }
 
 .wallet-panel__header {
@@ -202,6 +252,11 @@
 .wallet-panel__title h2 {
   margin: 0;
   font-size: 1.1rem;
+}
+
+.wallet-panel--compact .wallet-panel__title h2 {
+  font-size: 0.96rem;
+  opacity: 0.94;
 }
 
 .wallet-icon {
@@ -223,9 +278,18 @@
   color: var(--success);
 }
 
+.wallet-panel--compact .status-pill {
+  font-size: 0.68rem;
+  padding: 0.2rem 0.52rem;
+}
+
 .wallet-meta {
   display: grid;
   gap: var(--space-2);
+}
+
+.wallet-panel--compact .wallet-meta {
+  gap: 0.35rem;
 }
 
 .wallet-meta__item {
@@ -234,6 +298,11 @@
   gap: var(--space-3);
   padding-top: var(--space-2);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wallet-panel--compact .wallet-meta__item {
+  padding-top: 0.35rem;
+  font-size: 0.83rem;
 }
 
 .wallet-meta__item span {
@@ -245,9 +314,18 @@
   text-align: right;
 }
 
+.wallet-panel--compact .wallet-meta__item strong {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
 .wallet-actions {
   display: flex;
   gap: var(--space-2);
+}
+
+.wallet-panel--compact .wallet-actions {
+  justify-content: flex-start;
 }
 
 .source-tag {
@@ -264,11 +342,64 @@
   line-height: 1;
 }
 
-.live-price-refresh {
-  justify-self: start;
-  background: rgba(59, 230, 255, 0.14);
-  border-color: rgba(59, 230, 255, 0.5);
-  color: var(--text);
+.live-price-panel--compact .live-price-value {
+  font-size: 1.22rem;
+}
+
+.live-price-panel--compact .panel__header {
+  margin-bottom: 0.3rem;
+}
+
+.live-price-panel--compact .panel__header h2 {
+  font-size: 0.95rem;
+  opacity: 0.92;
+}
+
+.live-price-header {
+  margin-bottom: 0.35rem;
+  align-items: center;
+}
+
+.panel-icon-button {
+  border: 1px solid rgba(59, 230, 255, 0.5);
+  background: rgba(59, 230, 255, 0.13);
+  color: #d8f7ff;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.panel-icon-button:hover:not(:disabled) {
+  border-color: rgba(59, 230, 255, 0.82);
+  background: rgba(59, 230, 255, 0.2);
+}
+
+.panel-icon-button svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.panel-icon-button.is-loading svg {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 input,
@@ -300,6 +431,29 @@ input[type='range'] {
 .request-form {
   display: grid;
   gap: var(--space-4);
+}
+
+.panel__header-stack {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.request-form-panel .panel__header {
+  margin-bottom: var(--space-5);
+}
+
+.request-form-panel .panel__header h2 {
+  font-size: 1.65rem;
+  line-height: 1.02;
+}
+
+.request-form-eyebrow {
+  margin: 0;
+  color: var(--accent-lime);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .request-form label {
@@ -342,6 +496,20 @@ input[type='range'] {
   color: var(--text);
 }
 
+.button--tertiary {
+  background: rgba(59, 230, 255, 0.14);
+  border-color: rgba(59, 230, 255, 0.42);
+  color: #d7efff;
+  padding: 0.46rem 0.75rem;
+  font-size: 0.82rem;
+}
+
+.button--tertiary:hover:not(:disabled) {
+  background: rgba(59, 230, 255, 0.2);
+  border-color: rgba(59, 230, 255, 0.72);
+  color: #ecf7ff;
+}
+
 .button--primary:hover {
   box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
@@ -356,6 +524,36 @@ input[type='range'] {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
+}
+
+.request-list-filters {
+  margin-bottom: var(--space-4);
+}
+
+.requests-collapsible .panel__header {
+  align-items: center;
+}
+
+.panel-toggle-button {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  width: 1.4rem;
+  height: 1.4rem;
+  padding: 0;
+  line-height: 1;
+  font-size: 0.95rem;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+}
+
+.panel-toggle-button:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  color: var(--text);
+}
+
+.panel-summary {
+  margin: 0;
 }
 
 .request-list {
@@ -511,12 +709,12 @@ input[type='range'] {
 }
 
 @media (max-width: 1080px) {
-  .hero {
-    grid-template-columns: 1fr;
-  }
-
   .top-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero-controls__grid {
+    grid-template-columns: 1fr;
   }
 
   .dashboard-grid {
