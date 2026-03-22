@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "server": "tsx src/deploy-server.ts",
+    "test-mint": "tsx src/test-mint.ts"
   },
   "dependencies": {
     "@anastasia-labs/cardano-multiplatform-lib-nodejs": "^6.0.2-3",

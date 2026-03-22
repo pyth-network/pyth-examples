@@ -110,39 +110,33 @@ factura_ya/
 - Node.js 20+ (required by Lucid Evolution)
 - Pyth API key (from hackathon organizers)
 
-### Build Contracts
+### Quick Start
 
 ```bash
-cd contracts
-aiken build
-aiken check  # runs 32 tests
+# Install everything (contracts + offchain + frontend + indexer)
+npm run install:all
+
+# Build & test smart contracts (32 tests)
+npm run contracts:build
+npm run contracts:test
+
+# Start services (run each in a separate terminal)
+npm run server      # tx server on :3002 — builds, signs, submits txs
+npm run frontend    # React UI on :5173
+npm run indexer     # optional: Oura API on :3001
 ```
 
-### Run Indexer
+### Individual Commands
 
-```bash
-cd indexer
-npm install
-npm start  # starts on port 3001
-```
-
-### Run Transaction Server
-
-```bash
-cd offchain
-npm install
-npx tsx src/deploy-server.ts  # starts on port 3002
-```
-
-This server computes parameterized script hashes from the Aiken blueprint and serves standalone HTML pages for wallet interaction (deploy, register invoice). The frontend on :5173 opens these pages when the user triggers on-chain actions.
-
-### Run Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev  # starts on port 5173, proxies /api to indexer
-```
+| Command | Description |
+|---------|-------------|
+| `npm run install:all` | Install deps for all sub-projects |
+| `npm run contracts:build` | Compile Aiken smart contracts |
+| `npm run contracts:test` | Run 32 Aiken unit tests |
+| `npm run server` | Start tx server (port 3002) |
+| `npm run frontend` | Start React frontend (port 5173) |
+| `npm run indexer` | Start Oura indexer API (port 3001) |
+| `npm run test-mint` | Mint a test NFT (needs `WALLET_ADDRESS` env) |
 
 ## Architecture Decision: Transaction Server
 
