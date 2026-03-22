@@ -4,6 +4,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
+import { executeCancelFlow } from "../deployment/services/cancelFlow.js";
 import { executeLockFlow } from "../deployment/services/lockFlow.js";
 
 interface CreateRequestPayload {
@@ -100,6 +101,33 @@ const selectAllRequests = db.prepare(`
     lock_tx_draft_json AS lockTxDraftJson
   FROM requests
   ORDER BY created_at DESC
+`);
+
+const selectRequestById = db.prepare(`
+  SELECT
+    id,
+    requester_address_hex AS requesterAddressHex,
+    sponsor_address_hex AS sponsorAddressHex,
+    usd_amount AS usdAmount,
+    lock_ada AS lockAda,
+    lock_lovelace AS lockLovelace,
+    ada_usd AS adaUsd,
+    coverage_multiplier AS coverageMultiplier,
+    status,
+    description,
+    due_date AS dueDate,
+    created_at AS createdAt,
+    lock_tx_id AS lockTxId,
+    lock_tx_draft_json AS lockTxDraftJson
+  FROM requests
+  WHERE id = $id
+  LIMIT 1
+`);
+
+const updateRequestStatus = db.prepare(`
+  UPDATE requests
+  SET status = $status
+  WHERE id = $id
 `);
 
 function sendJson(res: ServerResponse, statusCode: number, payload: unknown): void {
@@ -199,23 +227,25 @@ function usdToCents(usdAmount: number): bigint {
 
 const server = createServer(async (req, res) => {
   try {
+    const requestUrl = new URL(req.url ?? "/", "http://localhost");
+
     if (req.method === "OPTIONS") {
       sendJson(res, 200, { ok: true });
       return;
     }
 
-    if (req.method === "GET" && req.url === "/api/health") {
+    if (req.method === "GET" && requestUrl.pathname === "/api/health") {
       sendJson(res, 200, { ok: true, dbPath });
       return;
     }
 
-    if (req.method === "GET" && req.url === "/api/requests") {
+    if (req.method === "GET" && requestUrl.pathname === "/api/requests") {
       const rows = selectAllRequests.all();
       sendJson(res, 200, { requests: rows.map(toRequestOutput) });
       return;
     }
 
-    if (req.method === "POST" && req.url === "/api/lock-transaction") {
+    if (req.method === "POST" && requestUrl.pathname === "/api/lock-transaction") {
       const rawBody = await getRawBody(req);
       const payload = JSON.parse(rawBody || "{}");
       validateLockPayload(payload);
@@ -253,7 +283,7 @@ const server = createServer(async (req, res) => {
       return;
     }
 
-    if (req.method === "POST" && req.url === "/api/requests") {
+    if (req.method === "POST" && requestUrl.pathname === "/api/requests") {
       const rawBody = await getRawBody(req);
       const payload = JSON.parse(rawBody || "{}");
       validateCreatePayload(payload);
@@ -319,6 +349,60 @@ const server = createServer(async (req, res) => {
           lockTxId: lockTxDraft.txId,
         },
         lockTxDraft,
+      });
+      return;
+    }
+
+    if (
+      req.method === "POST" &&
+      requestUrl.pathname.startsWith("/api/requests/") &&
+      requestUrl.pathname.endsWith("/cancel")
+    ) {
+      const requestId = requestUrl.pathname
+        .replace("/api/requests/", "")
+        .replace("/cancel", "")
+        .replace(/\//g, "");
+
+      if (!requestId) {
+        throw new Error("Invalid request id.");
+      }
+
+      const row = selectRequestById.get({ id: requestId }) as
+        | Record<string, unknown>
+        | undefined;
+      if (!row) {
+        sendJson(res, 404, { error: "Request not found." });
+        return;
+      }
+
+      const request = toRequestOutput(row) as {
+        id: string;
+        requesterAddressHex: string;
+        usdAmount: number;
+        status: string;
+      };
+
+      if (request.status === "claimed") {
+        throw new Error("Claimed requests cannot be cancelled.");
+      }
+      if (request.status === "cancelled") {
+        throw new Error("Request is already cancelled.");
+      }
+
+      const cancelResult = await executeCancelFlow({
+        usdAmountCents: usdToCents(request.usdAmount),
+        userAddress: request.requesterAddressHex,
+      });
+
+      updateRequestStatus.run({
+        id: request.id,
+        status: "cancelled",
+      });
+
+      sendJson(res, 200, {
+        requestId: request.id,
+        status: "cancelled",
+        cancelTxId: cancelResult.txHash,
       });
       return;
     }

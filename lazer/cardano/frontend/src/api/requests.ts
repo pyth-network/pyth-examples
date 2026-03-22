@@ -36,7 +36,7 @@ interface ListRequestsApiResponse {
   requests: ApiRequestRecord[];
 }
 
-const VALID_STATUSES: RequestStatus[] = ['created', 'ready_to_claim', 'claimed'];
+const VALID_STATUSES: RequestStatus[] = ['created', 'ready_to_claim', 'claimed', 'cancelled'];
 
 function shortHex(value: string, keep = 8): string {
   if (value.length <= keep * 2) {
@@ -117,4 +117,23 @@ export async function createRequestApi(
     }),
     lockTxDraft: data.lockTxDraft,
   };
+}
+
+export async function cancelRequestApi(
+  requestId: string,
+): Promise<{ requestId: string; status: RequestStatus; cancelTxId: string }> {
+  const response = await fetch(`/api/requests/${encodeURIComponent(requestId)}/cancel`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    throw new Error(await parseApiError(response));
+  }
+
+  const data = (await response.json()) as {
+    requestId: string;
+    status: RequestStatus;
+    cancelTxId: string;
+  };
+  return data;
 }

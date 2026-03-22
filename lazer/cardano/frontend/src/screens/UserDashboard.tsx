@@ -23,6 +23,7 @@ const FILTERS: Array<{ value: RequestFilter; label: string }> = [
   { value: 'created', label: 'Created' },
   { value: 'ready_to_claim', label: 'Ready' },
   { value: 'claimed', label: 'Claimed' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export function UserDashboard({

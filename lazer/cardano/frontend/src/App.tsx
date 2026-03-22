@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createRequestApi, fetchRequestsApi } from './api/requests';
+import { cancelRequestApi, createRequestApi, fetchRequestsApi } from './api/requests';
 import { EternlWalletPanel } from './components/EternlWalletPanel';
 import { LivePricePanel } from './components/LivePricePanel';
 import { RoleSwitcher } from './components/RoleSwitcher';
@@ -50,7 +50,7 @@ export default function App(): JSX.Element {
     const loadRequests = async (): Promise<void> => {
       try {
         const persistedRequests = await fetchRequestsApi();
-        if (!isSubscribed || persistedRequests.length === 0) {
+        if (!isSubscribed) {
           return;
         }
         setRequests(persistedRequests);
@@ -139,6 +139,27 @@ export default function App(): JSX.Element {
     );
   };
 
+  const handleCancel = async (requestId: string): Promise<void> => {
+    if (!canUseApp) {
+      throw new Error('Connect Eternl on Preprod before cancelling.');
+    }
+
+    setApiError(null);
+    try {
+      await cancelRequestApi(requestId);
+      setRequests((prev) =>
+        prev.map((request) =>
+          request.id === requestId ? { ...request, status: 'cancelled' } : request,
+        ),
+      );
+    } catch (cancelError) {
+      const message =
+        cancelError instanceof Error ? cancelError.message : 'Could not cancel request.';
+      setApiError(message);
+      throw new Error(message);
+    }
+  };
+
   return (
     <div className="app-root">
       <main className="app-shell">
@@ -224,7 +245,13 @@ export default function App(): JSX.Element {
                 isCreating={isCreating}
               />
             ) : (
-              <SponsorDashboard requests={requests} adaUsd={adaUsd} />
+              <SponsorDashboard
+                requests={requests}
+                adaUsd={adaUsd}
+                onCancel={(requestId) => {
+                  void handleCancel(requestId);
+                }}
+              />
             )}
             {apiError ? <p className="error-text">{apiError}</p> : null}
           </>

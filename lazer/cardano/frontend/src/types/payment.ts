@@ -1,6 +1,6 @@
 export type Role = 'user' | 'sponsor';
 
-export type RequestStatus = 'created' | 'ready_to_claim' | 'claimed';
+export type RequestStatus = 'created' | 'ready_to_claim' | 'claimed' | 'cancelled';
 
 export type RequestFilter = 'all' | RequestStatus;
 
