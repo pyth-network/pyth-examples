@@ -28,7 +28,10 @@ validator pay_with_pyth(
     // Transaction must be signed by the sponsor
     expect VerificationKey(sponsor_key_hash) =
       sponsor_address.payment_credential
+    trace @"sponsor_key_hash": sponsor_key_hash
+    trace @"extra_signatories": self.extra_signatories
     expect list.has(self.extra_signatories, sponsor_key_hash)
+    trace @"sponsor signature check passed"
     // -----------------------------------------
     when redeemer is {
       Unlock -> {
@@ -57,7 +60,10 @@ validator pay_with_pyth(
         True
       }
       // If the action is Cancel, the sponsor can manage the ADA in any way, for example, send it to itself
-      Cancel -> True
+      Cancel -> {
+        trace @"redeemer: Cancel"
+        True
+      }
     }
   }
 

@@ -13,8 +13,9 @@ interface UserDashboardProps {
   adaUsd: number;
   coverageMultiplier: number;
   onFilterChange: (filter: RequestFilter) => void;
-  onCreate: (payload: CreateRequestPayload) => void;
+  onCreate: (payload: CreateRequestPayload) => Promise<void>;
   onClaim: (requestId: string) => void;
+  isCreating: boolean;
 }
 
 const FILTERS: Array<{ value: RequestFilter; label: string }> = [
@@ -22,6 +23,7 @@ const FILTERS: Array<{ value: RequestFilter; label: string }> = [
   { value: 'created', label: 'Created' },
   { value: 'ready_to_claim', label: 'Ready' },
   { value: 'claimed', label: 'Claimed' },
+  { value: 'cancelled', label: 'Cancelled' },
 ];
 
 export function UserDashboard({
@@ -32,6 +34,7 @@ export function UserDashboard({
   onFilterChange,
   onCreate,
   onClaim,
+  isCreating,
 }: UserDashboardProps): JSX.Element {
   const [isRequestsOpen, setIsRequestsOpen] = useState(true);
   const filteredRequests =
@@ -43,6 +46,7 @@ export function UserDashboard({
         adaUsd={adaUsd}
         coverageMultiplier={coverageMultiplier}
         onCreate={onCreate}
+        isCreating={isCreating}
         className="panel--primary-action"
       />
       <section className="panel panel--secondary-action requests-collapsible">
@@ -63,7 +67,7 @@ export function UserDashboard({
           <RequestList
             title="Requests"
             items={filteredRequests}
-            role="user"
+            role="applicant"
             adaUsd={adaUsd}
             emptyText="No requests in this state."
             embedded

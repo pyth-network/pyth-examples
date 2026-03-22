@@ -7,11 +7,19 @@ interface RequestCardProps {
   role: Role;
   adaUsd: number;
   onClaim?: (id: string) => void;
+  onCancel?: (id: string) => void;
 }
 
-export function RequestCard({ request, role, adaUsd, onClaim }: RequestCardProps): JSX.Element {
+export function RequestCard({
+  request,
+  role,
+  adaUsd,
+  onClaim,
+  onCancel,
+}: RequestCardProps): JSX.Element {
   const currentRequiredAda = request.usdAmount / adaUsd;
   const isClaimable = request.status === 'ready_to_claim';
+  const isCancelable = request.status === 'created' || request.status === 'ready_to_claim';
   const isUnderfundedNow = request.lockAda < currentRequiredAda;
 
   return (
@@ -51,9 +59,18 @@ export function RequestCard({ request, role, adaUsd, onClaim }: RequestCardProps
         </p>
       ) : null}
 
-      {role === 'user' && isClaimable ? (
+      {role === 'applicant' && isClaimable ? (
         <button className="button button--primary" type="button" onClick={() => onClaim?.(request.id)}>
           Claim now
+        </button>
+      ) : null}
+      {role === 'sponsor' && isCancelable ? (
+        <button
+          className="button button--secondary"
+          type="button"
+          onClick={() => onCancel?.(request.id)}
+        >
+          Cancel request
         </button>
       ) : null}
 

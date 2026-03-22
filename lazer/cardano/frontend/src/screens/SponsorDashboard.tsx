@@ -5,10 +5,13 @@ import { formatAda, formatUsd } from '../utils/format';
 interface SponsorDashboardProps {
   requests: PaymentRequest[];
   adaUsd: number;
+  onCancel: (requestId: string) => void;
 }
 
-export function SponsorDashboard({ requests, adaUsd }: SponsorDashboardProps): JSX.Element {
-  const openRequests = requests.filter((request) => request.status !== 'claimed');
+export function SponsorDashboard({ requests, adaUsd, onCancel }: SponsorDashboardProps): JSX.Element {
+  const openRequests = requests.filter(
+    (request) => request.status !== 'claimed' && request.status !== 'cancelled',
+  );
   const totalLockedOpen = openRequests.reduce((sum, request) => sum + request.lockAda, 0);
   const requiredNowOpen = openRequests.reduce((sum, request) => sum + request.usdAmount / adaUsd, 0);
   const coverageBuffer = totalLockedOpen - requiredNowOpen;
@@ -48,6 +51,7 @@ export function SponsorDashboard({ requests, adaUsd }: SponsorDashboardProps): J
         role="sponsor"
         adaUsd={adaUsd}
         emptyText="No requests available."
+        onCancel={onCancel}
       />
     </div>
   );

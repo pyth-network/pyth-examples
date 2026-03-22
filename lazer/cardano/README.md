@@ -1,27 +1,24 @@
-# Proof Of Pyth or Pay With Pyth
+# Payth: calibrate uncertainty
 
-## Resumen en una frase
+This project aims to bring Pyth to Cardano with a simple, small and yet useful use case. Right now it's not a product per se, but it could become one in some ways. 
 
-Una dApp en Cardano para acuerdos de pago donde el proveedor cotiza en USD y el cliente bloquea fondos en ADA, 
-permitiendo que el settlement final preserve el valor pactado gracias a un oráculo de precios on-chain.
+## Project description
 
-## Idea de producto final
+The idea is pretty basic: a user, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
 
-Tenemos 2 agentes: alguien que paga y alguien que recibe la plata. Asumimos que el que paga tiene plata suficiente en todo momento. El usuario es el que recibe la plata, el que paga lo vamos a tratar como una sponsor wallet. 
+When both actors agree the task is complete, Bill proceeds to **unlock** the funds. How much? Well, the amount of ADA corresponding to the USD agreed, but using the current relation between USD and ADA. This is where **Pyth** comes in to compute on-chain how much ADA should be sent to Anne and how much should return to Bill. 
 
-El usuario se loguea con Ethernal/Metamask/Lace/Loquesea
+In the case that Anne leaves the job undone, or any real life condition that interrupts the relationship, Bill has the option to retrieve the locked funds. So, in summary, there are 2 possible flows: **lock --> unlock** and **lock --> cancel**. 
 
-El usuario hace una request de fondos (boton "cobrar") con un monto en USD, una descripcion y fecha limite
-El que paga acepta la request. Esto significa que necesitamos 2 pantallas, una para el sponsor y otra para el usuario.
+This of course can improve in many ways:
+* Add validity times for the unlock or the cancel actions
+* Give flexibility to the margin given by Bill
+* Allow other currencies to be used instead of USD
 
-Aceptar la request significa que el sponsor lockea suficiente ADA (con margen) para el usuario en un script. Este script lo que hace es:
-* Al momento de ejecutarse, verifica con pyth el valor del dolar
-* Hace la cuenta de cuantos ada tiene que transferir al usuario
-* Transfiere los ADA al usuario
-* Devuelve el resto, si sobra, al sponsor
-* Si no alcanza le manda todo lo que se lockeo al usuario
+## Use cases
+Catalyst and other rounds of funding could optionally use this system to reduce uncertainty for developers, but also it could work for freelance initiatives, service retainers and bounties or open tasks.
 
-Version inicial:
-
-El sponsor no acepta la request, sino que el usuario la genera y se acepta automaticamente con una cobertura fija del 100%.
-Una vez hecha la request el usuario debe tener forma de visualizarla y cobrarla en el momento que quiera.
+## Codebase overview
+The project is divided into 2 main sections: backend and frontend. 
+* The **frontend** connects the user with their Eternl wallet and makes requests to Pyth off-chain API to track the current ADA and USD value in the market. It also handles user interactions and request to the backend for creating a Task, completing a Task and retrieving money if the task is aborted. It is divided in 2 screens "Applicant" and "Sponsor" where each role has a different view. 
+* The **backend** provides 3 endpoints for the 3 actions, which in this context correspond to **lock**, **unlock** and **cancel** scripts. Each of them handles the deploy of a different transaction in cardano, using the **Evolution** framework. It also contains the Aiken code that will regulate the **unlocking** of funds. It also contains a battery of Aiken and Typescript tests 

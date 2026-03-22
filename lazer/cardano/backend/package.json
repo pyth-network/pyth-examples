@@ -4,6 +4,7 @@
   "description": "Transaction building for Pay With Pyth Cardano dApp",
   "type": "module",
   "scripts": {
+    "api": "tsx api/server.ts",
     "build": "tsc",
     "lock": "tsx deployment/scripts/lock.ts",
     "unlock": "tsx deployment/scripts/unlock.ts",
