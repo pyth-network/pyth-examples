@@ -181,6 +181,75 @@
   gap: var(--space-3);
 }
 
+.wallet-panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.wallet-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.wallet-panel__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.wallet-panel__title h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.wallet-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.3rem;
+}
+
+.status-pill {
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.24rem 0.62rem;
+  font-size: 0.73rem;
+  color: var(--muted);
+}
+
+.status-pill--ok {
+  border-color: rgba(92, 240, 164, 0.7);
+  color: var(--success);
+}
+
+.wallet-meta {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.wallet-meta__item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wallet-meta__item span {
+  color: var(--muted);
+}
+
+.wallet-meta__item strong {
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.wallet-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
 .source-tag {
   font-size: 0.76rem;
   color: var(--accent-cyan);
@@ -267,9 +336,20 @@ input[type='range'] {
   color: #091224;
 }
 
+.button--secondary {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text);
+}
+
 .button--primary:hover {
   box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
+}
+
+.button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .filter-row {

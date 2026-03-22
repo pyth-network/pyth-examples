@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { EternlWalletPanel } from './components/EternlWalletPanel';
 import { LivePricePanel } from './components/LivePricePanel';
 import { RoleSwitcher } from './components/RoleSwitcher';
 import { createSeedRequests } from './data/seed';
+import { useEternlWallet } from './hooks/useEternlWallet';
 import { usePythAdaUsdPrice } from './hooks/usePythAdaUsdPrice';
 import { SponsorDashboard } from './screens/SponsorDashboard';
 import { UserDashboard } from './screens/UserDashboard';
@@ -22,9 +24,17 @@ function countByStatus(requests: PaymentRequest[], status: RequestStatus): numbe
   return requests.filter((request) => request.status === status).length;
 }
 
+function shortHex(value: string, keep = 8): string {
+  if (value.length <= keep * 2) {
+    return value;
+  }
+  return `${value.slice(0, keep)}...${value.slice(-keep)}`;
+}
+
 export default function App(): JSX.Element {
   const [role, setRole] = useState<Role>('user');
   const [filter, setFilter] = useState<RequestFilter>('all');
+  const wallet = useEternlWallet();
   const {
     adaUsd,
     isLoading: isPriceLoading,
@@ -34,7 +44,8 @@ export default function App(): JSX.Element {
   } = usePythAdaUsdPrice();
   const [requests, setRequests] = useState<PaymentRequest[]>(() => createSeedRequests(INITIAL_ADA_USD));
   const pendingReadyTimers = useRef<number[]>([]);
-  const canSettle = adaUsd !== null;
+  const canUseApp = wallet.isConnected;
+  const canSettle = canUseApp && adaUsd !== null;
 
   useEffect(() => {
     return () => {
@@ -78,6 +89,9 @@ export default function App(): JSX.Element {
       beneficiaryLabel: 'You',
       sponsorLabel: 'Sponsor Wallet A',
     };
+    if (wallet.primaryAddressHex) {
+      newRequest.beneficiaryLabel = `Eternl ${shortHex(wallet.primaryAddressHex)}`;
+    }
 
     setRequests((prev) => [newRequest, ...prev]);
 
@@ -122,7 +136,8 @@ export default function App(): JSX.Element {
             </p>
           </div>
           <div className="hero-controls">
-            <RoleSwitcher value={role} onChange={setRole} />
+            <EternlWalletPanel wallet={wallet} />
+            {wallet.isConnected ? <RoleSwitcher value={role} onChange={setRole} /> : null}
             <LivePricePanel
               adaUsd={adaUsd}
               isLoading={isPriceLoading}
@@ -133,26 +148,12 @@ export default function App(): JSX.Element {
           </div>
         </header>
 
-        <section className="top-metrics">
-          <article className="metric-card">
-            <span>Total requests</span>
-            <strong>{requests.length}</strong>
-          </article>
-          <article className="metric-card">
-            <span>Ready to claim</span>
-            <strong>{countByStatus(requests, 'ready_to_claim')}</strong>
-          </article>
-          <article className="metric-card">
-            <span>Claimable value</span>
-            <strong>{formatUsd(claimableUsd)}</strong>
-          </article>
-          <article className="metric-card">
-            <span>Open locked collateral</span>
-            <strong>{formatAda(lockedAda)}</strong>
-          </article>
-        </section>
-
-        {!canSettle ? (
+        {!canUseApp ? (
+          <section className="panel">
+            <h2>Connect Eternl to continue</h2>
+            <p className="muted">Login is required before creating and claiming payment requests.</p>
+          </section>
+        ) : !canSettle ? (
           <section className="panel">
             <h2>Live price unavailable</h2>
             <p className="muted">
@@ -162,6 +163,24 @@ export default function App(): JSX.Element {
           </section>
         ) : (
           <>
+            <section className="top-metrics">
+              <article className="metric-card">
+                <span>Total requests</span>
+                <strong>{requests.length}</strong>
+              </article>
+              <article className="metric-card">
+                <span>Ready to claim</span>
+                <strong>{countByStatus(requests, 'ready_to_claim')}</strong>
+              </article>
+              <article className="metric-card">
+                <span>Claimable value</span>
+                <strong>{formatUsd(claimableUsd)}</strong>
+              </article>
+              <article className="metric-card">
+                <span>Open locked collateral</span>
+                <strong>{formatAda(lockedAda)}</strong>
+              </article>
+            </section>
             {role === 'user' ? (
               <UserDashboard
                 requests={requests}
