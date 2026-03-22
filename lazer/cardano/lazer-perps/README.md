@@ -5,7 +5,7 @@
 Team Name: Lazer Perps
 Submission Name: lazer-perps
 Team Members: María Elisa Araya ([@ar3lisa](https://x.com/ar3lisa)), Bárbara Olivera ([@b4rbbb](https://x.com/b4rbbb))
-Contact: https://x.com/ar3lisa / https://x.com/b4rbbb
+Contact: araya3lisa@gmail.com / brb.olivera@gmail.com
 
 > Direct extension of our [Lazer RWA](../lazer-rwa/) submission — same oracle integration, expanded into a perpetual futures protocol.
 
