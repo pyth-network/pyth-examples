@@ -4,7 +4,7 @@ This project aims to bring Pyth to Cardano with a simple, small and yet useful u
 
 ## Project description
 
-The idea is pretty basic: a user, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
+The idea is pretty basic: an applicant, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
 
 When both actors agree the task is complete, Bill proceeds to **unlock** the funds. How much? Well, the amount of ADA corresponding to the USD agreed, but using the current relation between USD and ADA. This is where **Pyth** comes in to compute on-chain how much ADA should be sent to Anne and how much should return to Bill. 
 
@@ -21,4 +21,29 @@ Catalyst and other rounds of funding could optionally use this system to reduce 
 ## Codebase overview
 The project is divided into 2 main sections: backend and frontend. 
 * The **frontend** connects the user with their Eternl wallet and makes requests to Pyth off-chain API to track the current ADA and USD value in the market. It also handles user interactions and request to the backend for creating a Task, completing a Task and retrieving money if the task is aborted. It is divided in 2 screens "Applicant" and "Sponsor" where each role has a different view. 
-* The **backend** provides 3 endpoints for the 3 actions, which in this context correspond to **lock**, **unlock** and **cancel** scripts. Each of them handles the deploy of a different transaction in cardano, using the **Evolution** framework. It also contains the Aiken code that will regulate the **unlocking** of funds. It also contains a battery of Aiken and Typescript tests 
+* The **backend** provides 3 endpoints for the 3 actions, which in this context correspond to **lock**, **unlock** and **cancel** scripts. Each of them handles the deploy of a different transaction in cardano, using the **Evolution** framework. It also contains the Aiken code that will regulate the **unlocking** of funds. It also contains a battery of Aiken and Typescript tests. 
+
+## Try it yourself
+* Go to the ```frontend``` directory, run ```npm i``` and run the frontend with ```npm run dev```.
+* Go to the ```backend``` directory, run ```npm i``` and run the server with ```npm run api```.
+* Go to the ```backend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials.
+* To run the tests, run `aiken check` for the Aiken tests and `npm run test` for the backend tests.
+
+Note that the project must be run in Google Chrome, or any browser that supports Eternl Wallet extension (but it was tested in Chrome).  
+
+## Frontend overview
+Here you can see the header of the page after connecting the wallet
+
+![header.png](images/header.png)
+
+Then you can choose which role are you on:
+
+![role.png](images/role.png)
+
+If you are an applicant, you can create your request
+
+![create.png](images/create.png)
+
+and then see a list of created requests
+
+![tasks.png](images/tasks.png)
