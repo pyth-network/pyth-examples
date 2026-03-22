@@ -1,0 +1,59 @@
+# Node / Next
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# TypeScript
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.pyc
+
+# Aiken / generated artifacts
+artifacts/
+build/packages/
+tmp/
+
+# Cardano / local secrets
+*.skey
+*.vkey
+*.addr
+*.seed
+wallet.json
+*.mnemonic
+
+# Test outputs
+playwright-report/
+test-results/
+
+# Keep source, ignore local dependency installs inside subprojects
+safequote-app-website/node_modules/
+safequote-app-website/.next/
+safequote-app-website/.env.local
+safequote-app-website/.env.development.local
+safequote-app-website/.env.production.local
+
+safequote-app-aiken/build/packages/
