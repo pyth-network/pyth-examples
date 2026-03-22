@@ -1,0 +1,28 @@
+{
+  "name": "prediction-market-offchain",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "cli": "bun run cli.ts",
+    "bot": "bun run bot.ts",
+    "dev": "bun --hot server.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@blaze-cardano/data": "^0.6.6",
+    "@blaze-cardano/sdk": "^0.2.48",
+    "@blaze-cardano/uplc": "^0.4.3",
+    "@blaze-cardano/vm": "^0.2.3",
+    "@pythnetwork/pyth-lazer-sdk": "^6.2.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  }
+}
