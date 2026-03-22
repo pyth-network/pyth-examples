@@ -102,9 +102,9 @@ Pyth Lazer Server                         Cardano PreProd
 
 | Type | Feed | Tx Hash |
 |------|------|---------|
-| Open position | XAUT/USD | [`96f8e76c...`](https://preprod.cardanoscan.io/transaction/96f8e76c00efdbb2e662a1ffc721cd09a02a330cefd2db90fcfcbbf0b7b854de) |
-| Close position | XAUT/USD | [`4428816d...`](https://preprod.cardanoscan.io/transaction/4428816d106a67331077b7eb83ec54f97696000d1d5a8e2a059acc6c7418ff1e) |
-| Liquidate | XAUT/USD | [`3b4e5590...`](https://preprod.cardanoscan.io/transaction/3b4e5590157cba456f130b69855f717fe62a8875ac7f02a394797aa32b3bff72) |
+| Open position | XAUT/USD | [`ccb967d2...`](https://preprod.cardanoscan.io/transaction/ccb967d2c1692a06fd293553ddce4d494718eebf81c25e647556b6e6fd343bb9) |
+| Close position | XAUT/USD | [`6532eebc...`](https://preprod.cardanoscan.io/transaction/6532eebc942166b562baf58c535284b6fffa56d794c434421f141842e5b29d47) |
+| Liquidate | XAUT/USD | [`477bfe3f...`](https://preprod.cardanoscan.io/transaction/477bfe3ffb991f745b6ce50c38564e099af415fc5e3b2177358d0d03dfdce4dd) |
 
 ## How to run
 
