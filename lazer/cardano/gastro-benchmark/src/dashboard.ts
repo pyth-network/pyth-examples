@@ -1,106 +1,176 @@
-// GastroBenchmark — Fair Price Procurement for Restaurants
-// Team Cuqui: Pablo Cardozo, Nashira Oropeza
-//
-// Compares supplier prices against Pyth Network commodity benchmarks
+import {
+  fetchLatestGastronomyBenchmarks,
+  shutdownPythClient,
+  type ResolvedBenchmark,
+} from "./pyth";
 
-// Precios de proveedores argentinos (reales/realistas)
-const SUPPLIERS = [
-  // Harina/Trigo
-  { name: "Molinos Río de la Plata", product: "Harina 000", priceUSD: 0.87 },
-  { name: "Proveedor Norte",         product: "Harina 000", priceUSD: 0.95 },
-  { name: "Minetti",                 product: "Harina 000", priceUSD: 0.82 },
-  { name: "Distribuidora Premium",   product: "Harina 000", priceUSD: 1.05 },
-
-  // Aceite de Soja
-  { name: "La Serenísima",           product: "Aceite Soja", priceUSD: 1.31 },
-  { name: "Distribuidora Sur",       product: "Aceite Soja", priceUSD: 1.18 },
-  { name: "Natura",                  product: "Aceite Soja", priceUSD: 1.45 },
-  { name: "Aceitera General",        product: "Aceite Soja", priceUSD: 1.52 },
-
-  // Carne Vacuna
-  { name: "Frigorífico ABC",         product: "Carne Vacuna", priceUSD: 4.20 },
-  { name: "Carnes del Oeste",        product: "Carne Vacuna", priceUSD: 4.85 },
-  { name: "Swift",                   product: "Carne Vacuna", priceUSD: 3.95 },
-  { name: "Premium Meat",            product: "Carne Vacuna", priceUSD: 5.50 },
-];
-
-// Precios de referencia Pyth Network (commodities)
-// NOTA: En producción, estos vendrían de Pyth Lazer API en tiempo real
-const PYTH_BENCHMARKS: Record<string, number> = {
-  "Harina 000": 0.82,    // Wheat (XW/USD) ~$0.82/kg
-  "Aceite Soja": 1.22,   // Soybean Oil (XB/USD) ~$1.22/kg
-  "Carne Vacuna": 4.10,  // Live Cattle (GF/USD) ~$4.10/kg
+type SupplierQuote = {
+  supplier: string;
+  product: string;
+  benchmarkId: number;
+  quotedPrice: number;
 };
 
-function runDashboard() {
-  console.log("\n🍽️  GastroBenchmark — Fair Price Procurement for Restaurants\n");
-  console.log("Team Cuqui: Pablo Cardozo, Nashira Oropeza\n");
-  console.log("Price benchmarks from Pyth Network commodity feeds");
-  console.log("─".repeat(76));
+const SUPPLIER_QUOTES: SupplierQuote[] = [
+  { supplier: "Molino Andino", product: "Harina de maiz spot", benchmarkId: 3018, quotedPrice: 4.58 },
+  { supplier: "Distribuidora Norte", product: "Harina de maiz spot", benchmarkId: 3018, quotedPrice: 4.83 },
+  { supplier: "Cocina Mayorista", product: "Harina de maiz spot", benchmarkId: 3018, quotedPrice: 4.44 },
+  { supplier: "Reserva de Cocina", product: "Maiz forward Jul-26", benchmarkId: 3019, quotedPrice: 4.71 },
+  { supplier: "AgroMenu", product: "Maiz forward Jul-26", benchmarkId: 3019, quotedPrice: 4.96 },
+  { supplier: "Despensa Central", product: "Azucar cruda Apr-26", benchmarkId: 3015, quotedPrice: 0.22 },
+];
 
-  // Mostrar precios de referencia
-  console.log("\n📊 MARKET BENCHMARKS (Pyth Network):");
-  console.log("   " + "─".repeat(64));
-  console.log("   Commodity      | Feed ID       | Price (USD/kg)");
-  console.log("   " + "─".repeat(64));
-  console.log("   Harina 000     | WHEAT/USD     | $" + PYTH_BENCHMARKS["Harina 000"].toFixed(2));
-  console.log("   Aceite Soja   | SOYBEAN_OIL/  | $" + PYTH_BENCHMARKS["Aceite Soja"].toFixed(2));
-  console.log("   Carne Vacuna  | LIVE_CATTLE/  | $" + PYTH_BENCHMARKS["Carne Vacuna"].toFixed(2));
-  console.log("   " + "─".repeat(64));
+function formatMoney(value: number | null, unit: string): string {
+  return value === null ? "N/D" : `$${value.toFixed(4)} ${unit}`;
+}
 
-  // Mostrar comparativa de proveedores
-  console.log("\n📋 SUPPLIER PRICE COMPARISON:");
-  console.log("─".repeat(76));
+function formatConfidence(value: number | null): string {
+  return value === null ? "N/D" : `+/-$${value.toFixed(4)}`;
+}
+
+function formatTimestamp(timestampUs: string | null): string {
+  if (!timestampUs) {
+    return "N/D";
+  }
+
+  const milliseconds = Number(timestampUs) / 1000;
+  if (!Number.isFinite(milliseconds)) {
+    return "N/D";
+  }
+
+  return new Date(milliseconds).toISOString();
+}
+
+function classifyMarkup(markup: number): string {
+  if (markup > 25) return "RED";
+  if (markup > 10) return "YELLOW";
+  return "GREEN";
+}
+
+function printBenchmarks(benchmarks: ResolvedBenchmark[]) {
+  console.log("\nREAL-TIME PYTH BENCHMARKS (commodity only)");
+  console.log("=".repeat(114));
   console.log(
-    "Proveedor".padEnd(26) +
-    "Producto".padEnd(14) +
-    "Precio".padEnd(10) +
-    "Ref. Pyth".padEnd(12) +
-    "Markup"
+    "Feed".padEnd(20) +
+      "Symbol".padEnd(26) +
+      "Price".padEnd(22) +
+      "Confidence".padEnd(18) +
+      "Session".padEnd(10) +
+      "Publishers",
   );
-  console.log("─".repeat(76));
+  console.log("-".repeat(114));
+
+  for (const benchmark of benchmarks) {
+    console.log(
+      benchmark.displayName.padEnd(20) +
+        benchmark.symbol.padEnd(26) +
+        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit).padEnd(22) +
+        formatConfidence(benchmark.confidence).padEnd(18) +
+        benchmark.marketSession.padEnd(10) +
+        String(benchmark.publisherCount),
+    );
+  }
+
+  console.log("-".repeat(114));
+}
+
+function printSupplierComparison(benchmarks: ResolvedBenchmark[]) {
+  const benchmarkMap = new Map(benchmarks.map((item) => [item.id, item]));
 
   let fairCount = 0;
   let warningCount = 0;
   let expensiveCount = 0;
+  let unavailableCount = 0;
 
-  for (const s of SUPPLIERS) {
-    const benchmark = PYTH_BENCHMARKS[s.product];
-    const markup = ((s.priceUSD - benchmark) / benchmark) * 100;
+  console.log("\nSUPPLIER COMPARISON AGAINST LIVE PYTH FEEDS");
+  console.log("=".repeat(132));
+  console.log(
+    "Supplier".padEnd(22) +
+      "Product".padEnd(24) +
+      "Supplier Quote".padEnd(22) +
+      "Pyth Ref".padEnd(20) +
+      "Status".padEnd(14) +
+      "Markup",
+  );
+  console.log("-".repeat(132));
 
-    // Thresholds: 10% fair, 25% acceptable, >25% expensive
-    const flag = markup > 25 ? "🔴" : markup > 10 ? "🟡" : "🟢";
+  for (const quote of SUPPLIER_QUOTES) {
+    const benchmark = benchmarkMap.get(quote.benchmarkId);
+    if (!benchmark) {
+      continue;
+    }
 
-    if (markup <= 10) fairCount++;
-    else if (markup <= 25) warningCount++;
+    const quoteLabel = `$${quote.quotedPrice.toFixed(4)} ${benchmark.supplierUnit}`;
+
+    if (benchmark.benchmarkPrice === null) {
+      unavailableCount++;
+      console.log(
+        quote.supplier.padEnd(22) +
+          quote.product.padEnd(24) +
+          quoteLabel.padEnd(22) +
+          "N/D".padEnd(20) +
+          "NO_LIVE_PRICE".padEnd(14) +
+          `market ${benchmark.marketSession}`,
+      );
+      continue;
+    }
+
+    const markup = ((quote.quotedPrice - benchmark.benchmarkPrice) / benchmark.benchmarkPrice) * 100;
+    const status = classifyMarkup(markup);
+
+    if (status === "GREEN") fairCount++;
+    else if (status === "YELLOW") warningCount++;
     else expensiveCount++;
 
     console.log(
-      s.name.padEnd(26) +
-      s.product.padEnd(14) +
-      `$${s.priceUSD.toFixed(2)}`.padEnd(10) +
-      `$${benchmark.toFixed(2)}`.padEnd(12) +
-      `${flag} +${markup.toFixed(1)}%`
+      quote.supplier.padEnd(22) +
+        quote.product.padEnd(24) +
+        quoteLabel.padEnd(22) +
+        formatMoney(benchmark.benchmarkPrice, benchmark.supplierUnit).padEnd(20) +
+        status.padEnd(14) +
+        `${markup >= 0 ? "+" : ""}${markup.toFixed(1)}%`,
     );
   }
 
-  console.log("─".repeat(76));
-  console.log(`\n📊 Summary: ${fairCount} ✅ Fair | ${warningCount} ⚠️ Acceptable | ${expensiveCount} 🔴 Expensive`);
-
-  console.log("\n🔗 How it works:");
-  console.log("   1. Pyth Network provides real-time commodity price feeds");
-  console.log("   2. Smart contract validates: supplier_price ≤ market_price × 1.30");
-  console.log("   3. Purchase orders settled on Cardano with price attestation");
-
-  console.log("\n🌾 Pyth Feeds for Food Commodities:");
-  console.log("   ┌─ WHEAT/USD (XW)      → Harina/Trigo");
-  console.log("   ├─ SOYBEAN_OIL/USD (XB) → Aceite de Soja");
-  console.log("   └─ LIVE_CATTLE/USD (GF) → Carne Vacuna");
-
-  console.log("\n💡 Business Value:");
-  console.log("   • Restaurants stop overpaying for ingredients");
-  console.log("   • Transparent price validation on-chain");
-  console.log("   • Suppliers compete on fair pricing\n");
+  console.log("-".repeat(132));
+  console.log(
+    `Summary: ${fairCount} fair | ${warningCount} watch | ${expensiveCount} expensive | ${unavailableCount} without live benchmark`,
+  );
 }
 
-runDashboard();
+function printNotes(benchmarks: ResolvedBenchmark[]) {
+  console.log("\nNOTES");
+  console.log("=".repeat(114));
+  console.log("1. All benchmark rows come from Pyth Pro `/v1/latest_price` using `PYTH_API_KEY` from `.env`.");
+  console.log("2. The dashboard is intentionally limited to commodity feeds with gastronomy relevance.");
+  console.log("3. If `latest_price` arrives without a live price because the market is closed, the app backfills the last official Pyth print with `getPrice` on recent historical timestamps.");
+
+  for (const [index, benchmark] of benchmarks.entries()) {
+    console.log(
+      `${index + 4}. ${benchmark.displayName}: ${benchmark.description} Last API timestamp ${formatTimestamp(benchmark.timestampUs)}. Source ${benchmark.source}.`,
+    );
+  }
+
+  console.log(`${benchmarks.length + 4}. Corn futures are normalized from exchange-style cents per bushel into USD per bushel for supplier comparison. This normalization is an implementation inference based on market convention.`);
+}
+
+async function runDashboard() {
+  const benchmarks = await fetchLatestGastronomyBenchmarks();
+
+  console.log("\nGastroBenchmark");
+  console.log("Focused commodity monitor for restaurant procurement");
+  console.log(`Snapshot: ${new Date().toISOString()}`);
+
+  printBenchmarks(benchmarks);
+  printSupplierComparison(benchmarks);
+  printNotes(benchmarks);
+  console.log("");
+}
+
+runDashboard().catch((error: unknown) => {
+  const message = error instanceof Error ? error.message : String(error);
+  console.error(`Dashboard failed: ${message}`);
+  process.exitCode = 1;
+}).finally(async () => {
+  await shutdownPythClient();
+});
