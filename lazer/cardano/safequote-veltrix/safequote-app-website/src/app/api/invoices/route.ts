@@ -15,6 +15,9 @@ export async function POST(request: Request) {
     pinHash: string;
     invoiceNftPolicyId: string;
     invoiceNftName: string;
+    invoiceScriptAddress?: string;
+    lockTxHash?: string;
+    lockTxIndex?: number;
     deadline: string;
   };
 
@@ -29,6 +32,9 @@ export async function POST(request: Request) {
     pinHash: body.pinHash,
     invoiceNftPolicyId: body.invoiceNftPolicyId,
     invoiceNftName: body.invoiceNftName,
+    invoiceScriptAddress: body.invoiceScriptAddress,
+    lockTxHash: body.lockTxHash,
+    lockTxIndex: body.lockTxIndex,
     status: "open",
     deadline: body.deadline,
     createdAt: now,

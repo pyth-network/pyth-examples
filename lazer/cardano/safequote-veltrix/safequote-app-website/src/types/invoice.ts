@@ -10,6 +10,9 @@ export interface Invoice {
   pinHash: string;
   invoiceNftPolicyId: string;
   invoiceNftName: string;
+  invoiceScriptAddress?: string;
+  lockTxHash?: string;
+  lockTxIndex?: number;
   adaQuoteSnapshot?: number;
   feedId?: number;
   txHash?: string;

@@ -1,27 +1,21 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import {
-  connectWallet,
-  getInstalledWallets,
-} from "@/features/wallet/lib/wallet-adapter";
+import type { BrowserWallet } from "@meshsdk/core";
+import { createInvoiceOnChain } from "@/features/invoices/lib/create-invoice-on-chain";
+import { payInvoiceOnChain } from "@/features/invoices/lib/pay-invoice-on-chain";
+import { getInstalledWallets, connectWallet } from "@/features/wallet/lib/wallet-adapter";
 import type { Invoice } from "@/types/invoice";
 import type { AdaUsdQuote } from "@/types/oracle";
 
-function hashPin(pin: string) {
-  return pin.trim().toLowerCase();
-}
-
-function quoteRate(quote: AdaUsdQuote) {
-  return Number(quote.price) * 10 ** quote.exponent;
-}
-
 export function SafeQuoteApp() {
   const [wallets, setWallets] = useState<{ name: string }[]>([]);
+  const [connectedWallet, setConnectedWallet] = useState<BrowserWallet | null>(null);
   const [walletName, setWalletName] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
   const [quote, setQuote] = useState<AdaUsdQuote | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [busy, setBusy] = useState(false);
   const [createForm, setCreateForm] = useState({
     clientName: "",
     concept: "",
@@ -83,7 +77,10 @@ export function SafeQuoteApp() {
 
   async function handleConnectWallet() {
     const connection = await connectWallet(walletName);
-    setWalletAddress(connection.changeAddress);
+    setConnectedWallet(connection.wallet);
+    startTransition(() => {
+      setWalletAddress(connection.changeAddress);
+    });
 
     await fetch("/api/auth/wallet", {
       method: "POST",
@@ -99,6 +96,7 @@ export function SafeQuoteApp() {
     await fetch("/api/auth/wallet", { method: "DELETE" });
 
     startTransition(() => {
+      setConnectedWallet(null);
       setWalletAddress("");
     });
   }
@@ -106,51 +104,78 @@ export function SafeQuoteApp() {
   async function handleCreateInvoice(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    await fetch("/api/invoices", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    if (!connectedWallet || !walletAddress) {
+      throw new Error("Connect a wallet before creating an invoice");
+    }
+
+    setBusy(true);
+
+    try {
+      const result = await createInvoiceOnChain(connectedWallet, {
         sellerAddress: walletAddress,
         clientName: createForm.clientName,
         concept: createForm.concept,
         amountUsd: Number(createForm.amountUsd),
-        pinHash: hashPin(createForm.pin),
-        invoiceNftPolicyId: `${process.env.NEXT_PUBLIC_INVOICE_NFT_POLICY_ID}`,
-        invoiceNftName: `invoice-${Date.now()}`,
+        pin: createForm.pin,
         deadline: new Date(createForm.deadline).toISOString(),
-      }),
-    });
+      });
 
-    const items = await fetchInvoices();
-    startTransition(() => {
-      setInvoices(items);
-    });
+      await fetch("/api/invoices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sellerAddress: result.invoice.sellerAddress,
+          clientName: result.invoice.clientName,
+          concept: result.invoice.concept,
+          amountUsd: result.invoice.amountUsd,
+          pinHash: result.invoice.pinHash,
+          invoiceNftPolicyId: result.invoice.invoiceNftPolicyId,
+          invoiceNftName: result.invoice.invoiceNftName,
+          invoiceScriptAddress: result.invoice.invoiceScriptAddress,
+          lockTxHash: result.invoice.lockTxHash,
+          lockTxIndex: result.invoice.lockTxIndex,
+          deadline: result.invoice.deadline,
+        }),
+      });
+
+      const items = await fetchInvoices();
+      startTransition(() => {
+        setInvoices(items);
+      });
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function handlePayInvoice(invoice: Invoice, pin: string) {
-    if (!quote) {
-      return;
+    if (!connectedWallet || !walletAddress) {
+      throw new Error("Connect a wallet before paying an invoice");
     }
 
-    const rate = quoteRate(quote);
-    const minAda = invoice.amountUsd / rate;
+    setBusy(true);
 
-    await fetch(`/api/invoices/${invoice.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        buyerAddress: walletAddress,
-        adaQuoteSnapshot: minAda,
-        feedId: quote.feedId,
-        txHash: `demo_${invoice.id}_${Date.now()}`,
-        status: hashPin(pin) === invoice.pinHash ? "paid" : invoice.status,
-      }),
-    });
+    try {
+      const payment = await payInvoiceOnChain(connectedWallet, invoice, pin);
 
-    const items = await fetchInvoices();
-    startTransition(() => {
-      setInvoices(items);
-    });
+      await fetch(`/api/invoices/${invoice.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          buyerAddress: payment.buyerAddress,
+          adaQuoteSnapshot: payment.minLovelace / 1_000_000,
+          feedId: payment.quote.feedId,
+          txHash: payment.txHash,
+          status: "paid",
+        }),
+      });
+
+      const items = await fetchInvoices();
+      startTransition(() => {
+        setInvoices(items);
+      });
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -161,10 +186,7 @@ export function SafeQuoteApp() {
 
       <section>
         <h2>Wallet</h2>
-        <select
-          value={walletName}
-          onChange={(event) => setWalletName(event.target.value)}
-        >
+        <select value={walletName} onChange={(event) => setWalletName(event.target.value)}>
           {wallets.map((wallet) => (
             <option key={wallet.name} value={wallet.name}>
               {wallet.name}
@@ -172,11 +194,11 @@ export function SafeQuoteApp() {
           ))}
         </select>
         {walletAddress ? (
-          <button onClick={() => void handleLogout()} type="button">
+          <button disabled={busy} onClick={() => void handleLogout()} type="button">
             Logout
           </button>
         ) : (
-          <button onClick={() => void handleConnectWallet()} type="button">
+          <button disabled={busy} onClick={() => void handleConnectWallet()} type="button">
             Connect wallet
           </button>
         )}
@@ -191,53 +213,40 @@ export function SafeQuoteApp() {
               placeholder="Client name"
               value={createForm.clientName}
               onChange={(event) =>
-                setCreateForm((current) => ({
-                  ...current,
-                  clientName: event.target.value,
-                }))
+                setCreateForm((current) => ({ ...current, clientName: event.target.value }))
               }
             />
             <input
               placeholder="Concept"
               value={createForm.concept}
               onChange={(event) =>
-                setCreateForm((current) => ({
-                  ...current,
-                  concept: event.target.value,
-                }))
+                setCreateForm((current) => ({ ...current, concept: event.target.value }))
               }
             />
             <input
               placeholder="USD amount"
               value={createForm.amountUsd}
               onChange={(event) =>
-                setCreateForm((current) => ({
-                  ...current,
-                  amountUsd: event.target.value,
-                }))
+                setCreateForm((current) => ({ ...current, amountUsd: event.target.value }))
               }
             />
             <input
               placeholder="PIN"
               value={createForm.pin}
               onChange={(event) =>
-                setCreateForm((current) => ({
-                  ...current,
-                  pin: event.target.value,
-                }))
+                setCreateForm((current) => ({ ...current, pin: event.target.value }))
               }
             />
             <input
               type="datetime-local"
               value={createForm.deadline}
               onChange={(event) =>
-                setCreateForm((current) => ({
-                  ...current,
-                  deadline: event.target.value,
-                }))
+                setCreateForm((current) => ({ ...current, deadline: event.target.value }))
               }
             />
-            <button type="submit">Create invoice NFT</button>
+            <button disabled={busy} type="submit">
+              Create invoice NFT
+            </button>
           </form>
         </section>
       ) : (
@@ -269,6 +278,7 @@ export function SafeQuoteApp() {
               key={invoice.id}
               onPay={handlePayInvoice}
               quote={quote}
+              disabled={busy || !walletAddress}
             />
           ))}
       </section>
@@ -279,9 +289,7 @@ export function SafeQuoteApp() {
           <article key={invoice.id}>
             <strong>{invoice.clientName}</strong>
             <p>{invoice.status}</p>
-            <p>
-              {invoice.invoiceNftPolicyId}.{invoice.invoiceNftName}
-            </p>
+            <p>{invoice.invoiceNftPolicyId}.{invoice.invoiceNftName}</p>
           </article>
         ))}
       </section>
@@ -293,28 +301,24 @@ function PayCard({
   invoice,
   quote,
   onPay,
+  disabled,
 }: {
   invoice: Invoice;
   quote: AdaUsdQuote | null;
   onPay: (invoice: Invoice, pin: string) => Promise<void>;
+  disabled: boolean;
 }) {
   const [pin, setPin] = useState("");
 
-  const minAda = quote
-    ? invoice.amountUsd / (Number(quote.price) * 10 ** quote.exponent)
-    : 0;
+  const minAda = quote ? invoice.amountUsd / (Number(quote.price) * 10 ** quote.exponent) : 0;
 
   return (
     <article>
       <strong>{invoice.clientName}</strong>
       <p>{invoice.amountUsd} USD</p>
       <p>Min ADA: {quote ? minAda.toFixed(4) : "Loading..."}</p>
-      <input
-        value={pin}
-        onChange={(event) => setPin(event.target.value)}
-        placeholder="PIN"
-      />
-      <button onClick={() => void onPay(invoice, pin)} type="button">
+      <input value={pin} onChange={(event) => setPin(event.target.value)} placeholder="PIN" />
+      <button disabled={disabled} onClick={() => void onPay(invoice, pin)} type="button">
         Pay invoice
       </button>
     </article>
