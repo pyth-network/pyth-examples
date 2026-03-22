@@ -1,0 +1,149 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #0a0a0f;
+  color: #e0e0e0;
+  min-height: 100vh;
+}
+
+.app { max-width: 960px; margin: 0 auto; padding: 1rem; }
+
+header {
+  padding: 2rem 0 1rem;
+  border-bottom: 1px solid #222;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+h1 { font-size: 2rem; color: #4fc3f7; }
+h2 { font-size: 1.4rem; margin-bottom: 1rem; color: #b0bec5; }
+.subtitle { color: #666; margin: 0.5rem 0 1rem; }
+
+nav { display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
+nav button {
+  padding: 0.5rem 1.5rem;
+  border: 1px solid #333;
+  background: transparent;
+  color: #999;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+nav button.active { background: #1a237e; color: #4fc3f7; border-color: #4fc3f7; }
+
+.price-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #111;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+.price-label { color: #666; }
+.price-value { color: #4caf50; font-weight: bold; }
+.price-source { color: #555; font-size: 0.75rem; }
+
+.invoice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.invoice-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 1rem;
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+.invoice-id { font-family: monospace; color: #888; font-size: 0.8rem; }
+.status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+.status.listed { background: #1b5e20; color: #81c784; }
+.status.sold { background: #4a148c; color: #ce93d8; }
+
+.card-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+.field label { display: block; font-size: 0.7rem; color: #555; text-transform: uppercase; }
+.field span { font-size: 1rem; }
+
+.buy-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.6rem;
+  background: #1a237e;
+  color: #4fc3f7;
+  border: 1px solid #4fc3f7;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.buy-btn:hover { background: #283593; }
+
+.invoice-form { max-width: 400px; }
+.form-field { margin-bottom: 1rem; }
+.form-field label { display: block; margin-bottom: 0.3rem; color: #888; font-size: 0.85rem; }
+.form-field input {
+  width: 100%;
+  padding: 0.6rem;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 0.95rem;
+}
+.form-field input:focus { border-color: #4fc3f7; outline: none; }
+
+.submit-btn {
+  padding: 0.7rem 2rem;
+  background: #4fc3f7;
+  color: #0a0a0f;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.success { text-align: center; padding: 2rem; }
+.success h3 { color: #4caf50; margin-bottom: 0.5rem; }
+.success button { margin-top: 1rem; padding: 0.5rem 1.5rem; background: #222; color: #999; border: 1px solid #333; border-radius: 6px; cursor: pointer; }
+.empty { text-align: center; padding: 2rem; color: #666; }
+
+footer { text-align: center; padding: 2rem 0; color: #444; font-size: 0.8rem; border-top: 1px solid #222; margin-top: 2rem; }
+
+/* Wallet */
+.wallet-connect { display: flex; align-items: center; gap: 0.5rem; }
+.wallet-list { display: flex; gap: 0.5rem; }
+.wallet-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.8rem; background: #1a237e; color: #4fc3f7;
+  border: 1px solid #4fc3f7; border-radius: 6px; cursor: pointer;
+  font-size: 0.8rem;
+}
+.wallet-btn:hover { background: #283593; }
+.wallet-btn:disabled { opacity: 0.5; cursor: wait; }
+.wallet-icon { width: 20px; height: 20px; border-radius: 4px; }
+.wallet-connected { display: flex; align-items: center; gap: 0.75rem; }
+.wallet-info { display: flex; align-items: center; gap: 0.5rem; background: #111; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.8rem; }
+.wallet-address { font-family: monospace; color: #888; }
+.wallet-balance { color: #4caf50; font-weight: bold; }
+.disconnect-btn { padding: 0.3rem 0.6rem; background: transparent; color: #666; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+.no-wallet { color: #666; font-size: 0.8rem; }
+.wallet-error { color: #ef5350; font-size: 0.8rem; margin-top: 0.3rem; }
+.form-info { background: #111; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.85rem; color: #888; }
+.form-info p { margin-bottom: 0.25rem; }
+.tx-info { color: #666; font-size: 0.9rem; margin-top: 0.5rem; }
