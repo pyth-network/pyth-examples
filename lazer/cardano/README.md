@@ -4,6 +4,10 @@ This project aims to bring Pyth to Cardano with a simple, small and yet useful u
 
 ## Project description
 
+Imagine you want to submit a grant proposal for a project idea you had that will improve Cardano significantly. You do your research, desing a feasible solution, and estimate a budget based on the amount of time and effort you expect to put on the solution. But, the grant will be paid in *ADA*, while your budget is estimated in *USD*.
+
+Of course, you could convert the budget to ADA using the current exchange rate, but delivery may take months or even years. During that time, the rate can fluctuate dramatically, potentially reaching entirely different value ranges. Payth solves this problem.
+
 The idea is pretty basic: an applicant, Anne, wants to do some task that will be paid in the future by some sponsor Bill. The transaction is gonna be in ADA, but Anne wants the price fixed in USD to avoid possible fluctuations. This could be benefitial, economically speaking, to any of them depending on the market. So Anne fixes a price in USD and, using the off-chain Pyth API, determines the corresponding amount of ADA at the given moment. She makes a request to Bill, and he **locks** in a Cardano Validator that amount of ADA, plus a certain margin (right now that margin is fixed to 100%).
 
 When both actors agree the task is complete, Bill proceeds to **unlock** the funds. How much? Well, the amount of ADA corresponding to the USD agreed, but using the current relation between USD and ADA. This is where **Pyth** comes in to compute on-chain how much ADA should be sent to Anne and how much should return to Bill. 
