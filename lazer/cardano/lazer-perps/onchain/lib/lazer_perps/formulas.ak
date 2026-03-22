@@ -93,3 +93,81 @@ pub fn is_liquidatable(
     }
   }
 }
+
+// ─── Tests ───────────────────────────────────────────────────────────
+
+// PnL: Long 5x, entry 3000, exit 3100, collateral 100
+// PnL = 100 * 5 * (3100 - 3000) / 3000 = 500 * 100 / 3000 = 16.67
+test pnl_long_profit() {
+  let pnl = compute_pnl(Long, 100, 5, 3000, 3100)
+  rational.round(pnl) == 17
+}
+
+// PnL: Long 5x, entry 3000, exit 2900, collateral 100
+// PnL = 100 * 5 * (2900 - 3000) / 3000 = -16.67
+test pnl_long_loss() {
+  let pnl = compute_pnl(Long, 100, 5, 3000, 2900)
+  rational.round(pnl) == -17
+}
+
+// PnL: Short 5x, entry 3000, exit 2900, collateral 100
+// PnL = 100 * 5 * (3000 - 2900) / 3000 = 16.67
+test pnl_short_profit() {
+  let pnl = compute_pnl(Short, 100, 5, 3000, 2900)
+  rational.round(pnl) == 17
+}
+
+// PnL: Short 5x, entry 3000, exit 3100, collateral 100
+// PnL = 100 * 5 * (3000 - 3100) / 3000 = -16.67
+test pnl_short_loss() {
+  let pnl = compute_pnl(Short, 100, 5, 3000, 3100)
+  rational.round(pnl) == -17
+}
+
+// Payout: collateral 100 + PnL 50 = 150
+test payout_positive() {
+  let pnl = rational.from_int(50)
+  let payout = compute_payout(100, pnl)
+  rational.round(payout) == 150
+}
+
+// Payout floor: collateral 100 + PnL -200 → max(0, -100) = 0
+test payout_zero_floor() {
+  let pnl = rational.from_int(-200)
+  let payout = compute_payout(100, pnl)
+  rational.round(payout) == 0
+}
+
+// Liq price Long 10x, entry 3000:
+// liq = 3000 * (101*10 - 100) / (100*10) = 3000 * 910 / 1000 = 2730
+test liq_price_long_10x() {
+  let liq = liquidation_price_long(3000, 10)
+  rational.round(liq) == 2730
+}
+
+// Liq price Short 10x, entry 3000:
+// liq = 3000 * (99*10 + 100) / (100*10) = 3000 * 1090 / 1000 = 3270
+test liq_price_short_10x() {
+  let liq = liquidation_price_short(3000, 10)
+  rational.round(liq) == 3270
+}
+
+// Long at 2700 (below liq 2730) → liquidatable
+test liquidatable_long_yes() {
+  is_liquidatable(Long, 3000, 10, 2700) == True
+}
+
+// Long at 2800 (above liq 2730) → safe
+test liquidatable_long_no() {
+  is_liquidatable(Long, 3000, 10, 2800) == False
+}
+
+// Short at 3300 (above liq 3270) → liquidatable
+test liquidatable_short_yes() {
+  is_liquidatable(Short, 3000, 10, 3300) == True
+}
+
+// Short at 3200 (below liq 3270) → safe
+test liquidatable_short_no() {
+  is_liquidatable(Short, 3000, 10, 3200) == False
+}
