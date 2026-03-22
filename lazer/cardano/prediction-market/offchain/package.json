@@ -1,0 +1,18 @@
+{
+  "name": "offchain",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@blaze-cardano/data": "^0.6.6",
+    "@blaze-cardano/sdk": "^0.2.48",
+    "@blaze-cardano/uplc": "^0.4.3",
+    "@pythnetwork/pyth-lazer-sdk": "^6.2.1"
+  }
+}
