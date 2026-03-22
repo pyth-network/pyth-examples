@@ -25,9 +25,11 @@ validator pay_with_pyth(
     _own_ref: Data,
     self: Transaction,
   ) {
+    // Transaction must be signed by the sponsor
     expect VerificationKey(sponsor_key_hash) =
       sponsor_address.payment_credential
     expect list.has(self.extra_signatories, sponsor_key_hash)
+    // -----------------------------------------
     when redeemer is {
       Unlock -> {
         expect [update] = pyth.get_updates(pyth_id, self)
@@ -38,8 +40,10 @@ validator pay_with_pyth(
           )
         expect Some(Some(price)) = feed.price
         expect Some(exponent) = feed.exponent
-        expect Some(multiplier) = rational.from_int(10) |> rational.pow(exponent)
+        expect Some(multiplier) =
+          rational.from_int(10) |> rational.pow(exponent)
         let ada_usd_price = rational.from_int(price) |> rational.mul(multiplier)
+        // Compute the amount of lovelace to be sent to the user
         expect Some(lovelace_needed) =
           rational.from_int(usd_amount_cents * 10_000)
             |> rational.div(ada_usd_price)
@@ -51,7 +55,12 @@ validator pay_with_pyth(
           },
         )
       }
+      // If the action is Cancel, the sponsor can manage the ADA in any way, for example, send it to itself
       Cancel -> True
     }
+  }
+
+  else(_) {
+    fail
   }
 }
