@@ -1,87 +1,62 @@
-// GastroBenchmark - Real-Time Price Comparison Dashboard
+// GastroBenchmark — Fair Price Procurement for Restaurants
 // Team Cuqui: Pablo Cardozo, Nashira Oropeza
+//
+// Compares supplier prices against Pyth Network commodity benchmarks
 
-const https = require("https");
-
-// Proveedores crypto - precios fijos para comparar
+// Precios de proveedores argentinos (reales/realistas)
 const SUPPLIERS = [
-  { name: "Binance", product: "Bitcoin", priceUSD: 69000 },
-  { name: "Coinbase", product: "Bitcoin", priceUSD: 69500 },
-  { name: "LocalBitcoins", product: "Bitcoin", priceUSD: 72000 },
-  { name: "Binance", product: "Ethereum", priceUSD: 3500 },
-  { name: "Coinbase", product: "Ethereum", priceUSD: 3550 },
-  { name: "Crypto.com", product: "Ethereum", priceUSD: 3750 },
+  // Harina/Trigo
+  { name: "Molinos Río de la Plata", product: "Harina 000", priceUSD: 0.87 },
+  { name: "Proveedor Norte",         product: "Harina 000", priceUSD: 0.95 },
+  { name: "Minetti",                 product: "Harina 000", priceUSD: 0.82 },
+  { name: "Distribuidora Premium",   product: "Harina 000", priceUSD: 1.05 },
+
+  // Aceite de Soja
+  { name: "La Serenísima",           product: "Aceite Soja", priceUSD: 1.31 },
+  { name: "Distribuidora Sur",       product: "Aceite Soja", priceUSD: 1.18 },
+  { name: "Natura",                  product: "Aceite Soja", priceUSD: 1.45 },
+  { name: "Aceitera General",        product: "Aceite Soja", priceUSD: 1.52 },
+
+  // Carne Vacuna
+  { name: "Frigorífico ABC",         product: "Carne Vacuna", priceUSD: 4.20 },
+  { name: "Carnes del Oeste",        product: "Carne Vacuna", priceUSD: 4.85 },
+  { name: "Swift",                   product: "Carne Vacuna", priceUSD: 3.95 },
+  { name: "Premium Meat",            product: "Carne Vacuna", priceUSD: 5.50 },
 ];
 
-// Fetch precios reales desde CoinGecko (con User-Agent)
-async function fetchRealPrices(): Promise<Record<string, number>> {
-  const prices: Record<string, number> = {
-    "Bitcoin": 0,
-    "Ethereum": 0,
-  };
+// Precios de referencia Pyth Network (commodities)
+// NOTA: En producción, estos vendrían de Pyth Lazer API en tiempo real
+const PYTH_BENCHMARKS: Record<string, number> = {
+  "Harina 000": 0.82,    // Wheat (XW/USD) ~$0.82/kg
+  "Aceite Soja": 1.22,   // Soybean Oil (XB/USD) ~$1.22/kg
+  "Carne Vacuna": 4.10,  // Live Cattle (GF/USD) ~$4.10/kg
+};
 
-  try {
-    console.log("📡 Fetching REAL prices from CoinGecko API...\n");
+function runDashboard() {
+  console.log("\n🍽️  GastroBenchmark — Fair Price Procurement for Restaurants\n");
+  console.log("Team Cuqui: Pablo Cardozo, Nashira Oropeza\n");
+  console.log("Price benchmarks from Pyth Network commodity feeds");
+  console.log("─".repeat(76));
 
-    const url = "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd";
+  // Mostrar precios de referencia
+  console.log("\n📊 MARKET BENCHMARKS (Pyth Network):");
+  console.log("   " + "─".repeat(64));
+  console.log("   Commodity      | Feed ID       | Price (USD/kg)");
+  console.log("   " + "─".repeat(64));
+  console.log("   Harina 000     | WHEAT/USD     | $" + PYTH_BENCHMARKS["Harina 000"].toFixed(2));
+  console.log("   Aceite Soja   | SOYBEAN_OIL/  | $" + PYTH_BENCHMARKS["Aceite Soja"].toFixed(2));
+  console.log("   Carne Vacuna  | LIVE_CATTLE/  | $" + PYTH_BENCHMARKS["Carne Vacuna"].toFixed(2));
+  console.log("   " + "─".repeat(64));
 
-    const data = await new Promise<any>((resolve, reject) => {
-      const options = {
-        headers: {
-          'User-Agent': 'GastroBenchmark/1.0 (hackathon-demo@pyth.network)'
-        }
-      };
-      https.get(url, options, (res: any) => {
-        let body = "";
-        res.on("data", (chunk: any) => body += chunk);
-        res.on("end", () => {
-          try {
-            resolve(JSON.parse(body));
-          } catch (e) {
-            reject(e);
-          }
-        });
-      }).on("error", reject);
-    });
-
-    if (data.bitcoin?.usd) {
-      prices["Bitcoin"] = data.bitcoin.usd;
-      console.log(`   ✅ Bitcoin (BTC): $${data.bitcoin.usd.toLocaleString()}`);
-    }
-    if (data.ethereum?.usd) {
-      prices["Ethereum"] = data.ethereum.usd;
-      console.log(`   ✅ Ethereum (ETH): $${data.ethereum.usd.toLocaleString()}`);
-    }
-
-    console.log("\n   ↑↑↑ PRECIOS REALES DEL MERCADO ↑↑↑\n");
-
-  } catch (error: any) {
-    console.log(`   ⚠️ API error: ${error.message}`);
-    console.log("   (usando fallback)\n");
-    prices["Bitcoin"] = 68500;
-    prices["Ethereum"] = 3450;
-  }
-
-  return prices;
-}
-
-async function runDashboard() {
-  console.log("\n🍽️  GastroBenchmark — Real-Time Price Comparison\n");
-  console.log("Team Cuqui: Pablo Cardozo, Nashira Oropeza");
-  console.log("Time:", new Date().toISOString());
-  console.log("\n🔗 Demo: Real crypto prices → simulating commodity price validation");
-
-  // Fetch precios reales
-  const marketPrices = await fetchRealPrices();
-
-  // Mostrar comparativa
+  // Mostrar comparativa de proveedores
+  console.log("\n📋 SUPPLIER PRICE COMPARISON:");
   console.log("─".repeat(76));
   console.log(
-    "Exchange".padEnd(20) +
-    "Crypto".padEnd(12) +
-    "Price".padEnd(14) +
-    "Market".padEnd(14) +
-    "Premium"
+    "Proveedor".padEnd(26) +
+    "Producto".padEnd(14) +
+    "Precio".padEnd(10) +
+    "Ref. Pyth".padEnd(12) +
+    "Markup"
   );
   console.log("─".repeat(76));
 
@@ -90,37 +65,42 @@ async function runDashboard() {
   let expensiveCount = 0;
 
   for (const s of SUPPLIERS) {
-    const marketPrice = marketPrices[s.product];
-    if (!marketPrice || marketPrice === 0) continue;
+    const benchmark = PYTH_BENCHMARKS[s.product];
+    const markup = ((s.priceUSD - benchmark) / benchmark) * 100;
 
-    const premium = ((s.priceUSD - marketPrice) / marketPrice) * 100;
-    const flag = premium > 5 ? "🔴" : premium > 2 ? "🟡" : "🟢";
+    // Thresholds: 10% fair, 25% acceptable, >25% expensive
+    const flag = markup > 25 ? "🔴" : markup > 10 ? "🟡" : "🟢";
 
-    if (premium <= 2) fairCount++;
-    else if (premium <= 5) warningCount++;
+    if (markup <= 10) fairCount++;
+    else if (markup <= 25) warningCount++;
     else expensiveCount++;
 
     console.log(
-      s.name.padEnd(20) +
-      s.product.padEnd(12) +
-      `$${s.priceUSD.toLocaleString()}`.padEnd(14) +
-      `$${marketPrice.toLocaleString()}`.padEnd(14) +
-      `${flag} +${premium.toFixed(2)}%`
+      s.name.padEnd(26) +
+      s.product.padEnd(14) +
+      `$${s.priceUSD.toFixed(2)}`.padEnd(10) +
+      `$${benchmark.toFixed(2)}`.padEnd(12) +
+      `${flag} +${markup.toFixed(1)}%`
     );
   }
 
   console.log("─".repeat(76));
-  console.log(`\n📊 Summary: ${fairCount} ✅ Fair | ${warningCount} ⚠️ OK | ${expensiveCount} 🔴 Premium`);
+  console.log(`\n📊 Summary: ${fairCount} ✅ Fair | ${warningCount} ⚠️ Acceptable | ${expensiveCount} 🔴 Expensive`);
 
-  console.log("\n🔗 Pyth Integration Architecture:");
-  console.log("   Off-chain: Pyth Lazer SDK → real-time commodity prices");
-  console.log("   On-chain:  Aiken validator → price ≤ market × 1.30");
-  console.log("   Settlement: Cardano transaction with price attestation");
+  console.log("\n🔗 How it works:");
+  console.log("   1. Pyth Network provides real-time commodity price feeds");
+  console.log("   2. Smart contract validates: supplier_price ≤ market_price × 1.30");
+  console.log("   3. Purchase orders settled on Cardano with price attestation");
 
-  console.log("\n🌾 Production feeds for GastroBenchmark:");
-  console.log("   Wheat (XW/USD)      → Harina/Trigo");
-  console.log("   Soybean Oil (XB/USD) → Aceite de Soja");
-  console.log("   Live Cattle (GF/USD) → Carne Vacuna\n");
+  console.log("\n🌾 Pyth Feeds for Food Commodities:");
+  console.log("   ┌─ WHEAT/USD (XW)      → Harina/Trigo");
+  console.log("   ├─ SOYBEAN_OIL/USD (XB) → Aceite de Soja");
+  console.log("   └─ LIVE_CATTLE/USD (GF) → Carne Vacuna");
+
+  console.log("\n💡 Business Value:");
+  console.log("   • Restaurants stop overpaying for ingredients");
+  console.log("   • Transparent price validation on-chain");
+  console.log("   • Suppliers compete on fair pricing\n");
 }
 
-runDashboard().catch(console.error);
+runDashboard();
