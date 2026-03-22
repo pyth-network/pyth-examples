@@ -7,6 +7,28 @@
 **Team Members:** Quimey Marquez
 **Contact:** quimey.marquez@gmail.com
 
+## Quick Start for Judges
+
+**Demo mode (no wallet needed, 30 seconds):**
+```bash
+cd frontend && npm install && npm run dev
+# Open http://localhost:15177 → click "Demo Mode"
+```
+
+**Smart contracts (29 tests):**
+```bash
+aiken build && aiken check
+```
+
+**On-chain with real wallet (5 minutes):**
+1. Install [Eternl](https://eternl.io), switch to **PreProd** testnet
+2. Get tADA from [Cardano Faucet](https://docs.cardano.org/cardano-testnets/tools/faucet/)
+3. Set collateral: Eternl > Settings > Collateral > Confirm
+4. `cd frontend && cp .env.example .env && npm install && npm run dev`
+5. Open http://localhost:15177 → Connect Wallet → Initialize Pool → Subscribe
+
+---
+
 ## Project Description
 
 DevalGuard is an on-chain parametric insurance protocol on Cardano that automatically compensates users if a fiat currency (e.g., the Argentine peso) devalues beyond a chosen threshold. Users pay a small premium and select their coverage parameters. If the exchange rate crosses the threshold during the coverage period, the smart contract reads the price from Pyth and executes the payout automatically — no claims process, no paperwork.
