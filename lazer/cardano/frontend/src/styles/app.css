@@ -186,6 +186,20 @@
   color: var(--text);
 }
 
+.role-switcher-block {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.role-switcher-label {
+  margin: 0;
+  margin-left: 0.35rem;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
 .role-switcher {
   display: inline-flex;
   gap: var(--space-2);
