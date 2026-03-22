@@ -1,25 +1,25 @@
 import {
-  Constr,
+  Address,
+  Assets,
   Data,
-  type LucidEvolution,
-  type SpendingValidator,
-  type TxBuilder,
-  type TxSignBuilder,
+  KeyHash,
+  ScriptHash,
+  TransactionHash,
+  type ProviderOnlyClient,
+  type SigningClient,
   type UTxO,
-} from "@lucid-evolution/lucid";
-import { getScriptAddress } from "../validator.js";
-import {
-  buildWithdrawRedeemer,
-  fetchPriceUpdate,
-  getPythContext,
-  parseAdaUsdPrice,
-  type PythContext,
-} from "../pyth.js";
+} from "@evolution-sdk/evolution";
+import { PlutusV3 } from "@evolution-sdk/evolution/PlutusV3";
+import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
+import { parseAdaUsdPrice } from "../pyth.js";
+import { getPythScriptHash, getPythState } from "../pyth_example/index.js";
 import type { Config } from "../config.js";
 
 export interface UnlockParams {
-  /** The parameterized spending validator */
-  validator: SpendingValidator;
+  /** Double-CBOR-encoded parameterized Plutus V3 spending script */
+  validatorScript?: string;
+  /** Backward-compatible fallback: object containing script hex */
+  validator?: { script: string };
   /** USD amount in cents (must match the validator parameter) */
   usdAmountCents: bigint;
   /** Bech32 address of the user — receives the ADA equivalent of usdAmountCents */
@@ -27,7 +27,7 @@ export interface UnlockParams {
   /** Bech32 address of the sponsor — receives the remaining ADA */
   sponsorAddress: string;
   /** The UTxO at the script address to spend (if known). If not provided, will be looked up. */
-  scriptUtxo?: UTxO;
+  scriptUtxo?: unknown;
 }
 
 /**
@@ -47,81 +47,165 @@ export function computeLovelaceForUser(
   return (dividend + adaUsdNumerator - 1n) / adaUsdNumerator;
 }
 
+export interface EvolutionPythContext {
+  stateUtxo: unknown;
+  withdrawScriptHash: string;
+}
+
+type UnlockClient = SigningClient & ProviderOnlyClient;
+
+const ADA_USD_FEED_ID = 16;
+
+function requirePaymentKeyHash(address: string): KeyHash.KeyHash {
+  const credential = Address.getPaymentCredential(address);
+  if (!credential) {
+    throw new Error("Invalid bech32 address");
+  }
+  if (credential._tag !== "KeyHash") {
+    throw new Error("Address must use key payment credential");
+  }
+  return credential;
+}
+
+async function getPythContext(
+  client: UnlockClient,
+  pythPolicyId: string,
+): Promise<EvolutionPythContext> {
+  const stateUtxo = await getPythState(pythPolicyId, client);
+  const withdrawScriptHash = getPythScriptHash(stateUtxo);
+  return { stateUtxo, withdrawScriptHash };
+}
+
+async function fetchPriceUpdateLikeExample(lazerToken: string): Promise<string> {
+  const lazer = await PythLazerClient.create({ token: lazerToken });
+  const latestPrice = await lazer.getLatestPrice({
+    channel: "fixed_rate@200ms",
+    formats: ["solana"],
+    jsonBinaryEncoding: "hex",
+    priceFeedIds: [ADA_USD_FEED_ID],
+    properties: ["price", "bestBidPrice", "bestAskPrice", "exponent"],
+  });
+
+  if (!latestPrice.solana?.data) {
+    throw new Error("Missing update payload");
+  }
+
+  return latestPrice.solana.data;
+}
+
+function toNetworkId(network: Config["network"]): number {
+  return network === "Mainnet" ? 1 : 0;
+}
+
+function getValidatorScriptAndAddress(
+  validatorScript: string,
+  network: Config["network"],
+): {
+  script: PlutusV3;
+  address: Address.Address;
+} {
+  const script = new PlutusV3({
+    bytes: Buffer.from(validatorScript, "hex"),
+  });
+  const scriptHash = ScriptHash.fromScript(script);
+  const address = new Address.Address({
+    networkId: toNetworkId(network),
+    paymentCredential: scriptHash,
+  });
+  return { script, address };
+}
+
+function resolveValidatorScript(params: UnlockParams): string {
+  const script = params.validatorScript ?? params.validator?.script;
+  if (!script) {
+    throw new Error("Missing validatorScript (or validator.script)");
+  }
+  return script;
+}
+
 /**
  * Builds an unlock transaction with pre-fetched Pyth context and price data.
  * Useful for testing (inject mock data instead of fetching from network).
  *
  * @param currentTime - Optional Unix timestamp in milliseconds to use for validity range.
- *                      Defaults to Date.now(). Pass the emulator's current time when testing
- *                      with the Lucid Emulator to avoid slot range validation errors.
  */
 export async function buildUnlockTxFromData(
-  lucid: LucidEvolution,
+  client: UnlockClient,
   config: Config,
   params: UnlockParams,
-  pythCtx: PythContext,
+  pythCtx: EvolutionPythContext,
   priceUpdateHex: string,
   currentTime?: number,
-): Promise<TxSignBuilder> {
-  const scriptAddress = getScriptAddress(params.validator, config.network);
+) {
+  const validatorScriptHex = resolveValidatorScript(params);
+  const { script: validatorScript, address: scriptAddress } = getValidatorScriptAndAddress(
+    validatorScriptHex,
+    config.network,
+  );
 
   let scriptUtxo = params.scriptUtxo;
   if (!scriptUtxo) {
-    const utxos = await lucid.utxosAt(scriptAddress);
+    const utxos = await client.getUtxos(scriptAddress);
     if (utxos.length === 0) throw new Error("No UTxOs found at script address");
     scriptUtxo = utxos[0];
   }
 
   const { numerator, denominator } = parseAdaUsdPrice(priceUpdateHex);
-  const withdrawRedeemer = buildWithdrawRedeemer(priceUpdateHex);
   const lovelaceToUser = computeLovelaceForUser(params.usdAmountCents, numerator, denominator);
 
-  const totalLovelace = scriptUtxo.assets.lovelace ?? 0n;
+  const totalLovelace = Assets.lovelaceOf((scriptUtxo as UTxO.UTxO).assets);
   if (lovelaceToUser > totalLovelace) {
     throw new Error(
       `Locked ADA (${totalLovelace}) insufficient for ${lovelaceToUser} lovelace needed`,
     );
   }
   const lovelaceToSponsor = totalLovelace - lovelaceToUser;
+  console.log(`Lovelace to user: ${lovelaceToUser}`);
+  console.log(`Lovelace to sponsor: ${lovelaceToSponsor}`);
 
-  const unlockRedeemer = Data.to(new Constr(0, []));
   const now = BigInt(currentTime ?? Date.now());
+  const unlockRedeemer = Data.constr(0n, []);
+  const updateBytes = Buffer.from(priceUpdateHex, "hex");
 
-  const refUtxos: UTxO[] = [
-    pythCtx.stateUtxo,
-    ...(pythCtx.withdrawRefUtxo ? [pythCtx.withdrawRefUtxo] : []),
-  ];
-
-  let builder: TxBuilder = lucid
+  return client
     .newTx()
-    .collectFrom([scriptUtxo], unlockRedeemer)
-    .attach.SpendingValidator(params.validator)
-    .readFrom(refUtxos)
-    .withdraw(pythCtx.rewardAddress, 0n, withdrawRedeemer)
-    .pay.ToAddress(params.userAddress, { lovelace: lovelaceToUser })
-    .pay.ToAddress(params.sponsorAddress, { lovelace: lovelaceToSponsor })
-    .validFrom(Number(now - 60_000n))
-    .validTo(Number(now + 60_000n))
-    .addSigner(params.sponsorAddress);
-
-  if (pythCtx.withdrawValidator) {
-    builder = builder.attach.WithdrawalValidator(pythCtx.withdrawValidator);
-  }
-
-  return builder.complete();
+    .setValidity({ from: now - 60_000n, to: now + 60_000n })
+    .attachScript({ script: validatorScript })
+    .collectFrom({
+      inputs: [scriptUtxo as UTxO.UTxO],
+      redeemer: unlockRedeemer,
+    })
+    .readFrom({ referenceInputs: [pythCtx.stateUtxo as UTxO.UTxO] })
+    .withdraw({
+      amount: 0n,
+      redeemer: [updateBytes],
+      stakeCredential: ScriptHash.fromHex(pythCtx.withdrawScriptHash),
+    })
+    .payToAddress({
+      address: Address.fromBech32(params.userAddress),
+      assets: Assets.fromLovelace(lovelaceToUser),
+    })
+    .payToAddress({
+      address: Address.fromBech32(params.sponsorAddress),
+      assets: Assets.fromLovelace(lovelaceToSponsor),
+    })
+    .addSigner({
+      keyHash: requirePaymentKeyHash(params.sponsorAddress),
+    })
+    .build();
 }
 
 /**
  * Builds a transaction that unlocks funds using a live Pyth oracle price.
  */
 export async function buildUnlockTx(
-  lucid: LucidEvolution,
+  client: UnlockClient,
   config: Config,
   params: UnlockParams,
-): Promise<TxSignBuilder> {
-  const pythCtx = await getPythContext(lucid, config.pythPolicyId, config.network);
-  const priceUpdateHex = await fetchPriceUpdate(config.pythLazerToken);
-  return buildUnlockTxFromData(lucid, config, params, pythCtx, priceUpdateHex);
+) {
+  const pythCtx = await getPythContext(client, config.pythPolicyId);
+  const priceUpdateHex = await fetchPriceUpdateLikeExample(config.pythLazerToken);
+  return buildUnlockTxFromData(client, config, params, pythCtx, priceUpdateHex);
 }
 
 /**
@@ -129,11 +213,11 @@ export async function buildUnlockTx(
  * Returns the transaction hash.
  */
 export async function unlock(
-  lucid: LucidEvolution,
+  client: UnlockClient,
   config: Config,
   params: UnlockParams,
 ): Promise<string> {
-  const tx = await buildUnlockTx(lucid, config, params);
-  const signed = await tx.sign.withWallet().complete();
-  return signed.submit();
+  const tx = await buildUnlockTx(client, config, params);
+  const txHash = await tx.signAndSubmit();
+  return TransactionHash.toHex(txHash);
 }
