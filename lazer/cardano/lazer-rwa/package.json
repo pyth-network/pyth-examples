@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "fetch-prices": "npx tsx src/fetch_prices_lazer_rwa.ts",
-    "submit-tx": "npx tsx src/submit_tx_lazer_rwa.ts"
+    "submit-tx": "npx tsx src/submit_tx_lazer_rwa.ts",
+    "mint": "npx tsx src/mint_rwa_token.ts"
   },
   "dependencies": {
     "@evolution-sdk/evolution": "^0.3.30",
