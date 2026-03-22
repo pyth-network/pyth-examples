@@ -8,6 +8,7 @@ const STATUS_LABELS: Record<RequestStatus, string> = {
   created: 'Created',
   ready_to_claim: 'Ready to claim',
   claimed: 'Claimed',
+  cancelled: 'Cancelled',
 };
 
 export function StatusBadge({ status }: StatusBadgeProps): JSX.Element {

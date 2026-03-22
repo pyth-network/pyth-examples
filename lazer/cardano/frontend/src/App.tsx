@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { cancelRequestApi, createRequestApi, fetchRequestsApi } from './api/requests';
 import { EternlWalletPanel } from './components/EternlWalletPanel';
 import { LivePricePanel } from './components/LivePricePanel';
 import { RoleSwitcher } from './components/RoleSwitcher';
@@ -15,7 +16,7 @@ import type {
   Role,
 } from './types/payment';
 import { formatAda, formatUsd } from './utils/format';
-import { computeLockAda, executeSettlement } from './utils/settlement';
+import { executeSettlement } from './utils/settlement';
 
 const COVERAGE_MULTIPLIER = 2;
 const INITIAL_ADA_USD = 0.65;
@@ -25,15 +26,8 @@ function countByStatus(requests: PaymentRequest[], status: RequestStatus): numbe
   return requests.filter((request) => request.status === status).length;
 }
 
-function shortHex(value: string, keep = 8): string {
-  if (value.length <= keep * 2) {
-    return value;
-  }
-  return `${value.slice(0, keep)}...${value.slice(-keep)}`;
-}
-
 export default function App(): JSX.Element {
-  const [role, setRole] = useState<Role>('user');
+  const [role, setRole] = useState<Role>('applicant');
   const [filter, setFilter] = useState<RequestFilter>('all');
   const wallet = useEternlWallet();
   const {
@@ -44,15 +38,38 @@ export default function App(): JSX.Element {
     refreshNow,
   } = usePythAdaUsdPrice();
   const [requests, setRequests] = useState<PaymentRequest[]>(() => createSeedRequests(INITIAL_ADA_USD));
-  const pendingReadyTimers = useRef<number[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const isRequiredNetwork = wallet.networkId === REQUIRED_NETWORK_ID;
   const canUseApp = wallet.isConnected && isRequiredNetwork;
   const canSettle = canUseApp && adaUsd !== null;
 
   useEffect(() => {
+    let isSubscribed = true;
+
+    const loadRequests = async (): Promise<void> => {
+      try {
+        const persistedRequests = await fetchRequestsApi();
+        if (!isSubscribed) {
+          return;
+        }
+        setRequests(persistedRequests);
+      } catch (loadError) {
+        if (!isSubscribed) {
+          return;
+        }
+        setApiError(
+          loadError instanceof Error
+            ? `Could not load persisted requests: ${loadError.message}`
+            : 'Could not load persisted requests.',
+        );
+      }
+    };
+
+    void loadRequests();
+
     return () => {
-      pendingReadyTimers.current.forEach((timerId) => window.clearTimeout(timerId));
-      pendingReadyTimers.current = [];
+      isSubscribed = false;
     };
   }, []);
 
@@ -72,39 +89,36 @@ export default function App(): JSX.Element {
     [requests],
   );
 
-  const handleCreate = (payload: CreateRequestPayload): void => {
+  const handleCreate = async (payload: CreateRequestPayload): Promise<void> => {
     if (!adaUsd || !canUseApp) {
-      return;
+      throw new Error('Connect Eternl on Preprod with a live ADA/USD price before creating.');
     }
-    const requestId = `request-${Date.now().toString(36)}-${Math.floor(Math.random() * 999)}`;
-    const nowIso = new Date().toISOString();
-    const lockAda = computeLockAda(payload.usdAmount, adaUsd, COVERAGE_MULTIPLIER);
-
-    const newRequest: PaymentRequest = {
-      id: requestId,
-      usdAmount: payload.usdAmount,
-      description: payload.description,
-      dueDate: payload.dueDate,
-      createdAt: nowIso,
-      lockAda,
-      status: 'created',
-      beneficiaryLabel: 'You',
-      sponsorLabel: 'Sponsor Wallet A',
-    };
-    if (wallet.primaryAddressHex) {
-      newRequest.beneficiaryLabel = `Eternl ${shortHex(wallet.primaryAddressHex)}`;
+    if (!wallet.primaryAddressHex) {
+      throw new Error('Eternl did not provide a primary address to create the lock transaction.');
     }
 
-    setRequests((prev) => [newRequest, ...prev]);
+    setIsCreating(true);
+    setApiError(null);
 
-    const timerId = window.setTimeout(() => {
-      setRequests((prev) =>
-        prev.map((request) =>
-          request.id === requestId ? { ...request, status: 'ready_to_claim' } : request,
-        ),
-      );
-    }, 800);
-    pendingReadyTimers.current.push(timerId);
+    try {
+      const { request } = await createRequestApi({
+        requesterAddressHex: wallet.primaryAddressHex,
+        usdAmount: payload.usdAmount,
+        description: payload.description,
+        dueDate: payload.dueDate,
+        adaUsd,
+        coverageMultiplier: COVERAGE_MULTIPLIER,
+      });
+
+      setRequests((prev) => [request, ...prev]);
+    } catch (createError) {
+      const message =
+        createError instanceof Error ? createError.message : 'Could not create request.';
+      setApiError(message);
+      throw new Error(message);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleClaim = (requestId: string): void => {
@@ -123,6 +137,27 @@ export default function App(): JSX.Element {
         };
       }),
     );
+  };
+
+  const handleCancel = async (requestId: string): Promise<void> => {
+    if (!canUseApp) {
+      throw new Error('Connect Eternl on Preprod before cancelling.');
+    }
+
+    setApiError(null);
+    try {
+      await cancelRequestApi(requestId);
+      setRequests((prev) =>
+        prev.map((request) =>
+          request.id === requestId ? { ...request, status: 'cancelled' } : request,
+        ),
+      );
+    } catch (cancelError) {
+      const message =
+        cancelError instanceof Error ? cancelError.message : 'Could not cancel request.';
+      setApiError(message);
+      throw new Error(message);
+    }
   };
 
   return (
@@ -198,7 +233,7 @@ export default function App(): JSX.Element {
                 <strong>{formatAda(lockedAda)}</strong>
               </article>
             </section>
-            {role === 'user' ? (
+            {role === 'applicant' ? (
               <UserDashboard
                 requests={requests}
                 filter={filter}
@@ -207,10 +242,18 @@ export default function App(): JSX.Element {
                 onFilterChange={setFilter}
                 onCreate={handleCreate}
                 onClaim={handleClaim}
+                isCreating={isCreating}
               />
             ) : (
-              <SponsorDashboard requests={requests} adaUsd={adaUsd} />
+              <SponsorDashboard
+                requests={requests}
+                adaUsd={adaUsd}
+                onCancel={(requestId) => {
+                  void handleCancel(requestId);
+                }}
+              />
             )}
+            {apiError ? <p className="error-text">{apiError}</p> : null}
           </>
         )}
       </main>
