@@ -4,14 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx ts-node test.ts"
+    "test": "npx ts-node test.ts",
+    "lock": "ts-node src/demo.ts lock",
+    "redeem": "ts-node src/demo.ts redeem",
+    "address": "ts-node -e \"import('./src/contract.js').then(m => m.getLucid().then(l => console.log(l.utils.validatorToAddress((await import('./src/contract.js')).validatorScript))))\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0"
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "dotenv": "^17.3.1"
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
