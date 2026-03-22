@@ -13,6 +13,7 @@ import {
   buildOpenPositionTx,
 } from "./orchestrator.js";
 import { parseFeed, feedName, getMarket } from "./feeds.js";
+import { formatCollateral } from "./collateral.js";
 
 async function main() {
   const lazerToken = process.env.ACCESS_TOKEN;
@@ -28,7 +29,7 @@ async function main() {
   const name = feedName(feedId);
 
   console.log(`=== Open ${direction} ${leverage}x on ${name} ===`);
-  console.log(`  Collateral: ${collateral / 1_000_000} USDCx`);
+  console.log(`  Collateral: ${formatCollateral(collateral)}`);
   if (market) console.log(`  Leverage cap: ${market.leverageCap}x`);
   console.log();
 
@@ -58,7 +59,7 @@ async function main() {
 
   console.log("Waiting for confirmation...");
   await wallet.awaitTx(digest);
-  console.log(`Position opened: ${direction} ${leverage}x ${name} (${collateral / 1_000_000} USDCx)`);
+  console.log(`Position opened: ${direction} ${leverage}x ${name} (${formatCollateral(collateral)})`);
 }
 
 main().catch((err) => {

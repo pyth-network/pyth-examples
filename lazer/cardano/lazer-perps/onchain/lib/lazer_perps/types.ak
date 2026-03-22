@@ -1,9 +1,18 @@
-use cardano/assets.{PolicyId}
+use cardano/assets.{PolicyId, AssetName}
 
 /// Direction of a perpetual position
 pub type Direction {
   Long
   Short
+}
+
+/// USDCx collateral token identification.
+/// On Cardano, native tokens are identified by policy ID + asset name.
+pub type CollateralToken {
+  /// Policy ID of the USDCx token (empty for ADA-as-collateral on testnet)
+  policy_id: PolicyId,
+  /// Asset name of the USDCx token
+  asset_name: AssetName,
 }
 
 /// Per-market configuration — applied as parameter at deployment.
@@ -19,10 +28,13 @@ pub type MarketConfig {
   min_collateral: Int,
   /// Policy ID of the liquidity pool manager
   pool_policy_id: PolicyId,
+  /// Collateral token (USDCx native token on Cardano)
+  collateral_token: CollateralToken,
 }
 
 /// PositionDatum — stored as inline datum on each position eUTxO.
 /// Each open position is an independent UTxO with this datum.
+/// All collateral amounts are denominated in micro USDCx (6 decimals).
 pub type PositionDatum {
   /// Pyth Lazer feed ID (e.g. 346 = XAU/USD)
   feed_id: Int,
@@ -40,7 +52,8 @@ pub type PositionDatum {
   opened_at: Int,
 }
 
-/// Pool state stored as datum on the liquidity pool eUTxO
+/// Pool state stored as datum on the liquidity pool eUTxO.
+/// The pool holds USDCx liquidity that backs trader positions.
 pub type PoolState {
   /// Total open interest across all positions (micro USDCx)
   total_open_interest: Int,

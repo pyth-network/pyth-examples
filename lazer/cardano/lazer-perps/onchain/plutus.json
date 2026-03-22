@@ -187,9 +187,36 @@
     "Int": {
       "dataType": "integer"
     },
+    "cardano/assets/AssetName": {
+      "title": "AssetName",
+      "dataType": "bytes"
+    },
     "cardano/assets/PolicyId": {
       "title": "PolicyId",
       "dataType": "bytes"
+    },
+    "lazer_perps/types/CollateralToken": {
+      "title": "CollateralToken",
+      "description": "USDCx collateral token identification.\n On Cardano, native tokens are identified by policy ID + asset name.",
+      "anyOf": [
+        {
+          "title": "CollateralToken",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "policy_id",
+              "description": "Policy ID of the USDCx token (empty for ADA-as-collateral on testnet)",
+              "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "asset_name",
+              "description": "Asset name of the USDCx token",
+              "$ref": "#/definitions/cardano~1assets~1AssetName"
+            }
+          ]
+        }
+      ]
     },
     "lazer_perps/types/Direction": {
       "title": "Direction",
@@ -242,6 +269,11 @@
               "title": "pool_policy_id",
               "description": "Policy ID of the liquidity pool manager",
               "$ref": "#/definitions/cardano~1assets~1PolicyId"
+            },
+            {
+              "title": "collateral_token",
+              "description": "Collateral token (USDCx native token on Cardano)",
+              "$ref": "#/definitions/lazer_perps~1types~1CollateralToken"
             }
           ]
         }
@@ -249,7 +281,7 @@
     },
     "lazer_perps/types/PoolState": {
       "title": "PoolState",
-      "description": "Pool state stored as datum on the liquidity pool eUTxO",
+      "description": "Pool state stored as datum on the liquidity pool eUTxO.\n The pool holds USDCx liquidity that backs trader positions.",
       "anyOf": [
         {
           "title": "PoolState",
@@ -272,7 +304,7 @@
     },
     "lazer_perps/types/PositionDatum": {
       "title": "PositionDatum",
-      "description": "PositionDatum — stored as inline datum on each position eUTxO.\n Each open position is an independent UTxO with this datum.",
+      "description": "PositionDatum — stored as inline datum on each position eUTxO.\n Each open position is an independent UTxO with this datum.\n All collateral amounts are denominated in micro USDCx (6 decimals).",
       "anyOf": [
         {
           "title": "PositionDatum",
