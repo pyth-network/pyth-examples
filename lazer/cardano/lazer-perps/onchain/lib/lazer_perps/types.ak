@@ -15,33 +15,36 @@ pub type MarketConfig {
   feed_id: Int,
   /// Maximum leverage for this market (e.g. 10 = 10x)
   leverage_cap: Int,
-  /// Minimum collateral in lovelace to open a position
+  /// Minimum collateral in micro USDCx to open a position
   min_collateral: Int,
   /// Policy ID of the liquidity pool manager
   pool_policy_id: PolicyId,
 }
 
-/// A perpetual position stored as datum on an independent eUTxO
-pub type Position {
-  /// Owner's public key hash
-  owner: ByteArray,
+/// PositionDatum — stored as inline datum on each position eUTxO.
+/// Each open position is an independent UTxO with this datum.
+pub type PositionDatum {
+  /// Pyth Lazer feed ID (e.g. 346 = XAU/USD)
+  feed_id: Int,
   /// Long or Short
   direction: Direction,
-  /// Collateral deposited (lovelace)
-  collateral: Int,
-  /// Position size = collateral * leverage (lovelace-denominated)
-  size: Int,
-  /// Entry price (raw integer, before exponent)
+  /// Leverage multiplier (e.g. 5 = 5x)
+  leverage: Int,
+  /// Entry price with 6 decimals (e.g. 3285_500000 = $3,285.50)
   entry_price: Int,
-  /// Entry price exponent (e.g. -8)
-  entry_exponent: Int,
+  /// Collateral in micro USDCx (e.g. 100_000000 = 100 USDCx)
+  collateral: Int,
+  /// Trader's public key hash
+  trader_pkh: ByteArray,
+  /// POSIX timestamp when the position was opened (milliseconds)
+  opened_at: Int,
 }
 
 /// Pool state stored as datum on the liquidity pool eUTxO
 pub type PoolState {
-  /// Total open interest across all positions (lovelace)
+  /// Total open interest across all positions (micro USDCx)
   total_open_interest: Int,
-  /// Maximum allowed open interest (lovelace)
+  /// Maximum allowed open interest (micro USDCx)
   max_open_interest: Int,
 }
 

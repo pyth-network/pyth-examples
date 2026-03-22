@@ -3,17 +3,19 @@ use cardano/assets.{PolicyId}
 use cardano/transaction.{Transaction}
 use lazer_perps/oracle_gate
 use lazer_perps/types.{
-  Direction, Long, Short, MarketConfig, Position,
+  Direction, Long, Short, MarketConfig, PositionDatum,
   liquidation_bps, keeper_fee_bps,
 }
 
 /// Compute PnL as a rational number.
 fn compute_pnl(
   direction: Direction,
-  size: Int,
+  collateral: Int,
+  leverage: Int,
   entry_price: Int,
   current_price: Int,
 ) -> rational.Rational {
+  let size = collateral * leverage
   let diff = when direction is {
     Long -> current_price - entry_price
     Short -> entry_price - current_price
@@ -24,19 +26,19 @@ fn compute_pnl(
 
 /// Liquidation validator.
 ///
-/// Anyone can trigger liquidation if the position is undercollateralized.
-/// No owner signature required — this is a public good.
+/// Anyone can trigger liquidation — no owner signature needed.
 ///
 /// Liquidation check:
 ///   remaining = collateral + PnL
-///   margin_ratio = remaining / collateral
-///   If remaining * 10000 < collateral * liquidation_bps → liquidatable
+///   If remaining * 10000 < collateral * liquidation_bps (8000) → liquidatable
 ///
-/// Keeper receives 1% of collateral as fee.
-/// Remaining collateral goes back to the pool.
+/// On liquidation:
+///   - Keeper receives 1% of collateral as fee
+///   - Remaining goes back to the liquidity pool
+///   - Position eUTxO is consumed (destroyed)
 validator liquidate(config: MarketConfig) {
   spend(
-    datum: Option<Position>,
+    datum: Option<PositionDatum>,
     _redeemer: Data,
     _own_ref: Data,
     self: Transaction,
@@ -47,11 +49,12 @@ validator liquidate(config: MarketConfig) {
     let (current_price, _exponent) =
       oracle_gate.read_price(config.pyth_id, config.feed_id, self)
 
-    // Compute PnL
+    // Compute PnL using position's leverage
     let pnl =
       compute_pnl(
         position.direction,
-        position.size,
+        position.collateral,
+        position.leverage,
         position.entry_price,
         current_price,
       )
