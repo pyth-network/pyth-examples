@@ -32,7 +32,12 @@ async function main() {
   console.log(`  USD amount: $${Number(usdAmountCents) / 100}`);
   console.log("  Fetching Pyth oracle price...");
 
-  const txHash = await unlock(lucid, config, { validator });
+  const txHash = await unlock(lucid, config, {
+    validator,
+    usdAmountCents,
+    userAddress,
+    sponsorAddress,
+  });
 
   console.log(`Unlock transaction submitted: ${txHash}`);
 }

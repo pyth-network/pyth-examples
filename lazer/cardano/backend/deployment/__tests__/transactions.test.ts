@@ -102,6 +102,7 @@ describe("lock + cancel flow (emulator)", () => {
     // Build cancel tx
     const cancelTx = await buildCancelTx(lucid, config, {
       validator,
+      sponsorAddress: sponsorAccount.address,
       scriptUtxo: scriptUtxos[0],
     });
     expect(cancelTx).toBeDefined();

@@ -30,7 +30,7 @@ async function main() {
 
   console.log("Building cancel transaction...");
 
-  const txHash = await cancel(lucid, config, { validator });
+  const txHash = await cancel(lucid, config, { validator, sponsorAddress });
 
   console.log(`Cancel transaction submitted: ${txHash}`);
 }

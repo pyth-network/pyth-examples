@@ -12,6 +12,8 @@ import type { Config } from "../config.js";
 export interface CancelParams {
   /** The parameterized spending validator */
   validator: SpendingValidator;
+  /** Bech32 address of the sponsor — locked ADA is explicitly sent back here */
+  sponsorAddress: string;
   /** The UTxO at the script address to spend (if known). If not provided, will be looked up. */
   scriptUtxo?: UTxO;
 }
@@ -19,6 +21,7 @@ export interface CancelParams {
 /**
  * Builds a transaction that cancels the payment agreement.
  * The sponsor reclaims all locked ADA. No Pyth oracle interaction needed.
+ * The full UTxO value is explicitly routed back to sponsorAddress.
  */
 export async function buildCancelTx(
   lucid: LucidEvolution,
@@ -44,7 +47,9 @@ export async function buildCancelTx(
     .newTx()
     .collectFrom([scriptUtxo], cancelRedeemer)
     .attach.SpendingValidator(params.validator)
-    .addSigner(await lucid.wallet().address())
+    // Explicitly send all locked value back to the sponsor
+    .pay.ToAddress(params.sponsorAddress, scriptUtxo.assets)
+    .addSigner(params.sponsorAddress)
     .complete();
 
   return tx;

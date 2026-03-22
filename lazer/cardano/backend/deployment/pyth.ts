@@ -120,3 +120,89 @@ export async function fetchPriceUpdate(
 export function buildWithdrawRedeemer(priceUpdateHex: string): string {
   return Data.to<string[]>([priceUpdateHex]);
 }
+
+/**
+ * Parses the ADA/USD price from a raw Pyth Lazer hex-encoded update message.
+ *
+ * The price is returned as { numerator, denominator } so callers can do exact
+ * bigint arithmetic without floating-point loss.
+ *
+ * Wire format (little-endian):
+ *   4B magic (b9011a82) | 64B signature | 32B pubkey | 2B payload_len | payload
+ * Payload:
+ *   4B magic (75d3c793) | 8B timestamp_us | 1B channel_id | 1B feeds_count | feeds...
+ * Each feed:
+ *   4B feed_id | 1B props_count | props...
+ * Property 0 (price): 1B id=0 | 8B i64 LE (raw price integer)
+ * Property 4 (exponent): 1B id=4 | 2B i16 LE (exponent, typically negative)
+ *
+ * actual_price = price_raw * 10^exponent
+ * So: numerator = price_raw, denominator = 10^(-exponent)   (when exponent < 0)
+ */
+export function parseAdaUsdPrice(priceUpdateHex: string): {
+  numerator: bigint;
+  denominator: bigint;
+} {
+  const buf = Buffer.from(priceUpdateHex, "hex");
+  let offset = 0;
+
+  // Skip envelope: 4B magic + 64B signature + 32B pubkey + 2B payload_len
+  offset += 4 + 64 + 32 + 2;
+
+  // Payload header: 4B magic + 8B timestamp + 1B channel + 1B feeds_count
+  offset += 4 + 8 + 1;
+  const feedsCount = buf.readUInt8(offset++);
+
+  for (let i = 0; i < feedsCount; i++) {
+    const feedId = buf.readUInt32LE(offset);
+    offset += 4;
+    const propsCount = buf.readUInt8(offset++);
+
+    let priceRaw: bigint | null = null;
+    let exponent: number | null = null;
+
+    for (let j = 0; j < propsCount; j++) {
+      const propId = buf.readUInt8(offset++);
+      if (propId === 0) {
+        // price: i64 LE
+        priceRaw = buf.readBigInt64LE(offset);
+        offset += 8;
+      } else if (propId === 4) {
+        // exponent: i16 LE
+        exponent = buf.readInt16LE(offset);
+        offset += 2;
+      } else {
+        // skip unknown/unneeded props (fixed sizes per property ID)
+        offset += propSize(propId);
+      }
+    }
+
+    if (feedId === ADA_USD_FEED_ID) {
+      if (priceRaw === null || exponent === null) {
+        throw new Error("ADA/USD feed is missing price or exponent property");
+      }
+      if (priceRaw <= 0n) {
+        throw new Error(`ADA/USD price is zero or negative: ${priceRaw}`);
+      }
+      if (exponent >= 0) {
+        return { numerator: priceRaw * 10n ** BigInt(exponent), denominator: 1n };
+      } else {
+        return { numerator: priceRaw, denominator: 10n ** BigInt(-exponent) };
+      }
+    }
+  }
+
+  throw new Error(`ADA/USD feed (id=${ADA_USD_FEED_ID}) not found in update`);
+}
+
+/** Byte sizes of each property payload (after the 1-byte property ID). */
+function propSize(propId: number): number {
+  switch (propId) {
+    case 0: case 1: case 2: case 5: case 6: case 10: case 11: return 8; // i64
+    case 3: return 2;  // u16
+    case 4: return 2;  // i16
+    case 7: case 8: case 12: return 9; // optional u64: 1B present flag + 8B value
+    case 9: return 2;  // market session u16
+    default: throw new Error(`Unknown Pyth property ID: ${propId}`);
+  }
+}
