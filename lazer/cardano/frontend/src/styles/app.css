@@ -176,25 +176,32 @@
   background: rgba(198, 255, 26, 0.15);
 }
 
-.price-panel header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.price-panel h3 {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.price-controls {
+.live-price-panel {
   display: grid;
-  grid-template-columns: 1fr auto;
   gap: var(--space-3);
-  align-items: center;
 }
 
-.price-input,
+.source-tag {
+  font-size: 0.76rem;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.live-price-value {
+  margin: 0;
+  font-size: 1.8rem;
+  font-family: 'Syne', 'Space Grotesk', sans-serif;
+  line-height: 1;
+}
+
+.live-price-refresh {
+  justify-self: start;
+  background: rgba(59, 230, 255, 0.14);
+  border-color: rgba(59, 230, 255, 0.5);
+  color: var(--text);
+}
+
 input,
 textarea {
   width: 100%;
@@ -219,10 +226,6 @@ input[type='range'] {
   padding: 0;
   border: 0;
   background: transparent;
-}
-
-.price-input {
-  width: 92px;
 }
 
 .request-form {
