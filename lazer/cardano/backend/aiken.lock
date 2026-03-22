@@ -24,4 +24,4 @@ requirements = []
 source = "github"
 
 [etags]
-"pyth-network/pyth-lazer-cardano@main" = [{ secs_since_epoch = 1774189662, nanos_since_epoch = 814400442 }, "a46dacd97a22eb07feeaf966d48c3116c8249ddc836705656e3135cea285bcfc"]
+"pyth-network/pyth-lazer-cardano@main" = [{ secs_since_epoch = 1774209615, nanos_since_epoch = 603967087 }, "a46dacd97a22eb07feeaf966d48c3116c8249ddc836705656e3135cea285bcfc"]
