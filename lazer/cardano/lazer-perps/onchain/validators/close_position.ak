@@ -43,7 +43,7 @@ validator close_position(config: MarketConfig) {
       )
 
     // Payout = max(0, collateral + PnL)
-    let _payout =
+    expect _payout =
       formulas.compute_payout(position.collateral, pnl)
 
     signed_by_trader && valid_prices

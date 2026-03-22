@@ -23,12 +23,12 @@ pub type PoolAction {
 /// The pool receives funds on losing trades and pays out on winning trades.
 /// All state transitions require a valid continuation output with
 /// updated PoolState datum.
-validator pool_manager(config: MarketConfig) {
+validator pool_manager(_config: MarketConfig) {
   spend(
     datum: Option<PoolState>,
     redeemer: PoolAction,
     _own_ref: Data,
-    self: Transaction,
+    _self: Transaction,
   ) {
     expect Some(pool) = datum
 
