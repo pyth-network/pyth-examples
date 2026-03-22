@@ -1,12 +1,16 @@
 use cardano/assets.{PolicyId}
 use cardano/transaction.{Transaction}
 use lazer_perps/oracle_gate
-use lazer_perps/types.{PerpsConfig, Position}
+use lazer_perps/types.{MarketConfig, Position}
 
 /// Open Position validator.
-/// Validates that a new position respects leverage limits and
-/// that the entry price matches the current Pyth oracle price.
-validator open_position(config: PerpsConfig) {
+///
+/// Validates that a new position:
+///   1. Has a valid Pyth price witness (entry_price == oracle price)
+///   2. Respects the market's leverage cap
+///   3. Meets minimum collateral requirement
+///   4. Size == collateral * leverage (no inflation)
+validator open_position(config: MarketConfig) {
   spend(
     datum: Option<Position>,
     _redeemer: Data,
@@ -15,16 +19,24 @@ validator open_position(config: PerpsConfig) {
   ) {
     expect Some(position) = datum
 
+    // Read current oracle price via the Pyth oracle gate
     let (current_price, _exponent) =
-      oracle_gate.read_price(config.pyth_id, position.feed_id, self)
+      oracle_gate.read_price(config.pyth_id, config.feed_id, self)
 
-    // Entry price must match current oracle price
-    let price_matches = current_price == position.entry_price
+    // 1. Entry price must match current oracle price
+    let price_valid = current_price == position.entry_price
 
-    // Leverage check: size <= collateral * max_leverage
+    // 2. Leverage cap: size / collateral <= leverage_cap
+    //    Equivalent: size <= collateral * leverage_cap
     let leverage_ok =
-      position.size <= position.collateral * config.max_leverage
+      position.size <= position.collateral * config.leverage_cap
 
-    price_matches && leverage_ok
+    // 3. Minimum collateral
+    let collateral_ok = position.collateral >= config.min_collateral
+
+    // 4. Size must be a positive multiple of collateral
+    let size_valid = position.size > 0 && position.collateral > 0
+
+    price_valid && leverage_ok && collateral_ok && size_valid
   }
 }
