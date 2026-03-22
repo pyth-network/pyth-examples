@@ -1,6 +1,4 @@
 use aiken/collection/list
-use aiken/math/rational
-use cardano/assets.{PolicyId}
 use cardano/transaction.{Transaction}
 use lazer_perps/formulas
 use lazer_perps/oracle_gate
