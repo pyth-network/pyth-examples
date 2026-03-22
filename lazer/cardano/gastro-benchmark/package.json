@@ -4,10 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx ts-node test.ts",
-    "lock": "ts-node src/demo.ts lock",
-    "redeem": "ts-node src/demo.ts redeem",
-    "address": "ts-node -e \"import('./src/contract.js').then(m => m.getLucid().then(l => console.log(l.utils.validatorToAddress((await import('./src/contract.js')).validatorScript))))\""
+    "dashboard": "ts-node src/dashboard.ts",
+    "test": "ts-node test.ts"
   },
   "keywords": [],
   "author": "",
