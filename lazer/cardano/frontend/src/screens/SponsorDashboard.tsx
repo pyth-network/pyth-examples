@@ -19,7 +19,6 @@ export function SponsorDashboard({ requests, adaUsd }: SponsorDashboardProps): J
       <section className="panel summary-panel">
         <header className="panel__header">
           <h2>Sponsor Summary</h2>
-          <p>Read-only overview for this v1.</p>
         </header>
         <div className="summary-grid">
           <div className="metric-card">

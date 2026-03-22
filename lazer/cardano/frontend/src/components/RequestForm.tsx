@@ -7,12 +7,14 @@ interface RequestFormProps {
   adaUsd: number;
   coverageMultiplier: number;
   onCreate: (payload: CreateRequestPayload) => void;
+  className?: string;
 }
 
 export function RequestForm({
   adaUsd,
   coverageMultiplier,
   onCreate,
+  className,
 }: RequestFormProps): JSX.Element {
   const [usdAmount, setUsdAmount] = useState('120');
   const [description, setDescription] = useState('');
@@ -59,10 +61,11 @@ export function RequestForm({
   };
 
   return (
-    <section className="panel">
+    <section className={`panel request-form-panel ${className ?? ''}`.trim()}>
       <header className="panel__header">
-        <h2>Create Request</h2>
-        <p>Auto-funded immediately with 100% coverage for this v1 demo.</p>
+        <div className="panel__header-stack">
+          <h2>Create Request</h2>
+        </div>
       </header>
       <form className="request-form" onSubmit={handleSubmit}>
         <label>

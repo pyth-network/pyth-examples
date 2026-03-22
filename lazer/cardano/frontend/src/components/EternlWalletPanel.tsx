@@ -2,6 +2,7 @@ import type { EternlWalletState } from '../types/wallet';
 
 interface EternlWalletPanelProps {
   wallet: EternlWalletState;
+  compact?: boolean;
 }
 
 function shortHex(value: string, keep = 10): string {
@@ -11,15 +12,17 @@ function shortHex(value: string, keep = 10): string {
   return `${value.slice(0, keep)}...${value.slice(-keep)}`;
 }
 
-export function EternlWalletPanel({ wallet }: EternlWalletPanelProps): JSX.Element {
+export function EternlWalletPanel({ wallet, compact = false }: EternlWalletPanelProps): JSX.Element {
   return (
-    <section className="panel wallet-panel">
+    <section
+      className={`panel wallet-panel ${compact ? 'wallet-panel--compact panel--utility' : ''}`.trim()}
+    >
       <header className="wallet-panel__header">
         <div className="wallet-panel__title">
           {wallet.walletIcon ? (
             <img src={wallet.walletIcon} alt={wallet.walletName} className="wallet-icon" />
           ) : null}
-          <h2>{wallet.walletName}</h2>
+          <h2>{compact ? 'Eternl' : wallet.walletName}</h2>
         </div>
         <span className={`status-pill ${wallet.isConnected ? 'status-pill--ok' : ''}`}>
           {wallet.isConnected ? 'Connected' : 'Disconnected'}
@@ -28,7 +31,9 @@ export function EternlWalletPanel({ wallet }: EternlWalletPanelProps): JSX.Eleme
 
       {!wallet.isInstalled ? (
         <p className="muted">
-          Eternl wallet not detected. Install the browser extension and reload this page.
+          {compact
+            ? 'Eternl not detected.'
+            : 'Eternl wallet not detected. Install the browser extension and reload this page.'}
         </p>
       ) : null}
 
@@ -45,21 +50,27 @@ export function EternlWalletPanel({ wallet }: EternlWalletPanelProps): JSX.Eleme
         </div>
       ) : null}
 
-      {wallet.error ? <p className="error-text">{wallet.error}</p> : null}
+      {wallet.error ? (
+        <p className="error-text">{compact ? 'Wallet connection failed.' : wallet.error}</p>
+      ) : null}
 
       <div className="wallet-actions">
         {wallet.isConnected ? (
-          <button type="button" className="button button--secondary" onClick={wallet.disconnect}>
+          <button
+            type="button"
+            className={`button ${compact ? 'button--tertiary' : 'button--secondary'}`}
+            onClick={wallet.disconnect}
+          >
             Disconnect
           </button>
         ) : (
           <button
             type="button"
-            className="button button--primary"
+            className={`button ${compact ? 'button--tertiary' : 'button--primary'}`}
             onClick={() => void wallet.connect()}
             disabled={!wallet.isInstalled || wallet.isConnecting}
           >
-            {wallet.isConnecting ? 'Connecting...' : 'Connect Eternl'}
+            {wallet.isConnecting ? 'Connecting...' : compact ? 'Connect' : 'Connect Eternl'}
           </button>
         )}
       </div>

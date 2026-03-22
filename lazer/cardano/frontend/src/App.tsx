@@ -129,7 +129,7 @@ export default function App(): JSX.Element {
     <div className="app-root">
       <main className="app-shell">
         <header className="hero panel">
-          <div>
+          <div className="hero-intro">
             <p className="eyebrow">Proof of Pyth</p>
             <h1>Pay With Pyth on Cardano</h1>
             <p className="hero-copy">
@@ -138,15 +138,22 @@ export default function App(): JSX.Element {
             </p>
           </div>
           <div className="hero-controls">
-            <EternlWalletPanel wallet={wallet} />
-            {canUseApp ? <RoleSwitcher value={role} onChange={setRole} /> : null}
-            <LivePricePanel
-              adaUsd={adaUsd}
-              isLoading={isPriceLoading}
-              error={priceError}
-              updatedAt={updatedAt}
-              onRefresh={refreshNow}
-            />
+            {canUseApp ? (
+              <div className="hero-controls__top">
+                <RoleSwitcher value={role} onChange={setRole} />
+              </div>
+            ) : null}
+            <div className="hero-controls__grid hero-controls__grid--utility">
+              <EternlWalletPanel wallet={wallet} compact />
+              <LivePricePanel
+                adaUsd={adaUsd}
+                isLoading={isPriceLoading}
+                error={priceError}
+                updatedAt={updatedAt}
+                onRefresh={refreshNow}
+                compact
+              />
+            </div>
           </div>
         </header>
 
