@@ -11,5 +11,6 @@
     "declaration": true,
     "skipLibCheck": true
   },
-  "include": ["deployment/**/*"]
+  "include": ["deployment/**/*"],
+  "exclude": ["deployment/__tests__/**/*", "deployment/pyth_example/**/*"]
 }

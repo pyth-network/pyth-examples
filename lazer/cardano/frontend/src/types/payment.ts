@@ -47,6 +47,8 @@ export interface PaymentRequest {
   adaUsdAtCreation?: number;
   coverageMultiplier?: number;
   lockTxId?: string;
+  cancelTxId?: string;
+  unlockTxId?: string;
   lockTxDraft?: LockTransactionDraft;
   settlement?: SettlementResult;
 }

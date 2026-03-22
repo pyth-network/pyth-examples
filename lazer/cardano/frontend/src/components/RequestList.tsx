@@ -11,7 +11,7 @@ interface RequestListProps {
   filters?: ReactNode;
   className?: string;
   embedded?: boolean;
-  onClaim?: (id: string) => void;
+  onClaim?: (id: string) => void | Promise<void>;
   onCancel?: (id: string) => void;
 }
 

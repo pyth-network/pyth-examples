@@ -79,6 +79,7 @@ export function buildValidator(params: ValidatorParams): SpendingValidator {
     params.pythPolicyId,
   ]);
 
+  console.log("Parameterized script:", parameterizedScript);
   return {
     type: "PlutusV3",
     script: applyDoubleCborEncoding(parameterizedScript),

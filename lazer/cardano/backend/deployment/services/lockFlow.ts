@@ -15,6 +15,7 @@ export interface ExecuteLockResult {
   scriptAddress: string;
   usdAmountCents: bigint;
   lovelaceToLock: bigint;
+  pythPolicyId: string;
 }
 
 function extractPaymentCredentialHash(addressInput: string): string {
@@ -66,5 +67,6 @@ export async function executeLockFlow(params: ExecuteLockParams): Promise<Execut
     scriptAddress,
     usdAmountCents: params.usdAmountCents,
     lovelaceToLock: params.lovelaceToLock,
+    pythPolicyId: config.pythPolicyId,
   };
 }

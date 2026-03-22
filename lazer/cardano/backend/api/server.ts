@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { DatabaseSync } from "node:sqlite";
 import { executeCancelFlow } from "../deployment/services/cancelFlow.js";
 import { executeLockFlow } from "../deployment/services/lockFlow.js";
+import { executeUnlockFlow } from "../deployment/services/unlockFlow.js";
 
 interface CreateRequestPayload {
   requesterAddressHex: string;
@@ -45,9 +46,30 @@ db.exec(`
     due_date TEXT,
     created_at TEXT NOT NULL,
     lock_tx_id TEXT NOT NULL,
-    lock_tx_draft_json TEXT NOT NULL
+    lock_tx_draft_json TEXT NOT NULL,
+    pyth_policy_id TEXT,
+    cancel_tx_id TEXT,
+    unlock_tx_id TEXT
   )
 `);
+
+try {
+  db.exec(`ALTER TABLE requests ADD COLUMN cancel_tx_id TEXT`);
+} catch {
+  // Column already exists.
+}
+
+try {
+  db.exec(`ALTER TABLE requests ADD COLUMN unlock_tx_id TEXT`);
+} catch {
+  // Column already exists.
+}
+
+try {
+  db.exec(`ALTER TABLE requests ADD COLUMN pyth_policy_id TEXT`);
+} catch {
+  // Column already exists.
+}
 
 const insertRequest = db.prepare(`
   INSERT INTO requests (
@@ -64,7 +86,8 @@ const insertRequest = db.prepare(`
     due_date,
     created_at,
     lock_tx_id,
-    lock_tx_draft_json
+    lock_tx_draft_json,
+    pyth_policy_id
   ) VALUES (
     $id,
     $requesterAddressHex,
@@ -79,7 +102,8 @@ const insertRequest = db.prepare(`
     $dueDate,
     $createdAt,
     $lockTxId,
-    $lockTxDraftJson
+    $lockTxDraftJson,
+    $pythPolicyId
   )
 `);
 
@@ -98,7 +122,10 @@ const selectAllRequests = db.prepare(`
     due_date AS dueDate,
     created_at AS createdAt,
     lock_tx_id AS lockTxId,
-    lock_tx_draft_json AS lockTxDraftJson
+    lock_tx_draft_json AS lockTxDraftJson,
+    pyth_policy_id AS pythPolicyId,
+    cancel_tx_id AS cancelTxId,
+    unlock_tx_id AS unlockTxId
   FROM requests
   ORDER BY created_at DESC
 `);
@@ -118,17 +145,57 @@ const selectRequestById = db.prepare(`
     due_date AS dueDate,
     created_at AS createdAt,
     lock_tx_id AS lockTxId,
-    lock_tx_draft_json AS lockTxDraftJson
+    lock_tx_draft_json AS lockTxDraftJson,
+    pyth_policy_id AS pythPolicyId,
+    cancel_tx_id AS cancelTxId,
+    unlock_tx_id AS unlockTxId
   FROM requests
   WHERE id = $id
   LIMIT 1
 `);
 
-const updateRequestStatus = db.prepare(`
+const updateRequestCancelled = db.prepare(`
   UPDATE requests
-  SET status = $status
+  SET status = $status,
+      cancel_tx_id = $cancelTxId
   WHERE id = $id
 `);
+
+const updateRequestClaimed = db.prepare(`
+  UPDATE requests
+  SET status = $status,
+      unlock_tx_id = $unlockTxId
+  WHERE id = $id
+`);
+
+const selectRowsMissingPythPolicyId = db.prepare(`
+  SELECT id, lock_tx_draft_json AS lockTxDraftJson
+  FROM requests
+  WHERE pyth_policy_id IS NULL
+`);
+
+const updateRequestPythPolicyId = db.prepare(`
+  UPDATE requests
+  SET pyth_policy_id = $pythPolicyId
+  WHERE id = $id
+`);
+
+for (const row of selectRowsMissingPythPolicyId.all() as Array<Record<string, unknown>>) {
+  try {
+    const draft = JSON.parse(String(row.lockTxDraftJson)) as {
+      metadata?: { pythPolicyId?: string };
+    };
+    const pythPolicyId = draft.metadata?.pythPolicyId;
+    if (typeof pythPolicyId === "string" && pythPolicyId.length > 0) {
+      updateRequestPythPolicyId.run({
+        id: String(row.id),
+        pythPolicyId,
+      });
+    }
+  } catch {
+    // Ignore malformed historical rows.
+  }
+}
 
 function sendJson(res: ServerResponse, statusCode: number, payload: unknown): void {
   res.writeHead(statusCode, {
@@ -169,6 +236,9 @@ function toRequestOutput(row: Record<string, unknown>) {
     dueDate: row.dueDate,
     createdAt: row.createdAt,
     lockTxId: row.lockTxId,
+    pythPolicyId: row.pythPolicyId,
+    cancelTxId: row.cancelTxId,
+    unlockTxId: row.unlockTxId,
     lockTxDraft: JSON.parse(String(row.lockTxDraftJson)),
   };
 }
@@ -225,6 +295,47 @@ function usdToCents(usdAmount: number): bigint {
   return BigInt(Math.round(usdAmount * 100));
 }
 
+function safeStringify(value: unknown): string {
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function extractErrorCauseMessages(error: unknown): string[] {
+  const messages: string[] = [];
+  const visited = new Set<unknown>();
+  let current: unknown = error;
+
+  while (current !== undefined && current !== null && !visited.has(current)) {
+    visited.add(current);
+
+    if (current instanceof Error) {
+      if (current.message) {
+        messages.push(current.message);
+      }
+      current = current.cause;
+      continue;
+    }
+
+    if (typeof current === "object") {
+      messages.push(safeStringify(current));
+      const maybeCause = (current as { cause?: unknown }).cause;
+      if (maybeCause === undefined) {
+        break;
+      }
+      current = maybeCause;
+      continue;
+    }
+
+    messages.push(String(current));
+    break;
+  }
+
+  return messages;
+}
+
 const server = createServer(async (req, res) => {
   try {
     const requestUrl = new URL(req.url ?? "/", "http://localhost");
@@ -277,6 +388,7 @@ const server = createServer(async (req, res) => {
             usdAmount: payload.usdAmount,
             adaUsd: payload.adaUsd,
             coverageMultiplier,
+            pythPolicyId: lockFlowResult.pythPolicyId,
           },
         },
       });
@@ -311,6 +423,7 @@ const server = createServer(async (req, res) => {
           usdAmount: payload.usdAmount,
           adaUsd: payload.adaUsd,
           coverageMultiplier,
+          pythPolicyId: lockFlowResult.pythPolicyId,
         },
       };
 
@@ -330,6 +443,7 @@ const server = createServer(async (req, res) => {
         createdAt,
         lockTxId: lockTxDraft.txId,
         lockTxDraftJson: JSON.stringify(lockTxDraft),
+        pythPolicyId: lockFlowResult.pythPolicyId,
       });
 
       sendJson(res, 201, {
@@ -347,6 +461,7 @@ const server = createServer(async (req, res) => {
           dueDate: payload.dueDate ?? null,
           createdAt,
           lockTxId: lockTxDraft.txId,
+          pythPolicyId: lockFlowResult.pythPolicyId,
         },
         lockTxDraft,
       });
@@ -378,7 +493,9 @@ const server = createServer(async (req, res) => {
       const request = toRequestOutput(row) as {
         id: string;
         requesterAddressHex: string;
+        sponsorAddressHex?: string | null;
         usdAmount: number;
+        pythPolicyId?: string | null;
         status: string;
       };
 
@@ -392,11 +509,13 @@ const server = createServer(async (req, res) => {
       const cancelResult = await executeCancelFlow({
         usdAmountCents: usdToCents(request.usdAmount),
         userAddress: request.requesterAddressHex,
+        pythPolicyId: request.pythPolicyId ?? null,
       });
 
-      updateRequestStatus.run({
+      updateRequestCancelled.run({
         id: request.id,
         status: "cancelled",
+        cancelTxId: cancelResult.txHash,
       });
 
       sendJson(res, 200, {
@@ -407,10 +526,80 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    if (
+      req.method === "POST" &&
+      requestUrl.pathname.startsWith("/api/requests/") &&
+      requestUrl.pathname.endsWith("/claim")
+    ) {
+      const requestId = requestUrl.pathname
+        .replace("/api/requests/", "")
+        .replace("/claim", "")
+        .replace(/\//g, "");
+
+      if (!requestId) {
+        throw new Error("Invalid request id.");
+      }
+
+      const row = selectRequestById.get({ id: requestId }) as
+        | Record<string, unknown>
+        | undefined;
+      if (!row) {
+        sendJson(res, 404, { error: "Request not found." });
+        return;
+      }
+
+      const request = toRequestOutput(row) as {
+        id: string;
+        requesterAddressHex: string;
+        sponsorAddressHex?: string | null;
+        usdAmount: number;
+        lockTxId?: string;
+        pythPolicyId?: string | null;
+        lockTxDraft?: { toScriptAddress?: string };
+        status: string;
+      };
+
+      if (request.status === "claimed") {
+        throw new Error("Request is already claimed.");
+      }
+      if (request.status === "cancelled") {
+        throw new Error("Cancelled requests cannot be claimed.");
+      }
+      if (request.status !== "ready_to_claim") {
+        throw new Error("Only ready_to_claim requests can be claimed.");
+      }
+
+      const unlockResult = await executeUnlockFlow({
+        usdAmountCents: usdToCents(request.usdAmount),
+        userAddress: request.requesterAddressHex,
+        sponsorAddress: request.sponsorAddressHex ?? null,
+        pythPolicyId: request.pythPolicyId ?? null,
+        expectedScriptAddress: request.lockTxDraft?.toScriptAddress ?? null,
+        expectedLockTxId: request.lockTxId ?? null,
+      });
+
+      updateRequestClaimed.run({
+        id: request.id,
+        status: "claimed",
+        unlockTxId: unlockResult.txHash,
+      });
+
+      sendJson(res, 200, {
+        requestId: request.id,
+        status: "claimed",
+        unlockTxId: unlockResult.txHash,
+      });
+      return;
+    }
+
     sendJson(res, 404, { error: "Not found" });
   } catch (error) {
+    const messages = extractErrorCauseMessages(error);
     sendJson(res, 400, {
-      error: error instanceof Error ? error.message : "Unexpected server error.",
+      error:
+        messages[0] ??
+        (error instanceof Error ? error.message : "Unexpected server error."),
+      causes: messages.slice(1),
     });
   }
 });

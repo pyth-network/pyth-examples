@@ -6,7 +6,7 @@ interface RequestCardProps {
   request: PaymentRequest;
   role: Role;
   adaUsd: number;
-  onClaim?: (id: string) => void;
+  onClaim?: (id: string) => void | Promise<void>;
   onCancel?: (id: string) => void;
 }
 
@@ -91,6 +91,26 @@ export function RequestCard({
             </p>
           )}
           <p className="muted">Executed with ADA/USD {request.settlement.executedAdaUsd.toFixed(2)}</p>
+        </section>
+      ) : null}
+
+      {request.lockTxId || request.unlockTxId || request.cancelTxId ? (
+        <section className="tx-meta">
+          {request.lockTxId ? (
+            <p className="muted">
+              Lock tx: <code>{request.lockTxId}</code>
+            </p>
+          ) : null}
+          {request.unlockTxId ? (
+            <p className="muted">
+              Claim tx: <code>{request.unlockTxId}</code>
+            </p>
+          ) : null}
+          {request.cancelTxId ? (
+            <p className="muted">
+              Cancel tx: <code>{request.cancelTxId}</code>
+            </p>
+          ) : null}
         </section>
       ) : null}
     </article>

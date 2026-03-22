@@ -6,6 +6,7 @@ import { cancel } from "../transactions/cancel.js";
 export interface ExecuteCancelParams {
   usdAmountCents: bigint;
   userAddress: string;
+  pythPolicyId?: string | null;
 }
 
 export interface ExecuteCancelResult {
@@ -41,6 +42,9 @@ export async function executeCancelFlow(
 ): Promise<ExecuteCancelResult> {
   // This mirrors scripts/cancel.ts from loadConfig() onward.
   const config = loadConfig();
+  if (params.pythPolicyId) {
+    config.pythPolicyId = params.pythPolicyId;
+  }
   const lucid = await initLucid(config);
 
   const sponsorAddress = await lucid.wallet().address();

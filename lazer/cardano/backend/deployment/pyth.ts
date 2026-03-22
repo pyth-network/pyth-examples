@@ -82,7 +82,6 @@ export async function fetchPriceUpdate(
   lazerToken: string,
 ): Promise<string> {
   const client = await PythLazerClient.create({
-    urls: [PYTH_LAZER_WS_URL],
     token: lazerToken,
   });
 
