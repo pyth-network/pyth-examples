@@ -20,7 +20,6 @@ interface UserDashboardProps {
 
 const FILTERS: Array<{ value: RequestFilter; label: string }> = [
   { value: 'all', label: 'All' },
-  { value: 'created', label: 'Created' },
   { value: 'ready_to_claim', label: 'Ready' },
   { value: 'claimed', label: 'Claimed' },
   { value: 'cancelled', label: 'Cancelled' },
