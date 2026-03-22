@@ -6,7 +6,8 @@ import { computeLockAda } from '../utils/settlement';
 interface RequestFormProps {
   adaUsd: number;
   coverageMultiplier: number;
-  onCreate: (payload: CreateRequestPayload) => void;
+  onCreate: (payload: CreateRequestPayload) => Promise<void>;
+  isCreating: boolean;
   className?: string;
 }
 
@@ -14,6 +15,7 @@ export function RequestForm({
   adaUsd,
   coverageMultiplier,
   onCreate,
+  isCreating,
   className,
 }: RequestFormProps): JSX.Element {
   const [usdAmount, setUsdAmount] = useState('120');
@@ -33,7 +35,7 @@ export function RequestForm({
     return computeLockAda(amount, adaUsd, coverageMultiplier);
   }, [adaUsd, coverageMultiplier, usdAmount]);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
 
     const amount = Number(usdAmount);
@@ -51,13 +53,19 @@ export function RequestForm({
     }
 
     setError('');
-    onCreate({
-      usdAmount: amount,
-      description: description.trim(),
-      dueDate,
-    });
-    setDescription('');
-    setUsdAmount('120');
+    try {
+      await onCreate({
+        usdAmount: amount,
+        description: description.trim(),
+        dueDate,
+      });
+      setDescription('');
+      setUsdAmount('120');
+    } catch (createError) {
+      setError(
+        createError instanceof Error ? createError.message : 'Could not create request right now.',
+      );
+    }
   };
 
   return (
@@ -72,9 +80,10 @@ export function RequestForm({
           USD amount
           <input
             type="number"
-            min="1"
+            // min="1"
             step="1"
             value={usdAmount}
+            disabled={isCreating}
             onChange={(event) => setUsdAmount(event.target.value)}
           />
         </label>
@@ -84,6 +93,7 @@ export function RequestForm({
             rows={3}
             value={description}
             placeholder="What are you charging for?"
+            disabled={isCreating}
             onChange={(event) => setDescription(event.target.value)}
           />
         </label>
@@ -93,6 +103,7 @@ export function RequestForm({
             type="date"
             value={dueDate}
             min={new Date().toISOString().slice(0, 10)}
+            disabled={isCreating}
             onChange={(event) => setDueDate(event.target.value)}
           />
         </label>
@@ -104,8 +115,8 @@ export function RequestForm({
 
         {error ? <p className="error-text">{error}</p> : null}
 
-        <button className="button button--primary" type="submit">
-          Create & Auto-Fund
+        <button className="button button--primary" type="submit" disabled={isCreating}>
+          {isCreating ? 'Creating lock transaction...' : 'Create & Auto-Fund'}
         </button>
       </form>
     </section>

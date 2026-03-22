@@ -14,6 +14,23 @@ export interface SettlementResult {
   shortfallUsd: number;
 }
 
+export interface LockTransactionDraft {
+  txId: string;
+  network: string;
+  kind: 'lock';
+  fromAddressHex: string;
+  toScriptAddress: string;
+  amount: {
+    lovelace: number;
+  };
+  metadata: {
+    requestId: string;
+    usdAmount: number;
+    adaUsd: number;
+    coverageMultiplier: number;
+  };
+}
+
 export interface PaymentRequest {
   id: string;
   usdAmount: number;
@@ -24,6 +41,13 @@ export interface PaymentRequest {
   status: RequestStatus;
   beneficiaryLabel: string;
   sponsorLabel: string;
+  requesterAddressHex?: string;
+  sponsorAddressHex?: string | null;
+  lockLovelace?: number;
+  adaUsdAtCreation?: number;
+  coverageMultiplier?: number;
+  lockTxId?: string;
+  lockTxDraft?: LockTransactionDraft;
   settlement?: SettlementResult;
 }
 

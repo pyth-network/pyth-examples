@@ -13,8 +13,9 @@ interface UserDashboardProps {
   adaUsd: number;
   coverageMultiplier: number;
   onFilterChange: (filter: RequestFilter) => void;
-  onCreate: (payload: CreateRequestPayload) => void;
+  onCreate: (payload: CreateRequestPayload) => Promise<void>;
   onClaim: (requestId: string) => void;
+  isCreating: boolean;
 }
 
 const FILTERS: Array<{ value: RequestFilter; label: string }> = [
@@ -32,6 +33,7 @@ export function UserDashboard({
   onFilterChange,
   onCreate,
   onClaim,
+  isCreating,
 }: UserDashboardProps): JSX.Element {
   const [isRequestsOpen, setIsRequestsOpen] = useState(true);
   const filteredRequests =
@@ -43,6 +45,7 @@ export function UserDashboard({
         adaUsd={adaUsd}
         coverageMultiplier={coverageMultiplier}
         onCreate={onCreate}
+        isCreating={isCreating}
         className="panel--primary-action"
       />
       <section className="panel panel--secondary-action requests-collapsible">
