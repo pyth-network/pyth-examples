@@ -30,6 +30,8 @@ The project is divided into 2 main sections: backend and frontend.
 * Go to the ```frontend``` directory, create a ```.env``` file like the `.env.example` and fill it with your own credentials.
 * To run the tests, run `aiken check` for the Aiken tests and `npm run test` for the backend tests.
 
+**Disclaimer:** some actions may take more than one attempt or take some time to make impact, sorry for the complications.
+
 Note that the project must be run in Google Chrome, or any browser that supports Eternl Wallet extension (but it was tested in Chrome).  
 
 ## Frontend overview
