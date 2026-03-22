@@ -25,6 +25,7 @@ import {
   integer,
 } from "@meshsdk/core";
 import * as CSL from "@emurgo/cardano-serialization-lib-nodejs";
+import * as CML from "@anastasia-labs/cardano-multiplatform-lib-nodejs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const BLUEPRINT_PATH = path.resolve(__dirname, "../../contracts/plutus.json");
@@ -189,8 +190,9 @@ async function main() {
           const utxos = await provider.fetchAddressUTxOs(walletAddr);
 
           // Use the simplified demo validator (no datum checks — see custom_docs/demo-validator-decision.md)
+          // KEY: applyParamsToScript handles the CBOR encoding correctly for the witness set
           const demoV = blueprint.validators.find((v: any) => v.title === "invoice_mint_demo.invoice_mint_demo.mint");
-          const mintScript = demoV.compiledCode;
+          const mintScript = meshApplyParams(demoV.compiledCode, []);
           const policyId = resolveScriptHash(mintScript, "V3");
           console.log(`[mint] Using demo policy: ${policyId}`);
 
@@ -198,9 +200,14 @@ async function main() {
           const addrBytes = bech32ToBytes(walletAddr);
           const pkh = Buffer.from(addrBytes.slice(1, 29)).toString("hex");
 
-          // Simple tx: mint 1 NFT, send to wallet, require seller signature
-          const txBuilder = new MeshTxBuilder({ fetcher: provider });
-          const unsignedTx = await txBuilder
+          // Find a UTxO for collateral (needed for Plutus script execution)
+          const collateralUtxo = utxos.find((u: any) =>
+            !u.output.amount.some || Object.keys(u.output.amount).length === 1
+          ) || utxos[0];
+
+          // Mint 1 NFT, send to wallet, require seller signature
+          const txBuilder = new MeshTxBuilder({ fetcher: provider, evaluator: provider });
+          let builder = txBuilder
             .mintPlutusScriptV3()
             .mint("1", policyId, invoiceId)
             .mintingScript(mintScript)
@@ -210,10 +217,16 @@ async function main() {
               { unit: policyId + invoiceId, quantity: "1" },
             ])
             .requiredSignerHash(pkh)
+            .txInCollateral(
+              collateralUtxo.input.txHash,
+              collateralUtxo.input.outputIndex,
+              collateralUtxo.output.amount,
+              collateralUtxo.output.address,
+            )
             .changeAddress(walletAddr)
             .selectUtxosFrom(utxos)
-            .setNetwork("preprod")
-            .complete();
+            .setNetwork("preprod");
+          const unsignedTx = await builder.complete();
 
           console.log(`[mint] Tx built, size: ${unsignedTx.length / 2} bytes`);
           res.writeHead(200, { "Content-Type": "application/json" });
@@ -230,12 +243,18 @@ async function main() {
       req.on("end", async () => {
         try {
           const { signedTx } = JSON.parse(body);
-          const provider = new KoiosProvider("preprod");
-          const result = await provider.submitTx(signedTx);
-          // MeshJS submitTx may return hash as string or void
-          const txHash = typeof result === "string" && result.length === 64
-            ? result
-            : "submitted";
+          // Submit directly to Koios via Ogmios endpoint (more reliable than MeshJS provider)
+          const submitRes = await fetch("https://preprod.koios.rest/api/v1/submittx", {
+            method: "POST",
+            headers: { "Content-Type": "application/cbor" },
+            body: Buffer.from(signedTx, "hex"),
+          });
+          const submitText = await submitRes.text();
+          console.log(`[submit] Koios response (${submitRes.status}): ${submitText.slice(0, 200)}`);
+          if (!submitRes.ok) {
+            throw new Error(submitText);
+          }
+          const txHash = submitText.replace(/"/g, "").trim();
           console.log(`[mint] Submitted! Tx: ${txHash}`);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ txHash }));
@@ -256,30 +275,24 @@ async function main() {
           // We need to replace <emptyWitnesses> with the signed witness set
           //
           // Using CSL to do this properly:
-          const txUnsigned = CSL.Transaction.from_hex(unsignedTx);
-          const walletWitnesses = CSL.TransactionWitnessSet.from_hex(witnessSet);
-          const originalWitnesses = txUnsigned.witness_set();
+          // Use CML (supports PlutusV3) to parse and merge witnesses
+          const txUnsigned = CML.Transaction.from_cbor_hex(unsignedTx);
+          const walletWS = CML.TransactionWitnessSet.from_cbor_hex(witnessSet);
+          const originalWS = txUnsigned.witness_set();
 
-          // Merge: keep scripts from original, add signatures from wallet
-          const mergedWitnesses = originalWitnesses;
-
-          // Add vkey witnesses (signatures) from wallet
-          const walletVkeys = walletWitnesses.vkeys();
+          // Merge: keep scripts/redeemers/datums from original, add vkeys from wallet
+          const walletVkeys = walletWS.vkeywitnesses();
           if (walletVkeys) {
-            const existingVkeys = mergedWitnesses.vkeys();
-            const allVkeys = existingVkeys || CSL.Vkeywitnesses.new();
-            for (let i = 0; i < walletVkeys.len(); i++) {
-              allVkeys.add(walletVkeys.get(i));
-            }
-            mergedWitnesses.set_vkeys(allVkeys);
+            originalWS.set_vkeywitnesses(walletVkeys);
           }
 
-          const signedTx = CSL.Transaction.new(
+          const signedTx = CML.Transaction.new(
             txUnsigned.body(),
-            mergedWitnesses,
+            originalWS,
+            true, // is_valid
             txUnsigned.auxiliary_data(),
           );
-          const signedHex = signedTx.to_hex();
+          const signedHex = signedTx.to_cbor_hex();
           console.log(`[assemble] Assembled signed tx, size: ${signedHex.length / 2}`);
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ signedTx: signedHex }));
@@ -434,6 +447,8 @@ function signingPage(
 
         print("\\nDone! Closing in 3 seconds...", "ok");
         setTimeout(() => window.close(), 3000);
+        // Auto-close disabled — close manually or click:
+        print("\\nYou can close this tab.", "info");
 
       } catch(e) {
         print("Error: " + e.message, "err");
@@ -622,11 +637,10 @@ function registerPage(
         print("Tx built! Policy: " + buildData.policyId.slice(0, 20) + "...", "ok");
         print("\\nSign the transaction in your wallet...", "info");
 
-        // CIP-30 signTx returns witness set CBOR
+        // CIP-30 signTx always returns witness set, not full tx
         const witnessSetHex = await api.signTx(buildData.unsignedTx, true);
-        print("Signed! Assembling transaction...", "ok");
+        print("Signed! Assembling with CML...", "ok");
 
-        // Send unsigned tx + witness set to server for assembly via CSL
         const assembleRes = await fetch("/assemble-tx", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -641,22 +655,22 @@ function registerPage(
           btn.disabled = false;
           return;
         }
+        const signedTx = assembleData.signedTx;
+        print("Assembled! Size: " + (signedTx.length / 2) + " bytes", "ok");
 
-        print("Submitting assembled tx to PreProd...", "info");
+        print("Submitting to PreProd...", "info");
         let txHash;
-
-        // Try submit via wallet first (assembled tx with signatures)
         try {
-          txHash = await api.submitTx(assembleData.signedTx);
+          txHash = await api.submitTx(signedTx);
           print("Submitted via wallet!", "ok");
         } catch(e) {
-          print("Wallet: " + e.message.slice(0, 100), "info");
-          // Fallback: submit via server/Koios
+          print("Wallet submit error (full):", "err");
+          print(e.message || JSON.stringify(e), "err");
           try {
             const submitRes = await fetch("/submit-tx", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ signedTx: assembleData.signedTx }),
+              body: JSON.stringify({ signedTx }),
             });
             const submitData = await submitRes.json();
             if (submitData.error) {
@@ -693,6 +707,8 @@ function registerPage(
 
         print("\\nDone! Closing in 3 seconds...", "ok");
         setTimeout(() => window.close(), 3000);
+        // Auto-close disabled — close manually or click:
+        print("\\nYou can close this tab.", "info");
 
       } catch(e) {
         print("Error: " + e.message, "err");
