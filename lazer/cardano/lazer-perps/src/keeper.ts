@@ -1,20 +1,44 @@
 /**
  * Lazer Perps — Keeper bot
  *
- * Streams Pyth Lazer prices via WebSocket and monitors positions
- * for liquidation opportunities. When a position becomes
- * undercollateralized, the keeper submits a liquidation tx.
+ * Streams prices via Pyth Lazer WebSocket and monitors for liquidation
+ * opportunities. Computes liquidation prices for each market and logs
+ * when positions would be liquidatable.
+ *
+ * Liquidation price formulas:
+ *   Long:  entry × (1 - 1/leverage + 0.01)
+ *   Short: entry × (1 + 1/leverage - 0.01)
  *
  * Usage:
- *   ACCESS_TOKEN=<token> CARDANO_MNEMONIC="<24 words>" npm run keeper
- *   ACCESS_TOKEN=<token> CARDANO_MNEMONIC="..." FEEDS=XAU/USD,XAUT/USD npm run keeper
+ *   ACCESS_TOKEN=<token> npm run keeper
+ *   ACCESS_TOKEN=<token> FEEDS=XAU/USD,XAUT/USD npm run keeper
  */
 
-import { PythLazerClient } from "@pythnetwork/pyth-lazer-sdk";
-import { parseFeeds, feedName, CATALOG } from "./feeds.js";
+import { streamPythPrice } from "./orchestrator.js";
+import { parseFeeds, feedName, getMarket, MARKETS } from "./feeds.js";
 
-const DEFAULT_FEEDS = [346, 345, 172]; // XAU, XAG, XAUT
-const LIQUIDATION_THRESHOLD_BPS = 8000; // 80%
+const DEFAULT_FEEDS = MARKETS.filter((m) => m.status === "stable").map((m) => m.id);
+
+// Example positions to monitor (in production: read from chain)
+const MOCK_POSITIONS = [
+  { feedId: 172, direction: "LONG" as const, leverage: 5, entryPrice: 4480_000000, collateral: 100_000000 },
+  { feedId: 346, direction: "SHORT" as const, leverage: 10, entryPrice: 3300_000, collateral: 500_000000 },
+];
+
+function computeLiqPrice(direction: "LONG" | "SHORT", entryPrice: number, leverage: number): number {
+  if (direction === "LONG") {
+    // entry × (1 - 1/leverage + 0.01)
+    return Math.round(entryPrice * (1 - 1 / leverage + 0.01));
+  } else {
+    // entry × (1 + 1/leverage - 0.01)
+    return Math.round(entryPrice * (1 + 1 / leverage - 0.01));
+  }
+}
+
+function isLiquidatable(direction: "LONG" | "SHORT", currentPrice: number, liqPrice: number): boolean {
+  if (direction === "LONG") return currentPrice <= liqPrice;
+  return currentPrice >= liqPrice;
+}
 
 const main = async () => {
   const token = process.env.ACCESS_TOKEN;
@@ -23,67 +47,52 @@ const main = async () => {
     process.exit(1);
   }
 
-  const feedIds = process.env.FEEDS
-    ? parseFeeds(process.env.FEEDS)
-    : DEFAULT_FEEDS;
+  const feedIds = process.env.FEEDS ? parseFeeds(process.env.FEEDS) : DEFAULT_FEEDS;
 
-  console.log("=== Lazer Perps Keeper ===");
-  console.log(`Liquidation threshold: ${LIQUIDATION_THRESHOLD_BPS / 100}%`);
-  console.log(`Monitoring: ${feedIds.map(feedName).join(", ")}\n`);
-
-  console.log("Connecting to Pyth Lazer...");
-  const client = await PythLazerClient.create({
-    token,
-    webSocketPoolConfig: {
-      urls: ["wss://pyth-lazer.dourolabs.app/v1/stream"],
-      numConnections: 1,
-    },
-  });
+  console.log("=== Lazer Perps Keeper ===\n");
+  console.log("Monitoring markets:", feedIds.map(feedName).join(", "));
+  console.log("\nMock positions:");
+  for (const pos of MOCK_POSITIONS) {
+    const liqPrice = computeLiqPrice(pos.direction, pos.entryPrice, pos.leverage);
+    console.log(
+      `  ${feedName(pos.feedId)} ${pos.direction} ${pos.leverage}x — entry: ${pos.entryPrice}, liq_price: ${liqPrice}`,
+    );
+  }
+  console.log();
 
   let updateCount = 0;
 
-  client.addMessageListener((message) => {
-    if (message.type !== "json") return;
-    const val = message.value;
-    if (val.type !== "streamUpdated") return;
-
+  const client = await streamPythPrice(feedIds, token, (feedId, priceStr, exponent) => {
     updateCount++;
-    const feeds = val.parsed?.priceFeeds ?? [];
+    const price = Number(priceStr);
 
-    for (const feed of feeds) {
-      const name = feedName(feed.priceFeedId);
-      const price = feed.price;
+    // Check each mock position for this feed
+    for (const pos of MOCK_POSITIONS) {
+      if (pos.feedId !== feedId) continue;
 
-      if (price !== undefined) {
-        // In production: query on-chain positions for this feed,
-        // compute margin ratios, and trigger liquidations.
-        if (updateCount % 25 === 0) {
-          console.log(
-            `[${new Date().toISOString()}] ${name}: ${price} (exp: ${feed.exponent}) — scanning positions...`,
-          );
-        }
+      const liqPrice = computeLiqPrice(pos.direction, pos.entryPrice, pos.leverage);
+      const liquidatable = isLiquidatable(pos.direction, price, liqPrice);
+
+      // Log every 5 seconds (25 updates at 200ms)
+      if (updateCount % 25 === 0) {
+        const status = liquidatable ? "LIQUIDATABLE" : "safe";
+        console.log(
+          `[${new Date().toISOString()}] ${feedName(feedId)}: ${price} (exp: ${exponent}) | ${pos.direction} ${pos.leverage}x → ${status}`,
+        );
+      }
+
+      if (liquidatable) {
+        console.log(
+          `\n*** LIQUIDATION TRIGGER: ${feedName(feedId)} ${pos.direction} ${pos.leverage}x ***`,
+          `\n    Current: ${price}, Liq price: ${liqPrice}`,
+          `\n    → In production: submit liquidation tx via orchestrator\n`,
+        );
       }
     }
   });
 
-  client.addAllConnectionsDownListener(() => {
-    console.log("WARNING: All connections down — keeper paused");
-  });
-
-  client.subscribe({
-    type: "subscribe",
-    subscriptionId: 1,
-    priceFeedIds: feedIds,
-    properties: ["price", "exponent", "bestBidPrice", "bestAskPrice"],
-    formats: ["solana"],
-    deliveryFormat: "json",
-    channel: "fixed_rate@200ms",
-    jsonBinaryEncoding: "hex",
-  });
-
   console.log("Keeper running. Press Ctrl+C to stop.\n");
 
-  // Keep running until interrupted
   process.on("SIGINT", () => {
     console.log(`\nKeeper stopped after ${updateCount} price updates.`);
     client.shutdown();

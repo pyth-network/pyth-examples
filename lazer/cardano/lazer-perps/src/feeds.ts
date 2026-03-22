@@ -1,51 +1,48 @@
 /**
- * Lazer Perps — Supported price feed catalog
+ * Lazer Perps — Market catalog
  *
- * RWA feeds available for perpetual trading on Pyth Lazer.
- * Feed IDs from: https://docs.pyth.network/price-feeds/pro/price-feed-ids
+ * Each market has a Pyth feed ID and a leverage cap.
+ * Deploy one set of validators per market without recompiling.
  */
 
-export interface PerpFeed {
+export interface Market {
   id: number;
   name: string;
   symbol: string;
+  leverageCap: number;
   category: "metal" | "energy" | "crypto-rwa";
   status: "stable" | "coming_soon";
 }
 
-export const CATALOG: PerpFeed[] = [
-  // Metals — primary perps markets
-  { id: 346,  name: "Gold",        symbol: "XAU/USD",  category: "metal",      status: "stable" },
-  { id: 345,  name: "Silver",      symbol: "XAG/USD",  category: "metal",      status: "stable" },
-
-  // Energy
-  { id: 2950, name: "Oil (WTI)",   symbol: "XTI/USD",  category: "energy",     status: "coming_soon" },
-
-  // Crypto RWA — 24/7 market, ideal for testing
-  { id: 172,  name: "Tether Gold", symbol: "XAUT/USD", category: "crypto-rwa", status: "stable" },
+export const MARKETS: Market[] = [
+  { id: 346,  name: "Gold",        symbol: "XAU/USD",  leverageCap: 10, category: "metal",      status: "stable" },
+  { id: 345,  name: "Silver",      symbol: "XAG/USD",  leverageCap: 10, category: "metal",      status: "stable" },
+  { id: 2950, name: "Oil (WTI)",   symbol: "XTI/USD",  leverageCap: 5,  category: "energy",     status: "coming_soon" },
+  { id: 172,  name: "Tether Gold", symbol: "XAUT/USD", leverageCap: 10, category: "crypto-rwa", status: "stable" },
 ];
 
-export function getFeed(id: number): PerpFeed | undefined {
-  return CATALOG.find((f) => f.id === id);
+export function getMarket(id: number): Market | undefined {
+  return MARKETS.find((m) => m.id === id);
 }
 
-export function getFeedBySymbol(symbol: string): PerpFeed | undefined {
-  const s = symbol.toUpperCase();
-  return CATALOG.find((f) => f.symbol === s);
+export function getMarketBySymbol(symbol: string): Market | undefined {
+  return MARKETS.find((m) => m.symbol === symbol.toUpperCase());
+}
+
+export function parseFeed(input: string): number {
+  const trimmed = input.trim();
+  const asNum = Number(trimmed);
+  if (!isNaN(asNum)) return asNum;
+  const market = getMarketBySymbol(trimmed);
+  if (!market) throw new Error(`Unknown market: ${trimmed}`);
+  return market.id;
 }
 
 export function parseFeeds(input: string): number[] {
-  return input.split(",").map((s) => {
-    const trimmed = s.trim();
-    const asNum = Number(trimmed);
-    if (!isNaN(asNum)) return asNum;
-    const feed = getFeedBySymbol(trimmed);
-    if (!feed) throw new Error(`Unknown feed: ${trimmed}`);
-    return feed.id;
-  });
+  return input.split(",").map(parseFeed);
 }
 
 export function feedName(id: number): string {
-  const feed = getFeed(id);
-  return feed ? `${feed.symbol} (${feed.name})` : `Feed ${id}`;
+  const m = getMarket(id);
+  return m ? `${m.symbol} (${m.name})` : `Feed ${id}`;
 }
