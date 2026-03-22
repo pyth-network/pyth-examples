@@ -7,6 +7,9 @@ La idea del sistema es simple: cuando un comerciante busca un producto dentro de
 ## Rol dentro de Cuqui
 `Cuqui` es la plataforma principal.
 
+Repositorio de `Cuqui`:
+https://github.com/pjcdz/cuqui
+
 `Cuqui` se encarga de:
 - ingerir listas de precios de proveedores
 - parsear PDFs, XLSX, DOCX, imágenes y mensajes
@@ -21,6 +24,8 @@ La idea del sistema es simple: cuando un comerciante busca un producto dentro de
 - devolver snapshots, historial en USD y explicaciones listas para UI
 
 En otras palabras: `Cuqui` es la plataforma; `GastroBenchmark` es la capa backend especializada que le agrega contexto de mercado internacional.
+
+Este repositorio debe leerse junto con `Cuqui`, porque `GastroBenchmark` no busca reemplazar la plataforma visual sino actuar como su microservicio de benchmarks y contexto de mercado.
 
 ## Por qué Cardano + Pyth
 Este proyecto nació para una hackathon y su base conceptual y técnica está en Cardano.
