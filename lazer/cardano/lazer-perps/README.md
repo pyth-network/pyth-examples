@@ -123,6 +123,27 @@ npm install
 cd onchain && aiken build && cd ..
 ```
 
+### Aiken commands
+
+```bash
+cd onchain
+
+# Compile all validators → generates plutus.json
+aiken build
+
+# Run all 12 unit tests (PnL, payout, liquidation price, triggers)
+aiken check
+
+# Check a specific test
+aiken check -m "pnl_long_profit"
+
+# Generate project documentation
+aiken docs
+
+# Clean build artifacts
+rm -rf build plutus.json
+```
+
 ### Commands
 
 ```bash
