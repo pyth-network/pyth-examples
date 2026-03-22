@@ -8,6 +8,7 @@ export {
   getPythContext,
   fetchPriceUpdate,
   buildWithdrawRedeemer,
+  parseAdaUsdPrice,
   type PythContext,
 } from "./pyth.js";
 export { buildLockTx, lock, type LockParams } from "./transactions/lock.js";
