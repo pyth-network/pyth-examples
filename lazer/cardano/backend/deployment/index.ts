@@ -14,6 +14,8 @@ export {
 export { buildLockTx, lock, type LockParams } from "./transactions/lock.js";
 export {
   buildUnlockTx,
+  buildUnlockTxFromData,
+  computeLovelaceForUser,
   unlock,
   type UnlockParams,
 } from "./transactions/unlock.js";
