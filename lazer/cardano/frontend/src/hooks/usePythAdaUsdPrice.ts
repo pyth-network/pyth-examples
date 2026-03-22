@@ -31,6 +31,10 @@ export function usePythAdaUsdPrice(): UsePythAdaUsdPriceState {
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshNow = useCallback(async () => {
+    if (isMountedRef.current) {
+      setIsLoading(true);
+    }
+
     if (!token) {
       if (isMountedRef.current) {
         setError('Missing VITE_PYTH_LAZER_TOKEN. Add it to your local .env file.');

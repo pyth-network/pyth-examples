@@ -12,6 +12,7 @@ interface RequestListProps {
   className?: string;
   embedded?: boolean;
   onClaim?: (id: string) => void;
+  onCancel?: (id: string) => void;
 }
 
 export function RequestList({
@@ -24,6 +25,7 @@ export function RequestList({
   className,
   embedded = false,
   onClaim,
+  onCancel,
 }: RequestListProps): JSX.Element {
   const content = (
     <>
@@ -37,6 +39,7 @@ export function RequestList({
             role={role}
             adaUsd={adaUsd}
             onClaim={onClaim}
+            onCancel={onCancel}
           />
         ))}
       </div>

@@ -372,6 +372,8 @@
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease, transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
 .panel-icon-button:hover:not(:disabled) {
@@ -380,10 +382,10 @@
 }
 
 .panel-icon-button svg {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 1.06rem;
+  height: 1.06rem;
   stroke: currentColor;
-  stroke-width: 2;
+  stroke-width: 2.35;
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -393,12 +395,41 @@
   animation: spin 1s linear infinite;
 }
 
+.panel-icon-button:disabled {
+  cursor: progress;
+  opacity: 1;
+  border-color: rgba(59, 230, 255, 0.9);
+  background: rgba(59, 230, 255, 0.26);
+  box-shadow: 0 0 0 4px rgba(59, 230, 255, 0.18);
+}
+
+.live-price-panel--loading .live-price-value {
+  opacity: 0.88;
+}
+
+.loading-text {
+  color: #b9f2ff;
+  animation: loading-pulse 1.1s ease-in-out infinite;
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes loading-pulse {
+  0% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.65;
   }
 }
 
@@ -483,6 +514,8 @@ input[type='range'] {
   font-weight: 600;
   padding: 0.62rem 0.95rem;
   cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease,
+    box-shadow 160ms ease, transform 160ms ease;
 }
 
 .button--primary {
@@ -494,6 +527,13 @@ input[type='range'] {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
   color: var(--text);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
 }
 
 .button--tertiary {
@@ -633,6 +673,11 @@ input[type='range'] {
 .status-badge--claimed {
   border-color: var(--success);
   color: var(--success);
+}
+
+.status-badge--cancelled {
+  border-color: var(--danger);
+  color: var(--danger);
 }
 
 .settlement-result {
