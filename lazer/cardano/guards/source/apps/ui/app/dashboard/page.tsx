@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sidebar } from "@/components/sidebar";
 import { Topbar } from "@/components/topbar";
@@ -27,7 +27,14 @@ import {
 import type { RiskLadderStep } from "@/lib/types";
 import { demoState } from "@/lib/demo-data";
 import {
+  applyLiveQuotesToDemoState,
+  liveReferencePriceForSymbol,
+  type LiveQuoteMap,
+} from "@/lib/live-prices";
+import {
   connectPreferredWallet,
+  hydrateStoredWalletSession,
+  persistWalletSession,
   type WalletSession,
 } from "@/lib/wallet-session";
 import {
@@ -52,11 +59,100 @@ export default function Dashboard() {
   const [dataset, setDataset] = useState<MockDatasetId>("ada_treasury_base");
   const [walletSession, setWalletSession] = useState<WalletSession | null>(null);
   const [connectingWallet, setConnectingWallet] = useState(false);
+  const [liveQuotes, setLiveQuotes] = useState<LiveQuoteMap | null>(null);
+  const [liveQuotesError, setLiveQuotesError] = useState<string | null>(null);
+  const [liveQuotesPollingEnabled, setLiveQuotesPollingEnabled] = useState(true);
   const [bootstrapDraft, setBootstrapDraft] = useState(() =>
     buildBootstrapDraft(demoState.policy),
   );
 
-  const data = demoState;
+  useEffect(() => {
+    setWalletSession(hydrateStoredWalletSession());
+  }, []);
+
+  useEffect(() => {
+    persistWalletSession(walletSession);
+  }, [walletSession]);
+
+  useEffect(() => {
+    if (!liveQuotesPollingEnabled) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadQuotes() {
+      try {
+        const response = await fetch("/api/oracle/quotes", {
+          cache: "no-store",
+        });
+        const payload = (await response.json()) as {
+          ok: boolean;
+          error?: string;
+          quotes?: LiveQuoteMap;
+        };
+
+        if (cancelled) {
+          return;
+        }
+
+        if (!response.ok || !payload.ok || !payload.quotes) {
+          setLiveQuotesError(payload.error ?? "Unable to fetch live quotes.");
+          setLiveQuotes(null);
+          if (response.status === 503) {
+            setLiveQuotesPollingEnabled(false);
+          }
+          return;
+        }
+
+        setLiveQuotes(payload.quotes);
+        setLiveQuotesError(null);
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        setLiveQuotesError(
+          error instanceof Error ? error.message : "Unable to fetch live quotes.",
+        );
+        setLiveQuotes(null);
+      }
+    }
+
+    void loadQuotes();
+    const interval = window.setInterval(() => {
+      void loadQuotes();
+    }, 60_000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [liveQuotesPollingEnabled]);
+
+  useEffect(() => {
+    const nextReferencePrice = liveReferencePriceForSymbol(
+      liveQuotes ?? {},
+      bootstrapDraft.referenceSymbol,
+      {
+        maxStaleUs: demoState.policy.maxStaleUs,
+        maxConfidenceBps: demoState.policy.maxConfidenceBps,
+      },
+    );
+    if (!nextReferencePrice || nextReferencePrice === bootstrapDraft.referencePrice) {
+      return;
+    }
+
+    setBootstrapDraft((current) => ({
+      ...current,
+      referencePrice: nextReferencePrice,
+    }));
+  }, [bootstrapDraft.referencePrice, bootstrapDraft.referenceSymbol, liveQuotes]);
+
+  const data = useMemo(
+    () => applyLiveQuotesToDemoState(demoState, liveQuotes ?? {}),
+    [liveQuotes],
+  );
   const policyView = buildPolicyViewFromDraft(bootstrapDraft);
   const datasetLabel =
     mockDatasetOptions.find((option) => option.id === dataset)?.label ?? dataset;
@@ -116,6 +212,8 @@ export default function Dashboard() {
           chain={data.vault.chain}
           oracleFreshness={data.metrics.oracleFreshness}
           mode={mode}
+          liveQuotesError={liveQuotesError}
+          liveQuotesEnabled={Boolean(liveQuotes?.ada)}
           walletSession={walletSession}
           companyName={bootstrapDraft.companyName}
           vaultName={bootstrapDraft.vaultName}
@@ -126,18 +224,19 @@ export default function Dashboard() {
         <div className="mb-6">
           <PreprodWarningBanner />
         </div>
-        <div className="mb-6">
-          <RuntimeControlPanel
-            mode={mode}
-            setMode={setMode}
-            dataset={dataset}
-            setDataset={setDataset}
-            walletSession={walletSession}
-            setWalletSession={setWalletSession}
-          />
-        </div>
-
         <AnimatePresence mode="wait">
+          {activeSection === "runtime" && (
+            <motion.section key="runtime" {...sectionTransition} className="mb-8">
+              <RuntimeControlPanel
+                mode={mode}
+                setMode={setMode}
+                dataset={dataset}
+                setDataset={setDataset}
+                walletSession={walletSession}
+                setWalletSession={setWalletSession}
+              />
+            </motion.section>
+          )}
           {/* Overview */}
           {(activeSection === "overview" || activeSection === "accounts") && (
             <motion.section key={activeSection} {...sectionTransition} className="space-y-6 mb-8">
@@ -243,11 +342,18 @@ export default function Dashboard() {
                 draft={bootstrapDraft}
                 setDraft={setBootstrapDraft}
                 currentAdaPrice={data.oracle.price}
+                currentReferencePrice={liveReferencePriceForSymbol(
+                  liveQuotes ?? {},
+                  bootstrapDraft.referenceSymbol,
+                )}
               />
               <PolicyCards policy={policyView} />
             </motion.section>
           )}
 
+          {activeSection === "runtime" && (
+            <motion.section key="runtime-spacer" {...sectionTransition} className="mb-0" />
+          )}
           {/* Risk Ladder */}
           {activeSection === "risk" && (
             <motion.section key="risk" {...sectionTransition} className="space-y-6 mb-8">

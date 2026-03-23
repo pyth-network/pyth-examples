@@ -39,6 +39,20 @@ const navItems = [
     ),
   },
   {
+    id: "runtime",
+    label: "Runtime",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 4h10" />
+        <path d="M6 9h6" />
+        <path d="M8 14h2" />
+        <circle cx="12.5" cy="4" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="5.5" cy="9" r="1.5" fill="currentColor" stroke="none" />
+        <circle cx="10.5" cy="14" r="1.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
     id: "risk",
     label: "Risk Ladder",
     icon: (

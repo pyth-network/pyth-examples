@@ -10,6 +10,8 @@ export interface WalletSession {
   connectedAtMs: number;
 }
 
+export const WALLET_SESSION_STORAGE_KEY = "guards-wallet-session";
+
 const MOCK_WALLET_ADDRESSES: Record<WalletSessionChain, string> = {
   cardano: "addr_test1qpz7...guards_mock",
   svm: "6w4F...guardsMockSvm",
@@ -76,6 +78,37 @@ export function shortWalletAddress(address: string): string {
   }
 
   return `${address.slice(0, 8)}...${address.slice(-6)}`;
+}
+
+export function hydrateStoredWalletSession(): WalletSession | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const raw = window.localStorage.getItem(WALLET_SESSION_STORAGE_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(raw) as WalletSession;
+  } catch {
+    window.localStorage.removeItem(WALLET_SESSION_STORAGE_KEY);
+    return null;
+  }
+}
+
+export function persistWalletSession(session: WalletSession | null): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (!session) {
+    window.localStorage.removeItem(WALLET_SESSION_STORAGE_KEY);
+    return;
+  }
+
+  window.localStorage.setItem(WALLET_SESSION_STORAGE_KEY, JSON.stringify(session));
 }
 
 function getCardanoProviders(): Array<[string, Cip30Provider]> {

@@ -21,8 +21,6 @@ interface RuntimeControlPanelProps {
   setWalletSession: (session: WalletSession | null) => void;
 }
 
-const STORAGE_KEY = "guards-wallet-session";
-
 export function RuntimeControlPanel({
   mode,
   setMode,
@@ -42,31 +40,7 @@ export function RuntimeControlPanel({
     const availability = detectWalletAvailability();
     setCardanoDetected(availability.cardano);
     setSvmDetected(availability.svm);
-
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return;
-    }
-
-    try {
-      setWalletSession(JSON.parse(raw) as WalletSession);
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
-  }, [setWalletSession]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    if (!walletSession) {
-      window.localStorage.removeItem(STORAGE_KEY);
-      return;
-    }
-
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(walletSession));
-  }, [walletSession]);
+  }, []);
 
   return (
     <div className="glass-panel overflow-hidden">

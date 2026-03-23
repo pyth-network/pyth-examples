@@ -15,6 +15,7 @@ interface VaultBootstrapLabProps {
   draft: VaultBootstrapDraft;
   setDraft: Dispatch<SetStateAction<VaultBootstrapDraft>>;
   currentAdaPrice: number;
+  currentReferencePrice?: number;
 }
 
 const custodyOptions: Array<{
@@ -65,7 +66,10 @@ export function VaultBootstrapLab({
   draft,
   setDraft,
   currentAdaPrice,
+  currentReferencePrice,
 }: VaultBootstrapLabProps) {
+  const liveReferenceAvailable =
+    typeof currentReferencePrice === "number" && Number.isFinite(currentReferencePrice);
   const checklist = buildBootstrapChecklist(draft);
   const readyCount = checklist.filter((item) => item.ready).length;
   const targetAda = computeReferenceTargetAda(
@@ -357,14 +361,15 @@ export function VaultBootstrapLab({
                 <Field label="Reference price">
                   <input
                     type="number"
-                    value={draft.referencePrice}
+                    value={currentReferencePrice ?? draft.referencePrice}
+                    disabled={liveReferenceAvailable}
                     onChange={(event) =>
                       setDraft((current) => ({
                         ...current,
                         referencePrice: Number(event.target.value),
                       }))
                     }
-                    className={inputClassName}
+                    className={`${inputClassName} disabled:cursor-not-allowed disabled:opacity-60`}
                   />
                 </Field>
                 <Field label="Target ounces">
@@ -387,8 +392,13 @@ export function VaultBootstrapLab({
                       {draft.useReferenceTarget ? targetAda.toLocaleString() : "Disabled"}
                     </div>
                     <p className="mt-1 text-xs text-text-muted">
-                      Uses {draft.referenceSymbol} and current ADA price (${currentAdaPrice.toFixed(3)}).
+                      Uses {draft.referenceSymbol} (${(currentReferencePrice ?? draft.referencePrice).toFixed(3)}) and ADA (${currentAdaPrice.toFixed(3)}).
                     </p>
+                    {liveReferenceAvailable && (
+                      <p className="mt-1 text-xs text-accent">
+                        Reference price is currently synced from the live Pyth quote.
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

@@ -34,9 +34,9 @@ export const demoState: DemoState = {
   oracle: {
     feedId: "pyth-ada-usd",
     symbol: "ADA/USD",
-    price: 0.45,
-    emaPrice: 0.47,
-    confidence: 0.002,
+    price: 0.25200284,
+    emaPrice: 0.25131742,
+    confidence: 0.00005284,
     publisherCount: 14,
     updatedAtMs: DEMO_NOW_MS - 2_000,
   },

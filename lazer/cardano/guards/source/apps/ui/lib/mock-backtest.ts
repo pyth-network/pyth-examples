@@ -177,14 +177,14 @@ function toLabel(timestampMs: number): string {
 function referenceBasePrice(referenceSymbol: string): number {
   switch (referenceSymbol) {
     case "BTC/USD":
-      return 87_250;
+      return 67_846.32774;
     case "SOL/USD":
-      return 186;
+      return 86.2;
     case "EUR/USD":
-      return 1.09;
+      return 1.15578;
     case "XAU/USD":
     default:
-      return 3_025;
+      return 4_421.412;
   }
 }
 
@@ -436,6 +436,7 @@ export function runMockBacktest(
       adaAmount: holdings.adaAmount,
       stableAmount: holdings.stableAmount,
       secondsSinceUpdate: 15,
+      secondsSinceLastTransition: 900,
     };
 
     const step = applyExecution(holdings, scenario, draft, resolved.strategy);

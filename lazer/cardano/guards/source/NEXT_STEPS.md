@@ -132,6 +132,13 @@ This is the canonical tracker for the repository. Every new task, bug, review co
 - [x] Tighten scaffold intent-shape validation so `max_sell_amount` and `min_buy_amount` must be strictly positive
 - [x] Require `datum.current_intent_id == Some(intent.intent_id)` before scaffold completion accepts an execution result
 
+### PR #31 · Live Multi-Asset Quotes
+- [x] Clear stale live-quote state when the dashboard falls back after a fetch failure
+- [x] Cache the Pyth Lazer client and resolved price feed ids in the quotes route
+- [x] Enforce oracle freshness and confidence guardrails before applying live ADA quotes to the dashboard state
+- [x] Disable manual editing of the reference-price field while a live reference quote is active
+- [x] Add unit tests for live-quote hydration and guardrail fallback behavior
+
 ## Product / Stack Pending
 - [x] Show a clear preprod-only / mainnet-unavailable warning as soon as the app opens
 - [x] Document the real preprod vault bootstrap path and its current blockers
@@ -142,6 +149,8 @@ This is the canonical tracker for the repository. Every new task, bug, review co
 - [x] Add a 7d / 15m historical replay that executes treasury strategies against deterministic mock price states
 - [x] Move wallet connect into the dashboard topbar with real-provider detection plus mock fallback
 - [x] Replace execution-side multichain readiness copy with active vault/company profile context
+- [x] Source ADA and reference-asset quotes from live Pyth snapshots in the dashboard when server credentials are available
+- [x] Move runtime controls into a dedicated sidebar-accessible dashboard section instead of rendering them on every view
 - [x] Bootstrap root `.env` and `.env.example` for Pyth/Cardano preprod and deploy settings
 - [x] Add `apps/blockchain` as the team-facing collaboration surface for contracts and chain adapters
 - [x] Evaluate Cardano aggregator options for integrator fee capture and choose a primary venue
@@ -162,11 +171,13 @@ This is the canonical tracker for the repository. Every new task, bug, review co
 - [x] Add deterministic demo frames and replay controls for the breach -> de-risk -> exit -> recovery scenario
 - [x] Refresh the local preview flow so the UI can be shown as a working product demo
 - [ ] Finish the remaining `Aiken` validator work for `AuthorizeExecution`, `CompleteExecution`, `UpdatePolicy`, `Resume`, and recreated-output continuity
+- [x] Add Vercel deployment scaffolding for `apps/ui`
 - [x] Integrate real Pyth signed updates and preprod witness flow
 - [x] Add deploy-prep scripts for Aiken contract doctor, blueprint build, and script address derivation
 - [ ] Resolve the Pyth State UTxO automatically from a live Cardano provider instead of `.env`
 - [ ] Integrate a live Cardano swap venue in the keeper execution path
 - [ ] Replace SQLite demo persistence with deployable storage
+- [ ] Connect the Vercel UI to a deployable backend/API environment instead of demo-local data
 - [ ] Add CI for tests and typecheck
 - [ ] Capture final demo screenshots / recording for the hackathon pitch
 - [x] Prepare the `pyth-examples` submission tree under `/lazer/cardano/my-project/`

@@ -16,6 +16,8 @@ interface TopbarProps {
   chain: ChainId;
   oracleFreshness: string;
   mode: DashboardMode;
+  liveQuotesEnabled: boolean;
+  liveQuotesError: string | null;
   walletSession: WalletSession | null;
   companyName: string;
   vaultName: string;
@@ -53,6 +55,8 @@ export function Topbar({
   chain,
   oracleFreshness,
   mode,
+  liveQuotesEnabled,
+  liveQuotesError,
   walletSession,
   companyName,
   vaultName,
@@ -61,6 +65,11 @@ export function Topbar({
   onDisconnectWallet,
 }: TopbarProps) {
   const appearance = getStageAppearance(stage);
+  const pythAccent = liveQuotesError
+    ? "#f0bf5f"
+    : liveQuotesEnabled
+      ? "#22c55e"
+      : "#9896aa";
 
   return (
     <motion.div
@@ -114,14 +123,23 @@ export function Topbar({
               height="12"
               viewBox="0 0 12 12"
               fill="none"
-              stroke="#22c55e"
+              stroke={pythAccent}
               strokeWidth="1.5"
             >
               <circle cx="6" cy="6" r="5" />
               <path d="M6 3v3l2 1" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Pyth: {oracleFreshness}
+            Pyth: {liveQuotesEnabled ? oracleFreshness : "demo fallback"}
           </span>
+          {liveQuotesError && (
+            <span
+              className="chip"
+              style={{ background: "rgba(240,191,95,0.12)", color: "#f0bf5f" }}
+              title={liveQuotesError}
+            >
+              Live quotes unavailable
+            </span>
+          )}
         </div>
       </div>
 

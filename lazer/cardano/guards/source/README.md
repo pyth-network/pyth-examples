@@ -110,6 +110,32 @@ Guards uses a split custody model:
 
 Revenue is modeled in two layers: venue partner fee and protocol fee, both governance-capped and accounted separately from slippage.
 
+## How Guards Makes Money
+
+Guards makes money primarily by taking explicit, parameterized fees on the automated swaps it executes on behalf of the treasury, within the bounds already approved by governance.
+
+That revenue model has two layers, with different accounting treatment:
+
+1. `Venue / partner fee`
+   Where the execution venue supports partner or integrator monetization, Guards can participate in that fee flow.
+   - If the venue exposes that fee directly in the swap path, it is deducted from the swap output and recorded as `venue / partner fee` in the execution record.
+   - If the venue instead pays a partner rebate out of its own economics, that rebate is paid to a Guards-controlled address outside the treasury swap proceeds and is treated as Guards revenue in off-chain reporting rather than treasury-owned output.
+
+2. `Guards protocol fee`
+   Guards charges an explicit protocol fee deducted from the swap output. It is never added as a separate extra charge on top of the treasury's intended sell amount.
+   The protocol fee is surfaced as `protocol fee` in the execution record and capped by treasury policy.
+
+In the actual product flow:
+- the treasury policy authorizes only approved routes and volumes
+- Guards executes a protective swap when the policy triggers
+- route selection enforces an allowed total fee envelope, while treasury policy separately caps the Guards protocol fee layer
+- the execution record separates gross swap output, venue / partner fee when present on-chain, protocol fee, and net received amount
+- the treasury keeps the protected output net of only the explicitly authorized on-chain execution fees
+- Guards retains the explicit protocol fee as direct platform revenue
+- where the venue supports partner or integrator fee sharing as a rebate, that rebate is recorded as venue-side partner revenue for Guards and is not treated as treasury-owned swap proceeds
+
+This is an intentional design choice. Guards does not rely on hidden spread, opaque slippage, or discretionary execution. The monetization model is explicit, capped, auditable, and directly tied to successful automated treasury protection.
+
 ## Demo Flow
 
 The current simulation and UI replay cover:
@@ -151,6 +177,15 @@ pnpm preview
 - Next.js preview (`pnpm preview`): `http://localhost:3000`
 - Legacy static preview (`pnpm preview:legacy`): `http://localhost:4310`
 - Runtime baseline: `Node >= 24.0.0`
+
+## Vercel
+
+The frontend can be deployed on `Vercel` from `apps/ui`.
+
+- Vercel Root Directory: `apps/ui`
+- Node.js: `24.x`
+- Config file: [apps/ui/vercel.json](./apps/ui/vercel.json)
+- Deploy notes: [docs/vercel-deploy.md](./docs/vercel-deploy.md)
 
 ## Environment
 
@@ -206,6 +241,7 @@ The core policy engine is shared across all chains. Execution remains local to e
 | [Custody Model](./docs/cardano-custody-model.md) | Split-custody design |
 | [DexHunter Adapter](./docs/dexhunter-live-adapter.md) | Live swap integration |
 | [Pyth Live Collector](./docs/pyth-live-collector.md) | Signed-update fetch and Cardano witness wiring |
+| [Vercel Deploy](./docs/vercel-deploy.md) | Frontend deployment setup for `apps/ui` |
 | [Frontend Spec](./docs/landing-frontend-spec.md) | UI and UX direction |
 | [Blockchain App Surface](./apps/blockchain/README.md) | Team-facing contracts and connector workspace |
 | [Execution Tracker](./NEXT_STEPS.md) | Current engineering backlog |
