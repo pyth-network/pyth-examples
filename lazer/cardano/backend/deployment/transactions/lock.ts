@@ -48,6 +48,19 @@ export async function lock(
 ): Promise<string> {
   const tx = await buildLockTx(lucid, config, params);
   const signed = await tx.sign.withWallet().complete();
-  const txHash = await signed.submit();
-  return txHash;
+  try {
+    const txHash = await signed.submit();
+    return txHash;
+  } catch (submitError) {
+    const message = submitError instanceof Error ? submitError.message : String(submitError);
+    // Some providers return submit validation errors even when the exact same tx
+    // was already accepted (e.g. "All inputs are spent...already been included").
+    if (
+      message.includes("All inputs are spent") &&
+      message.includes("already been included")
+    ) {
+      return signed.toHash();
+    }
+    throw submitError;
+  }
 }
