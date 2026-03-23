@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-display: "Lora", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #FDF6EC;
+}
+
+/* Override MeshSDK wallet button styles */
+mesh-wallet-button, [data-mesh-wallet] {
+  font-family: var(--font-body) !important;
+}
+
+/* Primary CTA: glow ring + shimmer (wrap WalletConnect) */
+.cta-glow {
+  position: relative;
+  z-index: 0;
+  border-radius: 1rem;
+}
+.cta-glow::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 1.1rem;
+  background: linear-gradient(135deg, #c25b4e, #e8705a, #c25b4e);
+  opacity: 0.35;
+  z-index: -1;
+  animation: ctaRingPulse 2.4s ease-in-out infinite;
+}
+@keyframes ctaRingPulse {
+  0%,
+  100% {
+    opacity: 0.22;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.03);
+  }
+}
+.cta-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 0.875rem;
+  background: linear-gradient(
+    105deg,
+    transparent 38%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 62%
+  );
+  background-size: 220% 100%;
+  animation: ctaShimmer 3.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes ctaShimmer {
+  0% {
+    background-position: 180% 0;
+  }
+  45%,
+  100% {
+    background-position: -180% 0;
+  }
+}
+/* Hero CTA: direct child button inside .cta-glow */
+.cta-glow > button {
+  position: relative;
+  z-index: 2;
+  font-size: 1rem !important;
+  padding: 0.75rem 1.75rem !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 14px -4px rgba(194, 91, 78, 0.55);
+}
