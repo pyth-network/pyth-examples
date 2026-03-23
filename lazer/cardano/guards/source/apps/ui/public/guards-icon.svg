@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 240" fill="none">
+  <!-- Shield / Vault Door Icon Only -->
+  <path d="M80 0 L160 30 L160 120 C160 180 120 220 80 240 C40 220 0 180 0 120 L0 30 Z"
+        fill="none" stroke="#3b82f6" stroke-width="3" opacity="0.9"/>
+  <path d="M80 12 L150 38 L150 118 C150 172 114 208 80 228 C46 208 10 172 10 118 L10 38 Z"
+        fill="#3b82f6" opacity="0.08"/>
+  <circle cx="80" cy="115" r="52" fill="none" stroke="#3b82f6" stroke-width="2.5" opacity="0.7"/>
+  <circle cx="80" cy="115" r="38" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.4"/>
+  <line x1="80" y1="77" x2="80" y2="90" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="80" y1="140" x2="80" y2="153" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="115" x2="55" y2="115" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <line x1="105" y1="115" x2="118" y2="115" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="80" cy="111" r="8" fill="#3b82f6" opacity="0.9"/>
+  <rect x="76.5" y="111" width="7" height="16" rx="3.5" fill="#3b82f6" opacity="0.9"/>
+  <circle cx="80" cy="111" r="3" fill="#f4f2ec" opacity="0.9"/>
+</svg>
