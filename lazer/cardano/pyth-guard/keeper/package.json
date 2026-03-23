@@ -1,0 +1,23 @@
+{
+  "name": "pythguard-keeper",
+  "version": "1.0.0",
+  "description": "PythGuard Keeper Bot — Stop-Loss Monitor for Cardano using Pyth Lazer",
+  "main": "dist/monitor.js",
+  "scripts": {
+    "dev": "ts-node monitor.ts",
+    "build": "tsc",
+    "start": "node dist/monitor.js"
+  },
+  "dependencies": {
+    "@pythnetwork/pyth-lazer-sdk": "^0.4.0",
+    "dotenv": "^16.4.5",
+    "ws": "^8.17.1",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/ws": "^8.5.11",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
