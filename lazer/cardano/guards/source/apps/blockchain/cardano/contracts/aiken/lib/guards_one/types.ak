@@ -1,3 +1,5 @@
+use aiken/crypto.{VerificationKeyHash}
+
 // Bounded Aiken scaffold for guards.one.
 // This file intentionally models the data shapes first so the future validator port
 // can stay aligned with the current TypeScript simulator.
@@ -20,8 +22,8 @@ pub type PolicyDatum {
   pyth_policy_id: ByteArray,
   stage: RiskStage,
   last_transition_us: Int,
-  governance_signers: List<ByteArray>,
-  keepers: List<ByteArray>,
+  governance_signers: List<VerificationKeyHash>,
+  keepers: List<VerificationKeyHash>,
   approved_route_ids: List<ByteArray>,
   stable_asset_id: ByteArray,
   primary_asset_id: ByteArray,
@@ -33,11 +35,20 @@ pub type PolicyDatum {
 }
 
 pub type PolicyRedeemer {
-  AuthorizeExecution,
-  CompleteExecution,
-  UpdatePolicy,
-  Resume,
-  EmergencyWithdraw,
+  AuthorizeExecution {
+    witness: PythWitness,
+    keeper: VerificationKeyHash,
+    now_us: Int,
+    intent: ExecutionIntent,
+  }
+
+  CompleteExecution { intent: ExecutionIntent, result: ExecutionResult }
+
+  UpdatePolicy { actor: VerificationKeyHash, now_us: Int }
+
+  Resume { actor: VerificationKeyHash, now_us: Int }
+
+  EmergencyWithdraw { actor: VerificationKeyHash }
 }
 
 pub type PythWitness {

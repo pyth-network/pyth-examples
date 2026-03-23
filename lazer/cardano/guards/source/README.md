@@ -144,6 +144,7 @@ pnpm typecheck
 pnpm test
 pnpm simulate
 pnpm pyth:fetch-live
+pnpm cardano:contract:doctor
 pnpm preview
 ```
 
@@ -173,6 +174,16 @@ See [.env.example](./.env.example) for the full list.
 
 If you only need the Cardano simulator/types, import `@anaconda/blockchain/cardano`.
 If you need the live Pyth/off-chain path, import `@anaconda/blockchain/cardano/offchain`.
+
+For contract deploy-prep:
+
+```bash
+pnpm cardano:contract:doctor
+pnpm cardano:contract:build
+pnpm cardano:contract:address
+```
+
+The current `PolicyVault` validator is still fail-closed for `AuthorizeExecution` and `CompleteExecution` until output continuity, chain-derived time, and real on-chain Pyth verification are wired into the spend path.
 
 ## Multichain Status
 

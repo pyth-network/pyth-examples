@@ -152,7 +152,7 @@ This is the canonical tracker for the repository. Every new task, bug, review co
 - [ ] Wire real Cardano wallet/provider dependencies into the DexHunter hot-wallet execution path
 - [ ] Surface venue fee + protocol fee breakdown in the operator UI and audit logs
 - [ ] Add a target-reference-asset policy mode, e.g. keep ADA exposure equivalent to `XAU/USD` ounces via Pyth feeds
-- [ ] Encode the hot-bucket custody rules in `PolicyVault` / `Aiken`
+- [x] Encode the bounded helper logic and emergency-withdraw rule in the `Aiken` `PolicyVault` scaffold
 - [ ] Add real wallet adapters for Cardano (`CIP-30`) and SVM (`Wallet Standard`) instead of dashboard-side planning states
 - [ ] Add a real frontend create-vault transaction flow on top of the preprod bootstrap builder
 - [x] Move the Pyth/Cardano live collector source of truth into `apps/blockchain/cardano/offchain`
@@ -161,8 +161,9 @@ This is the canonical tracker for the repository. Every new task, bug, review co
 - [x] Rebuild the operator UI with a Squads-inspired treasury shell and dark dashboard layout
 - [x] Add deterministic demo frames and replay controls for the breach -> de-risk -> exit -> recovery scenario
 - [x] Refresh the local preview flow so the UI can be shown as a working product demo
-- [ ] Port `PolicyVault` to `Aiken`
+- [ ] Finish the remaining `Aiken` validator work for `AuthorizeExecution`, `CompleteExecution`, `UpdatePolicy`, `Resume`, and recreated-output continuity
 - [x] Integrate real Pyth signed updates and preprod witness flow
+- [x] Add deploy-prep scripts for Aiken contract doctor, blueprint build, and script address derivation
 - [ ] Resolve the Pyth State UTxO automatically from a live Cardano provider instead of `.env`
 - [ ] Integrate a live Cardano swap venue in the keeper execution path
 - [ ] Replace SQLite demo persistence with deployable storage

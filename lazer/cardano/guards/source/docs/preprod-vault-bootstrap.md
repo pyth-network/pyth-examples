@@ -10,10 +10,11 @@ What is already live in the repo:
 - a DexHunter execution adapter and fee model in the backend/orchestration layer
 - a `PolicyVault` simulator/spec in TypeScript
 - an `Aiken` scaffold for the on-chain port under [`apps/blockchain/cardano/contracts/aiken`](../apps/blockchain/cardano/contracts/aiken)
+- deploy-prep scripts for contract doctor, blueprint build, script export, hash derivation, and address derivation
 
 What is not complete yet:
 
-- the `PolicyVault` validator is not deployed on preprod yet
+- the `PolicyVault` validator is not deployed on preprod yet and its authorize/complete branches remain fail-closed
 - the app does not have wallet login or a live rule editor yet
 - mainnet execution is intentionally disabled
 - the Pyth state UTxO still depends on explicit configuration instead of provider discovery
@@ -67,6 +68,26 @@ CARDANO_EXECUTION_HOT_WALLET_SKEY_PATH=./secrets/execution-hot.skey
 CARDANO_EXECUTION_ROUTE_ID=cardano-minswap-ada-usdm
 DEXHUNTER_PARTNER_ID=...
 ```
+
+Contract deploy-prep commands:
+
+```bash
+pnpm cardano:contract:doctor
+pnpm cardano:contract:build
+pnpm cardano:contract:address
+```
+
+Notes:
+
+- `pnpm cardano:contract:build` runs `aiken build` in `apps/blockchain/cardano/contracts/aiken`.
+- `pnpm cardano:contract:build` also exports `artifacts/policy_vault.plutus` and `artifacts/policy_vault.hash`.
+- `pnpm cardano:contract:address` derives `artifacts/policy_vault.addr` directly from the Aiken blueprint.
+- `AuthorizeExecution`, `CompleteExecution`, `UpdatePolicy`, and `Resume` remain intentionally fail-closed until custody-safe continuity and on-chain oracle checks are modeled.
+
+Current generated preprod script identity from this branch:
+
+- `policy_vault.hash`: `d86fb4d585d62b644b02e9c41944b3c23c966b02c768d99aed4a85a7`
+- `policy_vault.addr`: `addr_test1wrvxldx4shtzkeztqt5ugx2yk0pre9ntqtrk3kv6a49gtfc64y7rs`
 
 ## Validation before deployment
 

@@ -7,3 +7,4 @@ node_modules/
 !.env.example
 secrets/
 *.sqlite
+apps/blockchain/cardano/contracts/aiken/build/

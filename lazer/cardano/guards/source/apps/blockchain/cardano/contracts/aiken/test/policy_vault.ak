@@ -1,10 +1,7 @@
-// Scenario catalog for the future Aiken PolicyVault test suite.
-//
-// This file stays commentary-only until Aiken tooling is available in the
-// workspace. Once the toolchain lands, add property tests for:
-// - keeper allowlist checks
-// - route allowlist checks
-// - pyth policy id witness checks
-// - cooldown enforcement
-// - hot-bucket bounds
-// - authorize -> complete intent continuity
+// Minimal executable test so the Aiken project has a valid test module.
+// The full validator matrix remains documented in README/docs until the
+// tx-context-heavy scenarios are encoded here.
+
+test policy_vault_smoke() {
+  True
+}
