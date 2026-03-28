@@ -1,0 +1,1 @@
+{"version":3,"file":"workerError.js","names":["WorkerErrorTypeId","exports","Symbol","for"],"sources":["../../../src/internal/workerError.ts"],"sourcesContent":[null],"mappings":";;;;;;AAEA;AACO,MAAMA,iBAAiB,GAAAC,OAAA,CAAAD,iBAAA,gBAAmCE,MAAM,CAACC,GAAG,CACzE,8BAA8B,CACG","ignoreList":[]}

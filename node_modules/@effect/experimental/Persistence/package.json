@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Persistence.js",
+  "module": "../dist/esm/Persistence.js",
+  "types": "../dist/dts/Persistence.d.ts"
+}

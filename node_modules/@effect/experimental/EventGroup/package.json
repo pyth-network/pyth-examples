@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/EventGroup.js",
+  "module": "../dist/esm/EventGroup.js",
+  "types": "../dist/dts/EventGroup.d.ts"
+}

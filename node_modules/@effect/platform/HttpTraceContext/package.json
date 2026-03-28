@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpTraceContext.js",
+  "module": "../dist/esm/HttpTraceContext.js",
+  "types": "../dist/dts/HttpTraceContext.d.ts"
+}

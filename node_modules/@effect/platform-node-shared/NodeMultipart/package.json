@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeMultipart.js",
+  "module": "../dist/esm/NodeMultipart.js",
+  "types": "../dist/dts/NodeMultipart.d.ts"
+}

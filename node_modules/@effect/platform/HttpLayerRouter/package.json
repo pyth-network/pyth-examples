@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpLayerRouter.js",
+  "module": "../dist/esm/HttpLayerRouter.js",
+  "types": "../dist/dts/HttpLayerRouter.d.ts"
+}

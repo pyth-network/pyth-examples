@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpApp.js",
+  "module": "../dist/esm/HttpApp.js",
+  "types": "../dist/dts/HttpApp.d.ts"
+}

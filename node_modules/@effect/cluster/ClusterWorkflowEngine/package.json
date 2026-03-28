@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ClusterWorkflowEngine.js",
+  "module": "../dist/esm/ClusterWorkflowEngine.js",
+  "types": "../dist/dts/ClusterWorkflowEngine.d.ts"
+}

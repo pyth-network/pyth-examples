@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Etag.js",
+  "module": "../dist/esm/Etag.js",
+  "types": "../dist/dts/Etag.d.ts"
+}

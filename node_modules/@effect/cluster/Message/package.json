@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Message.js",
+  "module": "../dist/esm/Message.js",
+  "types": "../dist/dts/Message.d.ts"
+}

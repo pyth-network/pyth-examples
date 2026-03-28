@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/FetchHttpClient.js",
+  "module": "../dist/esm/FetchHttpClient.js",
+  "types": "../dist/dts/FetchHttpClient.d.ts"
+}

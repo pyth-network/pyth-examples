@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Singleton.js",
+  "module": "../dist/esm/Singleton.js",
+  "types": "../dist/dts/Singleton.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlEventLogServer.js",
+  "module": "../dist/esm/SqlEventLogServer.js",
+  "types": "../dist/dts/SqlEventLogServer.d.ts"
+}

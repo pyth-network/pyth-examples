@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Error.js",
+  "module": "../dist/esm/Error.js",
+  "types": "../dist/dts/Error.d.ts"
+}

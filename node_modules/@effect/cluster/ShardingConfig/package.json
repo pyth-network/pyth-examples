@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ShardingConfig.js",
+  "module": "../dist/esm/ShardingConfig.js",
+  "types": "../dist/dts/ShardingConfig.d.ts"
+}

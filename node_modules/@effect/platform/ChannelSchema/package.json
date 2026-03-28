@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ChannelSchema.js",
+  "module": "../dist/esm/ChannelSchema.js",
+  "types": "../dist/dts/ChannelSchema.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeFileSystem.js",
+  "module": "../dist/esm/NodeFileSystem.js",
+  "types": "../dist/dts/NodeFileSystem.d.ts"
+}

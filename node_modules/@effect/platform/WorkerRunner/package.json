@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/WorkerRunner.js",
+  "module": "../dist/esm/WorkerRunner.js",
+  "types": "../dist/dts/WorkerRunner.d.ts"
+}

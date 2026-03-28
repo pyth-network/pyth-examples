@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpMethod.js",
+  "module": "../dist/esm/HttpMethod.js",
+  "types": "../dist/dts/HttpMethod.d.ts"
+}

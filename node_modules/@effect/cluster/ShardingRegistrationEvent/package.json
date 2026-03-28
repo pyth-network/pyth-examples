@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ShardingRegistrationEvent.js",
+  "module": "../dist/esm/ShardingRegistrationEvent.js",
+  "types": "../dist/dts/ShardingRegistrationEvent.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SocketServer.js",
+  "module": "../dist/esm/SocketServer.js",
+  "types": "../dist/dts/SocketServer.d.ts"
+}

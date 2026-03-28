@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpRunner.js",
+  "module": "../dist/esm/HttpRunner.js",
+  "types": "../dist/dts/HttpRunner.d.ts"
+}

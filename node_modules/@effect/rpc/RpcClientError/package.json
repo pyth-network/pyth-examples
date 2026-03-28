@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcClientError.js",
+  "module": "../dist/esm/RpcClientError.js",
+  "types": "../dist/dts/RpcClientError.d.ts"
+}

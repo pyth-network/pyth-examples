@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/WorkflowProxy.js",
+  "module": "../dist/esm/WorkflowProxy.js",
+  "types": "../dist/dts/WorkflowProxy.d.ts",
+  "sideEffects": []
+}

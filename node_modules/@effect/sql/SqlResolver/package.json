@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlResolver.js",
+  "module": "../dist/esm/SqlResolver.js",
+  "types": "../dist/dts/SqlResolver.d.ts"
+}

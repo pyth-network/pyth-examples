@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/PlatformConfigProvider.js",
+  "module": "../dist/esm/PlatformConfigProvider.js",
+  "types": "../dist/dts/PlatformConfigProvider.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/OpenApiJsonSchema.js",
+  "module": "../dist/esm/OpenApiJsonSchema.js",
+  "types": "../dist/dts/OpenApiJsonSchema.d.ts"
+}
