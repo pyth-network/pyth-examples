@@ -18,7 +18,7 @@ jobs:
         with:
           toolchain: 1.91.1
           components: clippy, rustfmt
-          target: wasm32-unknown-unknown
+          target: wasm32v1-none
           cache-workspaces: "lazer/stellar -> target"
           rustflags: ""
       - name: install extra tools
@@ -28,6 +28,6 @@ jobs:
       - name: check Rust formatting
         run: cargo fmt --all -- --check
       - name: check Rust clippy
-        run: cargo clippy --release --target wasm32-unknown-unknown --locked -- --deny warnings
+        run: cargo clippy --release --target wasm32v1-none --locked -- --deny warnings
       - name: Build wasm
-        run: cargo build --release --target wasm32-unknown-unknown --locked
+        run: cargo build --release --target wasm32v1-none --locked
