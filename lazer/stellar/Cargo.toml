@@ -8,8 +8,8 @@ publish = false
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-pyth-lazer-stellar-sdk = "0.2"
-soroban-sdk = { version = "22.0.5", features = ["alloc"] }
+pyth-lazer-stellar-sdk = "0.3"
+soroban-sdk = { version = "26.1.0", features = ["alloc"] }
 
 [profile.release]
 overflow-checks = true

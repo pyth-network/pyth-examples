@@ -18,20 +18,20 @@ recent price. The main implementation lives in [`src/lib.rs`](./src/lib.rs).
 
 ## Prerequisites
 
-- A Rust toolchain with the `wasm32-unknown-unknown` target:
+- A Rust toolchain (minimum **1.84**) with the `wasm32v1-none` target:
   ```bash
-  rustup target add wasm32-unknown-unknown
+  rustup target add wasm32v1-none
   ```
 - The [Stellar CLI](https://developers.stellar.org/docs/tools/developer-tools/cli/install-cli).
 
 ## Build
 
 ```bash
-cargo build --release --target wasm32-unknown-unknown
+cargo build --release --target wasm32v1-none
 ```
 
 The optimized contract is written to
-`target/wasm32-unknown-unknown/release/pyth_lazer_stellar_example.wasm`.
+`target/wasm32v1-none/release/pyth_lazer_stellar_example.wasm`.
 
 ## Deploy (testnet)
 
@@ -53,7 +53,7 @@ threshold). Here: track BTC/USD (feed id 1) and reject updates older than 60 sec
 
 ```bash
 stellar contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/pyth_lazer_stellar_example.wasm \
+  --wasm target/wasm32v1-none/release/pyth_lazer_stellar_example.wasm \
   --source deployer \
   --network testnet \
   -- \
