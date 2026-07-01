@@ -40,7 +40,7 @@ deploy the verifier yourself:
 
 | Contract | Testnet address |
 | -------- | --------------- |
-| Pyth Lazer verifier | `CD2KMDOR274ZVPVVSDIBWNBLGAXJOHKJBQGNWYQHF3O6H767UOYJJYJZ` |
+| Pyth Lazer verifier | `CAYFT5JE3UQTKT4Q6ZOZK4FXVYVT6RE3MFC7STA4UB6WAEGBT65MRU52` |
 
 Configure a funded testnet identity once:
 
@@ -57,7 +57,7 @@ stellar contract deploy \
   --source deployer \
   --network testnet \
   -- \
-  --lazer CD2KMDOR274ZVPVVSDIBWNBLGAXJOHKJBQGNWYQHF3O6H767UOYJJYJZ \
+  --lazer CAYFT5JE3UQTKT4Q6ZOZK4FXVYVT6RE3MFC7STA4UB6WAEGBT65MRU52 \
   --feed_id 1 \
   --freshness_threshold_us 60000000
 ```
