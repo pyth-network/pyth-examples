@@ -1,0 +1,35 @@
+{
+  "name": "hedgepod-entropy-example",
+  "version": "1.0.0",
+  "description": "HedgePod Agent - Autonomous DeFi with Pyth Entropy for fair agent selection",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.js",
+    "test": "hardhat test"
+  },
+  "keywords": [
+    "pyth",
+    "entropy",
+    "randomness",
+    "defi",
+    "autonomous",
+    "fair",
+    "lottery"
+  ],
+  "author": "HedgePod Team",
+  "license": "MIT",
+  "homepage": "https://hedgepod.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mollybeach/hedgepod.git"
+  },
+  "dependencies": {
+    "@pythnetwork/entropy-sdk-solidity": "^2.2.1"
+  },
+  "devDependencies": {
+    "hardhat": "^2.22.0",
+    "ethers": "^6.9.0"
+  }
+}
+
