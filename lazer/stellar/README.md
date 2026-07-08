@@ -10,7 +10,8 @@ integration on Stellar:
 1. **Verify** a signed Lazer update via the deployed `pyth-lazer-stellar` verifier contract.
 2. **Parse** the verified payload with the published
    [`pyth-lazer-stellar-sdk`](https://crates.io/crates/pyth-lazer-stellar-sdk).
-3. **Freshness-check** the feed's update timestamp against a deployment-configured threshold.
+3. **Freshness-check** the feed's update timestamp against a deployment-configured threshold, and
+   reject any update whose timestamp is not strictly newer than the stored price (monotonic updates).
 4. **Store / retrieve** the latest price for a single configured feed.
 
 This is an example, not a production library — it tracks exactly one feed and keeps only the most

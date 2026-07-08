@@ -14,6 +14,7 @@ pub enum Error {
     PriceNotInitialized = 6,
     Overflow = 7,
     ParseError = 8,
+    PriceOutdated = 9,
 }
 
 impl From<ParseError> for Error {
