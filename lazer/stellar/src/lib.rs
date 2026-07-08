@@ -34,7 +34,8 @@ impl PythLazerExample {
     }
 
     /// Verify a signed Pyth Lazer update, check it is fresh, and store the
-    /// latest price for the configured feed.
+    /// latest price for the configured feed. Rejects the update if its feed
+    /// timestamp is not strictly newer than the currently stored price.
     pub fn update_price(env: Env, payload: Bytes) -> Result<(), Error> {
         let lazer = state::get_lazer(&env);
         let feed_id = state::get_feed_id(&env);
@@ -60,6 +61,15 @@ impl PythLazerExample {
         // skew) reads as age 0 rather than erroring.
         if now_us.saturating_sub(feed_ts_us) > freshness_threshold_us {
             return Err(Error::PriceStale);
+        }
+
+        // Never overwrite a newer price with an older one: the update's feed
+        // timestamp must strictly exceed the stored one. This keeps the stored
+        // price monotonic even if updates arrive out of order.
+        if let Some(stored) = state::get_latest_price(&env) {
+            if feed_ts_us <= stored.timestamp_us {
+                return Err(Error::PriceOutdated);
+            }
         }
 
         let price = feed.price.ok_or(Error::PriceMissing)?;
