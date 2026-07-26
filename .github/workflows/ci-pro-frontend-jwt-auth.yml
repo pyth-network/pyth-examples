@@ -1,0 +1,27 @@
+name: "Pro Frontend JWT Auth Example"
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - "pro/frontend-jwt-auth/**"
+      - ".github/workflows/ci-pro-frontend-jwt-auth.yml"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: pro/frontend-jwt-auth
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm install --global pnpm@9.2.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:format
+      - run: pnpm run test:types
+      - run: pnpm run build
