@@ -2,7 +2,7 @@ import { getPythToken, invalidatePythToken } from "./pythToken";
 
 // The public browser default matches the server default in
 // src/app/api/pyth-token/route.ts. History requests go directly from the
-// browser to the Pyth Pro API — only the mint endpoint is proxied through
+// browser to the Pyth Pro API; only the mint endpoint is proxied through
 // this app so `PRO_API_KEY` stays server-side.
 const DEFAULT_PYTH_API_BASE_URL = "https://pyth.dourolabs.app";
 
@@ -17,11 +17,12 @@ const PYTH_API_BASE_URL =
 
 export interface HistoryResponse {
   s: "ok" | "no_data" | "error";
-  t: number[];
-  o: number[];
-  h: number[];
-  l: number[];
-  c: number[];
+  // A `no_data` (or `error`) response may omit the OHLC arrays entirely.
+  t?: number[];
+  o?: number[];
+  h?: number[];
+  l?: number[];
+  c?: number[];
   v?: number[];
   errmsg?: string;
 }
@@ -35,21 +36,19 @@ export interface Candle {
 }
 
 export function candlesFromHistory(history: HistoryResponse): Candle[] {
-  const n = Math.min(
-    history.t.length,
-    history.o.length,
-    history.h.length,
-    history.l.length,
-    history.c.length,
-  );
+  const { t, o, h, l, c } = history;
+  if (!t || !o || !h || !l || !c) {
+    return [];
+  }
+  const n = Math.min(t.length, o.length, h.length, l.length, c.length);
   const out: Candle[] = new Array(n);
   for (let i = 0; i < n; i++) {
     out[i] = {
-      time: history.t[i]!,
-      open: history.o[i]!,
-      high: history.h[i]!,
-      low: history.l[i]!,
-      close: history.c[i]!,
+      time: t[i]!,
+      open: o[i]!,
+      high: h[i]!,
+      low: l[i]!,
+      close: c[i]!,
     };
   }
   return out;
@@ -95,7 +94,7 @@ export async function fetchHistory(
     const detail = await response.text();
     throw new Error(
       `Pyth history request failed: ${response.status} ${response.statusText}${
-        detail ? ` — ${detail}` : ""
+        detail ? ` (${detail})` : ""
       }`,
     );
   }

@@ -45,6 +45,7 @@ export function PythChart({ symbol, label, onUpdated }: PythChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const lastBarTimeRef = useRef<number>(0);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -106,6 +107,7 @@ export function PythChart({ symbol, label, onUpdated }: PythChartProps) {
         if (!series) return;
         series.setData(candles);
         if (candles.length > 0) {
+          lastBarTimeRef.current = candles[candles.length - 1]!.time;
           chartRef.current?.timeScale().fitContent();
         }
         setError(null);
@@ -134,7 +136,11 @@ export function PythChart({ symbol, label, onUpdated }: PythChartProps) {
         if (!series) return;
         const latest = candlesFromHistory(history);
         for (const candle of latest) {
+          // `series.update` only accepts the last bar or newer ones; an
+          // older bar throws "Cannot update oldest data".
+          if (candle.time < lastBarTimeRef.current) continue;
           series.update(toChartCandle(candle));
+          lastBarTimeRef.current = candle.time;
         }
         setError(null);
         onUpdated?.(new Date());
