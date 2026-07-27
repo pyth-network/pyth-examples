@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 const DEFAULT_PYTH_API_BASE_URL = "https://pyth.dourolabs.app";
 
-// Do not cache JWTs on the edge / Data Cache — each mint is a fresh call
+// Do not cache JWTs on the edge / Data Cache; each mint is a fresh call
 // to the upstream token endpoint with the server-held `PRO_API_KEY`.
 export const dynamic = "force-dynamic";
 
