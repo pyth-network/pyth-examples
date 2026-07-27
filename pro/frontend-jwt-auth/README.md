@@ -9,6 +9,8 @@ against it. Every History API request must carry a JWT
 and the JWT is minted with your long-lived Pro API key, which must **never**
 ship to the browser.
 
+![Live BTC, ETH, and SOL candlestick charts above the auth flow panel](screenshot.png)
+
 The finished app also renders a "How these charts authenticate" panel at the
 bottom of the page with a live view of the token cache (expiry countdown,
 mints this session), so you can watch the flow described below actually happen.
@@ -124,8 +126,21 @@ Two details matter here:
 
 ### Step 3: Calling the History API from the browser
 
-[`src/lib/pythClient.ts`](src/lib/pythClient.ts) attaches the JWT and handles
-expiry-in-flight:
+[`src/lib/pythClient.ts`](src/lib/pythClient.ts) attaches the JWT as a bearer
+token on every history request:
+
+```ts
+const url = new URL(`${PYTH_API_BASE_URL}/v1/${channel}/history`);
+url.searchParams.set("symbol", symbol);
+url.searchParams.set("from", String(from));
+url.searchParams.set("to", String(to));
+url.searchParams.set("resolution", resolution);
+return fetch(url.toString(), {
+  headers: { Authorization: `Bearer ${token}` }, // short-lived JWT, not the API key
+});
+```
+
+It also handles expiry-in-flight:
 
 ```ts
 let token = await getPythToken();
@@ -197,6 +212,11 @@ curl -s "https://pyth.dourolabs.app/v1/symbols" \
 | `PRO_API_KEY`                   | Server only | (required)                   | Long-lived Pyth Pro API key used to mint short-lived JWTs. |
 | `PYTH_API_BASE_URL`             | Server      | `https://pyth.dourolabs.app` | Override for non-prod environments.                        |
 | `NEXT_PUBLIC_PYTH_API_BASE_URL` | Browser     | `https://pyth.dourolabs.app` | Override the History API base used from the browser.       |
+
+Set the two base URL overrides together: the server mints tokens against
+`PYTH_API_BASE_URL`, while the browser fetches history from
+`NEXT_PUBLIC_PYTH_API_BASE_URL`. Overriding only one splits the app across
+two environments.
 
 ## Scripts
 
