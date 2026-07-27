@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "fs": "^0.0.1-security"
+  }
+}
