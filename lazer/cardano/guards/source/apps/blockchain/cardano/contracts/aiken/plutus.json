@@ -1,0 +1,439 @@
+{
+  "preamble": {
+    "title": "solx-ar/guards-one-cardano-aiken",
+    "description": "Bounded Aiken scaffold for the guards.one PolicyVault and hot-bucket model",
+    "version": "0.0.0",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.21+unknown"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "policy_vault.policy_vault.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/guards_one~1types~1PolicyDatum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/guards_one~1types~1PolicyRedeemer"
+        }
+      },
+      "compiledCode": "5909e801010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e3300130093754007370e90004dc3a4009370e90034c020dd5002244444653001159800980298071baa0018cc004c048c03cdd5000c88c8cc00400400c896600200314a115980099b8f375c602c00200714a31330020023017001404480a2460266028602860286028003230133014301430143014301430143014301400198071baa00a91809980a180a180a180a180a180a000c8c04cc050c050c050c050c050c050c050c050c050006460266028602860286028602860286028602860286028602800323013301430143014301430143014301430143014301400191809980a180a180a180a180a000c8c04cc050006460266028602860286028602860286028003371090004dc7a450091809980a180a180a000c8c04cc050c0500052222222222222222980091198089bac300d3021375400400325980098029bad300e3020375400315980098029bad300b3020375400315980099b89375a601460406ea8004dd6980498101baa0018acc006600266e3cdd7180418101baa001375c601860406ea800694294501e456600330013004375c604660406ea800694294501e456600330013004375c600e60406ea800694294501e456600330013004375c600c60406ea800694294501e46600260086eb8c08cc090c090c090c090c090c090c090c090c090c090c090c090c080dd5000d28528a03c8a50407914a080f2294101e4528203c8a50407914a080f2294101e4896600266e3c004dd7180798109baa0028a51899b8f001375c600e60426ea800901f488cdc49bad300f302137540026eb4c028c084dd50012444464b3001301a01189919194c004dd69815000cc0a8c0ac0066054007375c605400491112cc00566002660366eb0c04cc0acdd500e000c4cc06cdd6180c98159baa0230018a5040a5159800acc00566002604260546ea8c058c0acdd500e4528c52820528a508cc00528528528a05240a5159800acc0066002601e6eb8c0b8c0acdd5001528528a0528acc0066002601e6eb8c048c0acdd5001528528a0528cc004c03cdd7180698159baa002a50a5140a514a0814a2941029456600266e3cdd7181718159baa002375c602460566ea80722b3001337126eb4c038c0acdd500e002456600266e24dd69817181798179817981798179817981798179817981798179817981798159baa01c337020086eb4c038c0acdd500e456600266e1cdd6980a98159baa0030048acc004cdc79bae3012302b37540066eb8c0b8c0acdd500e4566002660180386eb8c044c0acdd5001c56600260160071598009980400e001c4cc02407000e2941029452820528a5040a514a0814a2941029452820528a5040a514a0814a2941029452820528a5040a4302a00130290013024375403f159800980e808c4c8cc896600266e3cdd7181518139baa018375c601c604e6ea800a2b30013371e6eb8c038c09cdd50009bae302a3027375403115980099baf30123027375403066e95200033029302a3027375400497ae08acc004cc020060dd7180a98139baa0018acc004c01c00a2b3001330040180028acc004cc01406000a2b30015980099b8f375c6054604e6ea8004dd7181518139baa0028acc004cdc79bae3009302737540026eb8c024c09cdd5001456600266e3cdd7180518139baa001375c601e604e6ea800a2b30013371e6eb8c058c09cdd50009bae30133027375400513371e6eb8c054c09cdd50009bae300d3027375400514a0812a29410254528204a8a504095159800acc004cdc49bad3011302737540046eb4c048c09cdd5000c4cdc49bad3012302737540026eb4c040c09cdd50014528204a8acc0056600266e252000375a601e604e6ea80062b30013371290001bad30133027375400315980099b89375a601e604e6ea8004dd6980a98139baa0028acc004cdc49bad3012302737540046eb4c04cc09cdd5000c56600260186eb4c034c09cdd5000c6600260166eb8c040c09cdd5000d28528a04a8a50409514a0812a29410254528204a8a5040951337126eb4c03cc09cdd50009bad30103027375403114a0812a29410254528204a8a50409514a0812a29410254528204a8a50409514a0812a294102518140009814181480098121baa01f8acc004c06404629422b300130180118a508992cc004cc054dd6180a18129baa01600189980a9bac30133025375403a00314a08118dd7181398121baa01f4088811102220442259800998020011bae300d30253754003133004002375c6022604a6ea8006294102311640352259800980398081baa002899191919191919191919191919194c004dd61811000cdd718110074dd71811006cdd718110064c08802a6eb8c0880266eb8c0880226eb8c08801e6eb4c08801a6eb4c0880166eb4c0880126eb4c08800e6eb8c088009222222222222259800981800744c8cc8966002604a00515980098179baa003800c590304566002605000515980098179baa003800c5903045902d205a302c375400226644b300130250018acc004c0bcdd5006400a2c81822b300130280018acc004c0bcdd5006400a2c81822b300130240018acc004c0bcdd5006400a2c81822b300130230018acc004c0bcdd5006400a2c81822b30013370e9004000c566002605e6ea80320051640c11640b4816902d205a40b42646600200201e44b300100180fc4c8cc00c00cc0d0008dd71819000a060302c3754014605e0311640b4302200130210013020001301f001301e001301d001301c001301b001301a00130190013018001301700130160013011375400516403d3012006488966002601000b132323298009bad3018001980c800cdd7180c0012444b3001301c0028992cc004c03cc060dd5000c4c8c8ca60026eb8c07c0066eb8c07c00e6eb8c07c00922259800981180244cc03cc0880240422c8100603e002603c00260326ea80062c80b8c06c01a2c80c86030002602e00260246ea80362b3001300b00589919192cc004c06400a26600a60300062b3001300b301437540031323232323232323232323298009bae30230019bae302300b9bae302300a9bae30230099bae30230089bae30230079bad30230069bad30230059bad30230049bae30230039bad302300248888888888966002605e01901c8b20581811800981100098108009810000980f800980f000980e800980e000980d800980d000980a9baa0018b20268b202c301700130170013012375401b1598009803802c4c8c8cc896600260340070078b202e375a602e0026eb8c05c008c05c004c048dd5006c566002600c00b13232332259800980d001c01e2c80b8dd6980b8009bae301700230170013012375401b15980099b874802001626464b30013018002802c590151bae30160013012375401b164040808101020204040301130120054528200e180400098019baa0088a4d13656400401",
+      "hash": "d86fb4d585d62b644b02e9c41944b3c23c966b02c768d99aed4a85a7"
+    },
+    {
+      "title": "policy_vault.policy_vault.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "5909e801010029800aba2aba1aba0aab9faab9eaab9dab9a488888896600264653001300800198041804800cdc3a400530080024888966002600460106ea800e3300130093754007370e90004dc3a4009370e90034c020dd5002244444653001159800980298071baa0018cc004c048c03cdd5000c88c8cc00400400c896600200314a115980099b8f375c602c00200714a31330020023017001404480a2460266028602860286028003230133014301430143014301430143014301400198071baa00a91809980a180a180a180a180a180a000c8c04cc050c050c050c050c050c050c050c050c050006460266028602860286028602860286028602860286028602800323013301430143014301430143014301430143014301400191809980a180a180a180a180a000c8c04cc050006460266028602860286028602860286028003371090004dc7a450091809980a180a180a000c8c04cc050c0500052222222222222222980091198089bac300d3021375400400325980098029bad300e3020375400315980098029bad300b3020375400315980099b89375a601460406ea8004dd6980498101baa0018acc006600266e3cdd7180418101baa001375c601860406ea800694294501e456600330013004375c604660406ea800694294501e456600330013004375c600e60406ea800694294501e456600330013004375c600c60406ea800694294501e46600260086eb8c08cc090c090c090c090c090c090c090c090c090c090c090c090c080dd5000d28528a03c8a50407914a080f2294101e4528203c8a50407914a080f2294101e4896600266e3c004dd7180798109baa0028a51899b8f001375c600e60426ea800901f488cdc49bad300f302137540026eb4c028c084dd50012444464b3001301a01189919194c004dd69815000cc0a8c0ac0066054007375c605400491112cc00566002660366eb0c04cc0acdd500e000c4cc06cdd6180c98159baa0230018a5040a5159800acc00566002604260546ea8c058c0acdd500e4528c52820528a508cc00528528528a05240a5159800acc0066002601e6eb8c0b8c0acdd5001528528a0528acc0066002601e6eb8c048c0acdd5001528528a0528cc004c03cdd7180698159baa002a50a5140a514a0814a2941029456600266e3cdd7181718159baa002375c602460566ea80722b3001337126eb4c038c0acdd500e002456600266e24dd69817181798179817981798179817981798179817981798179817981798159baa01c337020086eb4c038c0acdd500e456600266e1cdd6980a98159baa0030048acc004cdc79bae3012302b37540066eb8c0b8c0acdd500e4566002660180386eb8c044c0acdd5001c56600260160071598009980400e001c4cc02407000e2941029452820528a5040a514a0814a2941029452820528a5040a514a0814a2941029452820528a5040a4302a00130290013024375403f159800980e808c4c8cc896600266e3cdd7181518139baa018375c601c604e6ea800a2b30013371e6eb8c038c09cdd50009bae302a3027375403115980099baf30123027375403066e95200033029302a3027375400497ae08acc004cc020060dd7180a98139baa0018acc004c01c00a2b3001330040180028acc004cc01406000a2b30015980099b8f375c6054604e6ea8004dd7181518139baa0028acc004cdc79bae3009302737540026eb8c024c09cdd5001456600266e3cdd7180518139baa001375c601e604e6ea800a2b30013371e6eb8c058c09cdd50009bae30133027375400513371e6eb8c054c09cdd50009bae300d3027375400514a0812a29410254528204a8a504095159800acc004cdc49bad3011302737540046eb4c048c09cdd5000c4cdc49bad3012302737540026eb4c040c09cdd50014528204a8acc0056600266e252000375a601e604e6ea80062b30013371290001bad30133027375400315980099b89375a601e604e6ea8004dd6980a98139baa0028acc004cdc49bad3012302737540046eb4c04cc09cdd5000c56600260186eb4c034c09cdd5000c6600260166eb8c040c09cdd5000d28528a04a8a50409514a0812a29410254528204a8a5040951337126eb4c03cc09cdd50009bad30103027375403114a0812a29410254528204a8a50409514a0812a29410254528204a8a50409514a0812a294102518140009814181480098121baa01f8acc004c06404629422b300130180118a508992cc004cc054dd6180a18129baa01600189980a9bac30133025375403a00314a08118dd7181398121baa01f4088811102220442259800998020011bae300d30253754003133004002375c6022604a6ea8006294102311640352259800980398081baa002899191919191919191919191919194c004dd61811000cdd718110074dd71811006cdd718110064c08802a6eb8c0880266eb8c0880226eb8c08801e6eb4c08801a6eb4c0880166eb4c0880126eb4c08800e6eb8c088009222222222222259800981800744c8cc8966002604a00515980098179baa003800c590304566002605000515980098179baa003800c5903045902d205a302c375400226644b300130250018acc004c0bcdd5006400a2c81822b300130280018acc004c0bcdd5006400a2c81822b300130240018acc004c0bcdd5006400a2c81822b300130230018acc004c0bcdd5006400a2c81822b30013370e9004000c566002605e6ea80320051640c11640b4816902d205a40b42646600200201e44b300100180fc4c8cc00c00cc0d0008dd71819000a060302c3754014605e0311640b4302200130210013020001301f001301e001301d001301c001301b001301a00130190013018001301700130160013011375400516403d3012006488966002601000b132323298009bad3018001980c800cdd7180c0012444b3001301c0028992cc004c03cc060dd5000c4c8c8ca60026eb8c07c0066eb8c07c00e6eb8c07c00922259800981180244cc03cc0880240422c8100603e002603c00260326ea80062c80b8c06c01a2c80c86030002602e00260246ea80362b3001300b00589919192cc004c06400a26600a60300062b3001300b301437540031323232323232323232323298009bae30230019bae302300b9bae302300a9bae30230099bae30230089bae30230079bad30230069bad30230059bad30230049bae30230039bad302300248888888888966002605e01901c8b20581811800981100098108009810000980f800980f000980e800980e000980d800980d000980a9baa0018b20268b202c301700130170013012375401b1598009803802c4c8c8cc896600260340070078b202e375a602e0026eb8c05c008c05c004c048dd5006c566002600c00b13232332259800980d001c01e2c80b8dd6980b8009bae301700230170013012375401b15980099b874802001626464b30013018002802c590151bae30160013012375401b164040808101020204040301130120054528200e180400098019baa0088a4d13656400401",
+      "hash": "d86fb4d585d62b644b02e9c41944b3c23c966b02c768d99aed4a85a7"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "List<ByteArray>": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/ByteArray"
+      }
+    },
+    "List<aiken/crypto/VerificationKeyHash>": {
+      "dataType": "list",
+      "items": {
+        "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+      }
+    },
+    "Option<ByteArray>": {
+      "title": "Option",
+      "anyOf": [
+        {
+          "title": "Some",
+          "description": "An optional value.",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        },
+        {
+          "title": "None",
+          "description": "Nothing.",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "aiken/crypto/VerificationKeyHash": {
+      "title": "VerificationKeyHash",
+      "dataType": "bytes"
+    },
+    "guards_one/types/ExecutionIntent": {
+      "title": "ExecutionIntent",
+      "anyOf": [
+        {
+          "title": "ExecutionIntent",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "intent_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "vault_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "chain_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "kind",
+              "$ref": "#/definitions/guards_one~1types~1ExecutionKind"
+            },
+            {
+              "title": "stage",
+              "$ref": "#/definitions/guards_one~1types~1RiskStage"
+            },
+            {
+              "title": "source_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "destination_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "route_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "max_sell_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "min_buy_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "expiry_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "created_at_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "reason_hash",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "snapshot_ids",
+              "$ref": "#/definitions/List<ByteArray>"
+            }
+          ]
+        }
+      ]
+    },
+    "guards_one/types/ExecutionKind": {
+      "title": "ExecutionKind",
+      "anyOf": [
+        {
+          "title": "DeriskSwap",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "ReentrySwap",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "guards_one/types/ExecutionResult": {
+      "title": "ExecutionResult",
+      "anyOf": [
+        {
+          "title": "ExecutionResult",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "intent_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "vault_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "chain_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "source_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "destination_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "sold_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "bought_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "average_price",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "route_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "executed_at_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "tx_hash",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        }
+      ]
+    },
+    "guards_one/types/PolicyDatum": {
+      "title": "PolicyDatum",
+      "anyOf": [
+        {
+          "title": "PolicyDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "vault_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "pyth_policy_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "stage",
+              "$ref": "#/definitions/guards_one~1types~1RiskStage"
+            },
+            {
+              "title": "last_transition_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "governance_signers",
+              "$ref": "#/definitions/List<aiken~1crypto~1VerificationKeyHash>"
+            },
+            {
+              "title": "keepers",
+              "$ref": "#/definitions/List<aiken~1crypto~1VerificationKeyHash>"
+            },
+            {
+              "title": "approved_route_ids",
+              "$ref": "#/definitions/List<ByteArray>"
+            },
+            {
+              "title": "stable_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "primary_asset_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "current_intent_id",
+              "$ref": "#/definitions/Option<ByteArray>"
+            },
+            {
+              "title": "hot_bucket_max_notional",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "max_stale_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "max_confidence_bps",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "cooldown_us",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "guards_one/types/PolicyRedeemer": {
+      "title": "PolicyRedeemer",
+      "anyOf": [
+        {
+          "title": "AuthorizeExecution",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "witness",
+              "$ref": "#/definitions/guards_one~1types~1PythWitness"
+            },
+            {
+              "title": "keeper",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "now_us",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "intent",
+              "$ref": "#/definitions/guards_one~1types~1ExecutionIntent"
+            }
+          ]
+        },
+        {
+          "title": "CompleteExecution",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": [
+            {
+              "title": "intent",
+              "$ref": "#/definitions/guards_one~1types~1ExecutionIntent"
+            },
+            {
+              "title": "result",
+              "$ref": "#/definitions/guards_one~1types~1ExecutionResult"
+            }
+          ]
+        },
+        {
+          "title": "UpdatePolicy",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": [
+            {
+              "title": "actor",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "now_us",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "Resume",
+          "dataType": "constructor",
+          "index": 3,
+          "fields": [
+            {
+              "title": "actor",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            },
+            {
+              "title": "now_us",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        },
+        {
+          "title": "EmergencyWithdraw",
+          "dataType": "constructor",
+          "index": 4,
+          "fields": [
+            {
+              "title": "actor",
+              "$ref": "#/definitions/aiken~1crypto~1VerificationKeyHash"
+            }
+          ]
+        }
+      ]
+    },
+    "guards_one/types/PythWitness": {
+      "title": "PythWitness",
+      "anyOf": [
+        {
+          "title": "PythWitness",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "pyth_policy_id",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "pyth_state_reference",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "signed_update_hex",
+              "$ref": "#/definitions/ByteArray"
+            }
+          ]
+        }
+      ]
+    },
+    "guards_one/types/RiskStage": {
+      "title": "RiskStage",
+      "anyOf": [
+        {
+          "title": "Normal",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Watch",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        },
+        {
+          "title": "PartialDerisk",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": []
+        },
+        {
+          "title": "FullExit",
+          "dataType": "constructor",
+          "index": 3,
+          "fields": []
+        },
+        {
+          "title": "Frozen",
+          "dataType": "constructor",
+          "index": 4,
+          "fields": []
+        }
+      ]
+    }
+  }
+}
