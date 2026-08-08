@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeRuntime.js",
+  "module": "../dist/esm/NodeRuntime.js",
+  "types": "../dist/dts/NodeRuntime.d.ts"
+}

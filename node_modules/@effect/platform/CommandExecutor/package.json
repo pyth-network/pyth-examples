@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/CommandExecutor.js",
+  "module": "../dist/esm/CommandExecutor.js",
+  "types": "../dist/dts/CommandExecutor.d.ts"
+}

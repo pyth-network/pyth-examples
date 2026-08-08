@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlStream.js",
+  "module": "../dist/esm/SqlStream.js",
+  "types": "../dist/dts/SqlStream.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Entity.js",
+  "module": "../dist/esm/Entity.js",
+  "types": "../dist/dts/Entity.d.ts"
+}

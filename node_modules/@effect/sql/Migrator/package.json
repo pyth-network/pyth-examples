@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Migrator.js",
+  "module": "../dist/esm/Migrator.js",
+  "types": "../dist/dts/Migrator.d.ts"
+}

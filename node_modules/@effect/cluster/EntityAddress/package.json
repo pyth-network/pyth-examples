@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/EntityAddress.js",
+  "module": "../dist/esm/EntityAddress.js",
+  "types": "../dist/dts/EntityAddress.d.ts"
+}

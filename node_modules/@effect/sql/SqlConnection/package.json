@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlConnection.js",
+  "module": "../dist/esm/SqlConnection.js",
+  "types": "../dist/dts/SqlConnection.d.ts"
+}

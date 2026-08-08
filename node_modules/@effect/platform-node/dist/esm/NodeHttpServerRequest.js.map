@@ -1,0 +1,1 @@
+{"version":3,"file":"NodeHttpServerRequest.js","names":["internal","toIncomingMessage","toServerResponse"],"sources":["../../src/NodeHttpServerRequest.ts"],"sourcesContent":[null],"mappings":"AAKA,OAAO,KAAKA,QAAQ,MAAM,0BAA0B;AAEpD;;;;AAIA,OAAO,MAAMC,iBAAiB,GAC5BD,QAAQ,CAACC,iBAAiB;AAE5B;;;;AAIA,OAAO,MAAMC,gBAAgB,GAC3BF,QAAQ,CAACE,gBAAgB","ignoreList":[]}

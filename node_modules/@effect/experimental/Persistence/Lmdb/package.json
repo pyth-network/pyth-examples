@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/Persistence/Lmdb.js",
+  "module": "../../dist/esm/Persistence/Lmdb.js",
+  "types": "../../dist/dts/Persistence/Lmdb.d.ts"
+}

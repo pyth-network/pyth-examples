@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ClusterSchema.js",
+  "module": "../dist/esm/ClusterSchema.js",
+  "types": "../dist/dts/ClusterSchema.d.ts"
+}

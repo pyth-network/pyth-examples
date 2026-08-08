@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpServerError.js",
+  "module": "../dist/esm/HttpServerError.js",
+  "types": "../dist/dts/HttpServerError.d.ts"
+}

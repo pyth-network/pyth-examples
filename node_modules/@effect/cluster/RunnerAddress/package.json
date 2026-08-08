@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RunnerAddress.js",
+  "module": "../dist/esm/RunnerAddress.js",
+  "types": "../dist/dts/RunnerAddress.d.ts"
+}

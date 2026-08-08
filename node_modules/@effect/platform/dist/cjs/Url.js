@@ -1,0 +1,266 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.urlParams = exports.setUsername = exports.setUrlParams = exports.setSearch = exports.setProtocol = exports.setPort = exports.setPathname = exports.setPassword = exports.setHref = exports.setHostname = exports.setHost = exports.setHash = exports.mutate = exports.modifyUrlParams = exports.fromString = void 0;
+var Cause = _interopRequireWildcard(require("effect/Cause"));
+var Either = _interopRequireWildcard(require("effect/Either"));
+var _Function = require("effect/Function");
+var Redacted = _interopRequireWildcard(require("effect/Redacted"));
+var UrlParams = _interopRequireWildcard(require("./UrlParams.js"));
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
+/**
+ * @since 1.0.0
+ */
+
+/**
+ * Parses a URL string into a `URL` object, returning an `Either` type for safe
+ * error handling.
+ *
+ * **Details**
+ *
+ * This function converts a string into a `URL` object, enabling safe URL
+ * parsing with built-in error handling. If the string is invalid or fails to
+ * parse, this function does not throw an error; instead, it wraps the error in
+ * a `IllegalArgumentException` and returns it as the `Left` value of an
+ * `Either`. The `Right` value contains the successfully parsed `URL`.
+ *
+ * An optional `base` parameter can be provided to resolve relative URLs. If
+ * specified, the function interprets the input `url` as relative to this
+ * `base`. This is especially useful when dealing with URLs that might not be
+ * fully qualified.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Url } from "@effect/platform"
+ * import { Either } from "effect"
+ *
+ * // Parse an absolute URL
+ * //
+ * //      ┌─── Either<URL, IllegalArgumentException>
+ * //      ▼
+ * const parsed = Url.fromString("https://example.com/path")
+ *
+ * if (Either.isRight(parsed)) {
+ *   console.log("Parsed URL:", parsed.right.toString())
+ * } else {
+ *   console.log("Error:", parsed.left.message)
+ * }
+ * // Output: Parsed URL: https://example.com/path
+ *
+ * // Parse a relative URL with a base
+ * const relativeParsed = Url.fromString("/relative-path", "https://example.com")
+ *
+ * if (Either.isRight(relativeParsed)) {
+ *   console.log("Parsed relative URL:", relativeParsed.right.toString())
+ * } else {
+ *   console.log("Error:", relativeParsed.left.message)
+ * }
+ * // Output: Parsed relative URL: https://example.com/relative-path
+ * ```
+ *
+ * @since 1.0.0
+ * @category Constructors
+ */
+const fromString = (url, base) => Either.try({
+  try: () => new URL(url, base),
+  catch: cause => new Cause.IllegalArgumentException(cause instanceof globalThis.Error ? cause.message : "Invalid input")
+});
+/**
+ * This function clones the original `URL` object and applies a callback to the
+ * clone, allowing multiple updates at once.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Url } from "@effect/platform"
+ *
+ * const myUrl = new URL("https://example.com")
+ *
+ * const mutatedUrl = Url.mutate(myUrl, (url) => {
+ *   url.username = "user"
+ *   url.password = "pass"
+ * })
+ *
+ * console.log("Mutated:", mutatedUrl.toString())
+ * // Output: Mutated: https://user:pass@example.com/
+ * ```
+ *
+ * @since 1.0.0
+ * @category Modifiers
+ */
+exports.fromString = fromString;
+const mutate = exports.mutate = /*#__PURE__*/(0, _Function.dual)(2, (self, f) => {
+  const copy = new URL(self);
+  f(copy);
+  return copy;
+});
+/** @internal */
+const immutableURLSetter = property => (0, _Function.dual)(2, (url, value) => mutate(url, url => {
+  url[property] = value;
+}));
+/**
+ * Updates the hash fragment of the URL.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setHash = exports.setHash = /*#__PURE__*/immutableURLSetter("hash");
+/**
+ * Updates the host (domain and port) of the URL.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setHost = exports.setHost = /*#__PURE__*/immutableURLSetter("host");
+/**
+ * Updates the domain of the URL without modifying the port.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setHostname = exports.setHostname = /*#__PURE__*/immutableURLSetter("hostname");
+/**
+ * Replaces the entire URL string.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setHref = exports.setHref = /*#__PURE__*/immutableURLSetter("href");
+/**
+ * Updates the password used for authentication.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setPassword = exports.setPassword = /*#__PURE__*/(0, _Function.dual)(2, (url, password) => mutate(url, url => {
+  url.password = typeof password === "string" ? password : Redacted.value(password);
+}));
+/**
+ * Updates the path of the URL.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setPathname = exports.setPathname = /*#__PURE__*/immutableURLSetter("pathname");
+/**
+ * Updates the port of the URL.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setPort = exports.setPort = /*#__PURE__*/immutableURLSetter("port");
+/**
+ * Updates the protocol (e.g., `http`, `https`).
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setProtocol = exports.setProtocol = /*#__PURE__*/immutableURLSetter("protocol");
+/**
+ * Updates the query string of the URL.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setSearch = exports.setSearch = /*#__PURE__*/immutableURLSetter("search");
+/**
+ * Updates the username used for authentication.
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setUsername = exports.setUsername = /*#__PURE__*/immutableURLSetter("username");
+/**
+ * Updates the query parameters of a URL.
+ *
+ * **Details**
+ *
+ * This function allows you to set or replace the query parameters of a `URL`
+ * object using the provided `UrlParams`. It creates a new `URL` object with the
+ * updated parameters, leaving the original object unchanged.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Url, UrlParams } from "@effect/platform"
+ *
+ * const myUrl = new URL("https://example.com?foo=bar")
+ *
+ * // Write parameters
+ * const updatedUrl = Url.setUrlParams(
+ *   myUrl,
+ *   UrlParams.fromInput([["key", "value"]])
+ * )
+ *
+ * console.log(updatedUrl.toString())
+ * // Output: https://example.com/?key=value
+ * ```
+ *
+ * @since 1.0.0
+ * @category Setters
+ */
+const setUrlParams = exports.setUrlParams = /*#__PURE__*/(0, _Function.dual)(2, (url, searchParams) => mutate(url, url => {
+  url.search = UrlParams.toString(searchParams);
+}));
+/**
+ * Retrieves the query parameters from a URL.
+ *
+ * **Details**
+ *
+ * This function extracts the query parameters from a `URL` object and returns
+ * them as `UrlParams`. The resulting structure can be easily manipulated or
+ * inspected.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Url } from "@effect/platform"
+ *
+ * const myUrl = new URL("https://example.com?foo=bar")
+ *
+ * // Read parameters
+ * const params = Url.urlParams(myUrl)
+ *
+ * console.log(params)
+ * // Output: [ [ 'foo', 'bar' ] ]
+ * ```
+ *
+ * @since 1.0.0
+ * @category Getters
+ */
+const urlParams = url => UrlParams.fromInput(url.searchParams);
+/**
+ * Reads, modifies, and updates the query parameters of a URL.
+ *
+ * **Details**
+ *
+ * This function provides a functional way to interact with query parameters by
+ * reading the current parameters, applying a transformation function, and then
+ * writing the updated parameters back to the URL. It returns a new `URL` object
+ * with the modified parameters, ensuring immutability.
+ *
+ * **Example**
+ *
+ * ```ts
+ * import { Url, UrlParams } from "@effect/platform"
+ *
+ * const myUrl = new URL("https://example.com?foo=bar")
+ *
+ * const changedUrl = Url.modifyUrlParams(myUrl, UrlParams.append("key", "value"))
+ *
+ * console.log(changedUrl.toString())
+ * // Output: https://example.com/?foo=bar&key=value
+ * ```
+ *
+ * @since 1.0.0
+ * @category Modifiers
+ */
+exports.urlParams = urlParams;
+const modifyUrlParams = exports.modifyUrlParams = /*#__PURE__*/(0, _Function.dual)(2, (url, f) => mutate(url, url => {
+  const params = f(UrlParams.fromInput(url.searchParams));
+  url.search = UrlParams.toString(params);
+}));
+//# sourceMappingURL=Url.js.map

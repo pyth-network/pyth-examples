@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcSchema.js",
+  "module": "../dist/esm/RpcSchema.js",
+  "types": "../dist/dts/RpcSchema.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeStream.js",
+  "module": "../dist/esm/NodeStream.js",
+  "types": "../dist/dts/NodeStream.d.ts"
+}

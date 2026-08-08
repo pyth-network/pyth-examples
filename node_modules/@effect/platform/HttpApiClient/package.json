@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpApiClient.js",
+  "module": "../dist/esm/HttpApiClient.js",
+  "types": "../dist/dts/HttpApiClient.d.ts"
+}

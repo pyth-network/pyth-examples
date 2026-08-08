@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcMiddleware.js",
+  "module": "../dist/esm/RpcMiddleware.js",
+  "types": "../dist/dts/RpcMiddleware.d.ts"
+}

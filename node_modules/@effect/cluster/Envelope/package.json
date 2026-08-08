@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Envelope.js",
+  "module": "../dist/esm/Envelope.js",
+  "types": "../dist/dts/Envelope.d.ts"
+}

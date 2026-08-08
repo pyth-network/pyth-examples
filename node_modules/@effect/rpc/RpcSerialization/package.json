@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcSerialization.js",
+  "module": "../dist/esm/RpcSerialization.js",
+  "types": "../dist/dts/RpcSerialization.d.ts"
+}

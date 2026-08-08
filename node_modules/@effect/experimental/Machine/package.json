@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Machine.js",
+  "module": "../dist/esm/Machine.js",
+  "types": "../dist/dts/Machine.d.ts"
+}
