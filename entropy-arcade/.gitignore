@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+
+# deps & builds
+node_modules/
+artifacts/
+cache/
+dist/
+build/
+.next/
+.out/
+coverage/
+typechain*/
+
+# noise
+*.log
+.DS_Store
+*.swp
+*.swo
