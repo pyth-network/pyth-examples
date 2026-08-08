@@ -1,0 +1,31 @@
+# Oura pipeline configuration for Factura Ya marketplace indexer.
+#
+# Watches the marketplace validator script address on Cardano PreProd
+# and pipes transaction events to a webhook sink for processing.
+#
+# Prerequisites:
+#   - Oura installed (https://txpipe.github.io/oura/)
+#   - Cardano PreProd node access (via Demeter.run or local)
+#   - The indexer API running on localhost:3001
+
+[source]
+type = "N2N"
+peers = ["preprod-node.world.dev.cardano.org:30000"]
+
+[source.mapper]
+include_transaction_details = true
+
+# Filter for marketplace validator script address
+# Replace MARKETPLACE_SCRIPT_ADDRESS with the actual bech32 address
+# after deploying the marketplace validator.
+[[filters]]
+type = "selection"
+
+[filters.predicate]
+any_output_address = "MARKETPLACE_SCRIPT_ADDRESS"
+
+[sink]
+type = "Webhook"
+url = "http://localhost:3001/oura/event"
+timeout = 30000
+max_retries = 3
