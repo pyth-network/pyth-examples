@@ -1,0 +1,206 @@
+/* ==================================================================
+   1. IMPORTS (OBLIGATORIO: SIEMPRE PRIMERO)
+   ================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+@import "tailwindcss";
+
+/* ==================================================================
+   2. CONFIGURACIÓN DEL TEMA (TAILWIND V4)
+   ================================================================== */
+@theme {
+  /* --- COLORES --- */
+  --color-sz-bg: #000000;
+  --color-sz-card: #111113;
+  --color-sz-blue: #2563eb;
+  --color-sz-blue-dark: #1d4ed8;
+  --color-sz-gold: #d4af37;
+  --color-sz-text: #ffffff;
+  --color-sz-muted: #94a3b8;
+  
+  /* --- TIPOGRAFÍAS --- */
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-main: "Outfit", sans-serif;
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* --- ANIMACIONES --- */
+  --animate-shine: shineMetal 8s linear infinite;
+  --animate-shine-slow: shine-slow 8s linear infinite;
+  --animate-nav: navMetalFlow 30s linear infinite;
+  --animate-pulse-slow: pulse 1.5s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  /* --- KEYFRAMES --- */
+  @keyframes shineMetal { to { background-position: 200% center; } }
+  @keyframes shine-slow { 
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  @keyframes navMetalFlow { to { background-position: 200% center; } }
+  @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+  @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+}
+
+/* ==================================================================
+   3. ESTILOS BASE Y GLOBALES
+   ================================================================== */
+@layer base {
+  :root { color-scheme: dark; }
+
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #333 #000;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-sz-bg);
+    color: var(--color-sz-text);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: white;
+  }
+
+  a { text-decoration: none; transition: 0.3s; }
+  ul { list-style: none; padding: 0; margin: 0; }
+
+  /* --- SCROLLBAR PERSONALIZADO --- */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #050505; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
+}
+
+/* ==================================================================
+   4. UTILIDADES ESPECÍFICAS
+   ================================================================== */
+@layer components {
+  /* Texto Titanium */
+  .text-titanium {
+    background: linear-gradient(135deg, #888 0%, #fff 50%, #888 100%);
+    background-size: 200% auto;
+    background-clip: text; -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: var(--animate-shine-slow);
+    filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+  }
+  .animate-shine-slow {
+    background-size: 200% auto;
+    animation: shine-slow 8s linear infinite;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+  }
+  .glass-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(37, 99, 235, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+  }
+  .btn-sz { 
+    background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%); 
+    color: white; padding: 12px 30px; font-weight: 800; border: none; 
+    font-family: var(--font-montserrat); letter-spacing: 0.1em; text-transform: uppercase;
+    transition: all 0.3s ease; box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
+    border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-sz:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(37, 99, 235, 0.5); color: #fff; }
+}
+.nav-reflection-bottom {
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.4), transparent);
+}
+/* ==================================================================
+   5. SZ TERMINAL - GPU ACCELERATED ENGINE
+   ================================================================== */
+
+.react-grid-layout {
+  background-color: #0b0e11;
+  position: relative;
+  /* Optimización GPU */
+  transform: translateZ(0); 
+  will-change: transform;
+}
+
+.react-grid-item {
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  border-radius: 2px;
+  background-color: #0b0e11;
+  position: absolute;
+  overflow: hidden;
+  /* Esto elimina el lag visual al arrastrar */
+  transition: box-shadow 0.1s, opacity 0.1s; 
+}
+
+/* Cuando se está moviendo/redimensionando */
+.react-grid-item.resizing, 
+.react-grid-item.react-grid-placeholder {
+  z-index: 100 !important;
+  will-change: width, height, transform;
+}
+
+/* EL FANTASMA (Placeholder) */
+.react-grid-item.react-grid-placeholder {
+  background: rgba(0, 255, 195, 0.05) !important;
+  border: 1px dashed #00FFC3 !important;
+  opacity: 0.6 !important;
+  border-radius: 4px;
+}
+
+/* --- 🔥 LA SOLUCIÓN AL LAG (THE MAGIC FIX) --- */
+/* Cuando la clase 'layout-active' está activa en el padre: */
+
+/* 1. Desactivar todos los eventos de mouse en los hijos (Iframes, botones, tablas) */
+.layout-active .react-grid-item > .widget-content {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* 2. Activar la capa de congelamiento inmediatamente */
+.layout-active .widget-freeze-layer {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- CAPA DE CONGELAMIENTO --- */
+.widget-freeze-layer {
+  position: absolute;
+  inset: 0;
+  /* Fondo semitransparente que oculta la complejidad del renderizado */
+  background: rgba(11, 14, 17, 0.7); 
+  backdrop-filter: blur(3px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease-in-out;
+}
+
+/* --- MANIJAS --- */
+.react-resizable-handle {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  z-index: 1000;
+}

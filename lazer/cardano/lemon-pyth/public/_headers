@@ -1,0 +1,17 @@
+# === REGLAS GLOBALES ===
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-XSS-Protection: 1; mode=block
+  # Cache base: Forzamos validación para el index.html (siempre fresco)
+  Cache-Control: public, max-age=0, must-revalidate
+
+# === ASSETS DE VITE (Inmutables) ===
+/assets/*
+  # Estos archivos tienen hashes (ej: index-a1b2.js), son seguros de cachear por 1 año
+  Cache-Control: public, max-age=31536000, immutable
+
+# === IMÁGENES Y LOGOS ===
+/img/*
+  Cache-Control: public, max-age=86400, must-revalidate

@@ -1,0 +1,168 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "calendar": "Calendario",
+    "screener": "Screener",
+    "terminal": "TERMINAL"
+  },
+  "hero": {
+    "title": "DOMINA LOS MERCADOS",
+    "subtitle": "Código probado en mercados reales desde Noviembre 2023.",
+    "cta": "Iniciar Terminal"
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos de Uso"
+  },
+  "indicators": {
+    "title": "Catálogo SZ",
+    "subtitle": "Ingeniería de software aplicada al análisis técnico.",
+    "sub_public": "Biblioteca Pública",
+    "and": "y",
+    "sub_vip": "Acceso Miembros / VIP",
+    "public_title": "Biblioteca Pública",
+    "public_desc": "Scripts de Acceso Libre",
+    "vip_title": "Acceso Miembros / VIP",
+    "vip_subtitle": "Suite Exclusiva"
+  },
+  "ind": {
+    "custom": {
+      "1": "Lectura limpia de Price Action.",
+      "2": "Identificación de micro-tendencias.",
+      "3": "Señales visuales de reversión."
+    },
+    "insider": {
+      "1": "Rastro de volumen institucional.",
+      "2": "Detección de bloques ocultos.",
+      "3": "Anomalías de flujo real."
+    },
+    "matrix": {
+      "1": "Matriz de multiosciladores.",
+      "2": "Puntos exactos de sobrecompra.",
+      "3": "Confirmación de agotamiento."
+    },
+    "prime": {
+      "1": "Rangos y Pips.",
+      "2": "Acumulación y Distribución.",
+      "3": "Auto Fibonacci Dinámico."
+    },
+    "xtra": {
+      "1": "Nodos Delta.",
+      "2": "HTF Chart 3 (Multitemporal).",
+      "3": "Divergencias Confirmadas."
+    },
+    "ladder": {
+      "1": "Subasta real.",
+      "2": "Bajo consumo de memoria.",
+      "3": "Órdenes activas en vela."
+    }
+  },
+  "btn": {
+    "add_chart": "Añadir a Gráfico",
+    "view_tv": "Ver en TradingView",
+    "view_dev": "Ver en Desarrollo"
+  },
+  "membership": {
+    "title": "Membresía SZ VIP",
+    "desc": "Accede al arsenal completo operando con nuestros sponsors oficiales."
+  },
+  "mem": {
+    "disc": "Descuentos",
+    "disc_desc": "20% OFF en comisiones.",
+    "bonus": "Bonos Semanales",
+    "bonus_desc": "Campañas exclusivas.",
+    "valid": "Validación Rápida",
+    "valid_desc": "Activación vía UID.",
+    "top": "Sponsors Top Tier",
+    "top_desc": "Plataformas reguladas.",
+    "sponsors": "Sponsors Oficiales"
+  },
+  "form": {
+    "title": "Solicitar Activación",
+    "select": "Selecciona tu Exchange",
+    "uid": "Tu UID de Usuario",
+    "tv_user": "Usuario de TradingView",
+    "submit": "Enviar Solicitud",
+    "manual": "Validación manual vía Telegram."
+  },
+  "elite": {
+    "badge": "ACCESO ELITE",
+    "title": "¿Operas grandes volúmenes?",
+    "desc": "Accede a condiciones superiores:",
+    "benefits": "Mayor % Rebate, Pagos Directos (USDT) y Exclusividad.",
+    "contact": "Contactar Soporte"
+  },
+  "toolkit": {
+    "title": "SZ TOOLKIT",
+    "subtitle": "Centro de mando profesional: Gestión de riesgo y eventos macro.",
+    "system_status": "ESTADO DEL SISTEMA",
+    "operational": "OPERATIVO",
+    "calendar_title": "CALENDARIO ECONÓMICO",
+    "calc_title": "CALCULADORA DE RIESGO",
+    "instrument": "Instrumento",
+    "capital": "Capital ($)",
+    "risk": "Riesgo (%)",
+    "sl_dist": "Distancia Stop Loss",
+    "pip_value": "Valor por Pip",
+    "calc_btn": "CALCULAR POSICIÓN",
+    "max_loss": "Pérdida Máx",
+    "sugg_lots": "LOTAJE SUGERIDO",
+    "std_lots": "Lotes Estándar",
+    "hint_forex_usd": "Estándar: $10 USD por pip",
+    "hint_pips": "en Pips (Ej: 15)",
+    "hint_forex_cross": "Aprox $9 USD (Variable)",
+    "hint_gold": "XAU: $10 por Pip (0.10 mov)",
+    "hint_pips_gold": "en Pips (20 pips = $2.00)",
+    "hint_indices": "Indices: $1 por punto",
+    "hint_points": "en Puntos (Ej: 50)",
+    "hint_crypto": "Crypto: 1 Lote = 1 Coin",
+    "hint_dist": "Distancia en Precio USD"
+  },
+  "contact": {
+    "back": "VOLVER A LA PLATAFORMA",
+    "support_tag": "SOPORTE",
+    "title": "Centro de Contacto",
+    "subtitle": "Canales oficiales de soporte y comunidad.",
+    "comm_support_title": "Comunidad",
+    "comm_support_desc": "Únete a nuestro canal público para actualizaciones.",
+    "join_channel": "Unirse al canal",
+    "formal_title": "Soporte Email",
+    "formal_desc": "Consultas comerciales o técnicas específicas."
+  },
+  "privacy": {
+    "back": "VOLVER A LA PLATAFORMA",
+    "title": "Política de Privacidad",
+    "update": "Última actualización: Enero 2026",
+    "intro": "En SZ Oficial, valoramos su confianza. Esta política detalla cómo manejamos la información técnica necesaria para brindarle el servicio de la Terminal.",
+    "sec1_title": "Datos que Recopilamos",
+    "sec1_text": "Actualmente, SZ Oficial opera bajo un modelo de acceso simplificado. No gestionamos cuentas de usuario ni bases de datos con información personal sensible.",
+    "sec1_li1": "Cookies de sesión y preferencias locales (idioma, tema).",
+    "sec1_li2": "Direcciones IP y datos de navegador para seguridad y prevención de ataques DDoS.",
+    "sec2_title": "Uso de la Información",
+    "sec2_intro": "La información técnica se utiliza exclusivamente para:",
+    "sec2_li1": "Mantener la funcionalidad de la Terminal.",
+    "sec2_li2": "Recordar sus preferencias visuales entre visitas.",
+    "sec2_li3": "Garantizar la seguridad de la infraestructura.",
+    "sec3_title": "Gestión de Cookies y Almacenamiento",
+    "sec3_text": "Podrás, en cualquier momento, restringir, bloquear o eliminar las cookies de los Servicios. Para ello, deberás modificar la configuración de tu navegador a través del menú “Preferencias”, “Opciones” o “Herramientas”.",
+    "sec3_sub1_title": "Cómo eliminar las cookies",
+    "sec3_sub1_text": "La mayoría de los navegadores le permiten negarse a aceptar cookies y eliminarlas. Los métodos varían según la versión.",
+    "sec3_sub2_title": "Eliminación del Almacenamiento Local",
+    "sec3_sub2_text": "Nuestra Terminal utiliza Local Storage para guardar sus dibujos y configuraciones de gráficos sin necesidad de un servidor.",
+    "sec4_title": "Seguridad",
+    "sec4_text": "Aunque no almacenamos credenciales, implementamos cifrado SSL/TLS (https) en todas las comunicaciones para proteger su navegación.",
+    "sec5_title": "Sus Derechos",
+    "sec5_text1": "Dado que actualmente no almacenamos registros de usuarios (cuentas, contraseñas o nombres) en nuestros servidores, no poseemos datos personales que puedan ser eliminados a petición. El control total de sus datos de navegación reside en su propio dispositivo (cookies y caché).",
+    "sec5_text2": "En caso de implementar un sistema de registro en el futuro, esta política será actualizada para reflejar sus derechos de acceso, rectificación y supresión (GDPR/CCPA).",
+    "rights": "Todos los derechos reservados."
+  },
+  "live": {
+    "title": "SZ en Vivo",
+    "online": "EN VIVO",
+    "offline": "OFFLINE",
+    "offline_msg": "Análisis de mercado en tiempo real y sesiones educativas.",
+    "expand": "Haz clic para ampliar"
+  }
+}
