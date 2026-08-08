@@ -1,0 +1,19 @@
+name = "yeriko/pythflow"
+version = "0.0.1"
+license = "Apache-2.0"
+description = "Pyth Lazer × Cardano oracle validator"
+
+[repository]
+user = "yeriko"
+project = "pythflow"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "main"
+source = "github"
