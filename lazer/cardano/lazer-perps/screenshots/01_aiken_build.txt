@@ -1,0 +1,14 @@
+    Compiling team/lazer-perps 0.0.0 (.)
+    Resolving team/lazer-perps
+      Fetched 2 packages in 0.01s from cache
+    Compiling aiken-lang/stdlib v3.0.0 (./build/packages/aiken-lang-stdlib)
+    Compiling pyth-network/pyth-lazer-cardano main (./build/packages/pyth-network-pyth-lazer-cardano)
+   Generating project's blueprint (./plutus.json)
+  OK: close_position.close_position.spend
+  OK: close_position.close_position.else
+  OK: liquidate.liquidate.spend
+  OK: liquidate.liquidate.else
+  OK: open_position.open_position.spend
+  OK: open_position.open_position.else
+  OK: pool_manager.pool_manager.spend
+  OK: pool_manager.pool_manager.else

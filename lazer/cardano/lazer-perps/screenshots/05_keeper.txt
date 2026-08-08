@@ -1,0 +1,188 @@
+=== Lazer Perps Keeper ===
+
+Monitoring markets: XAU/USD (Gold), XAG/USD (Silver), XAUT/USD (Tether Gold)
+
+Mock positions:
+  XAUT/USD (Tether Gold) LONG 5x — entry: 4480000000, liq_price: 3628800000
+  XAU/USD (Gold) SHORT 10x — entry: 3300000, liq_price: 3597000
+
+Keeper running. Press Ctrl+C to stop.
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508957, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508957, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508958, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508960, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508860, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508892, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508850, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508855, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+[2026-03-22T22:38:00.239Z] XAU/USD (Gold): 4508748 (exp: -3) | SHORT 10x → LIQUIDATABLE
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508748, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508867, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508797, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508791, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508658, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508647, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508574, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508502, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508502, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508484, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508484, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508427, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508335, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508290, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508291, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508232, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508230, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+[2026-03-22T22:38:03.441Z] XAUT/USD (Tether Gold): 450784167483 (exp: -8) | LONG 5x → safe
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508341, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508378, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508296, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508299, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508258, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508218, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508290, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508274, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+[2026-03-22T22:38:05.240Z] XAU/USD (Gold): 4508260 (exp: -3) | SHORT 10x → LIQUIDATABLE
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508260, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
+
+*** LIQUIDATION TRIGGER: XAU/USD (Gold) SHORT 10x *** 
+    Current: 4508226, Liq price: 3597000 
+    → In production: submit liquidation tx via orchestrator
+
