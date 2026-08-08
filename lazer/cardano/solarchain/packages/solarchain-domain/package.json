@@ -1,0 +1,16 @@
+{
+  "name": "@packages/solarchain-domain",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test --import tsx src/**/*.test.ts"
+  },
+  "dependencies": {
+    "@packages/cardano-core": "file:../cardano-core",
+    "@packages/shared-types": "file:../shared-types"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "name": "solarchain-cardano-mvp",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "workspaces": [
+    "apps/solarchain-api",
+    "apps/solarchain-web",
+    "packages/config",
+    "packages/shared-types",
+    "packages/cardano-core",
+    "packages/pyth-adapter",
+    "packages/solarchain-domain",
+    "packages/contracts-aiken"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev:api": "npm run dev --workspace @apps/solarchain-api",
+    "dev:web": "npm run dev --workspace @apps/solarchain-web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/pg": "^8.15.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
