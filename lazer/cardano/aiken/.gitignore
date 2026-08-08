@@ -1,0 +1,8 @@
+# Aiken compilation artifacts
+.env
+# Aiken's project working directory
+build/
+# Aiken's default documentation export
+docs/
+# Parameterized blueprint output (local)
+plutus.applied.json
