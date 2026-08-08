@@ -1,0 +1,331 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=IBM+Plex+Mono:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-1: #07091a;
+  --bg-2: #0c1033;
+  --panel: #0f1540;
+  --accent: #7c3aed;
+  --accent-2: #06b6d4;
+  --line: #a78bfa;
+  --line-soft: rgba(167, 139, 250, 0.15);
+  --text: #e8eeff;
+}
+
+html,
+body,
+#__next {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--text);
+  background:
+    radial-gradient(ellipse at 14% 10%, rgba(124, 58, 237, 0.2), transparent 38%),
+    radial-gradient(ellipse at 86% 80%, rgba(6, 182, 212, 0.13), transparent 38%),
+    linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 60%, #060818 100%);
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Press Start 2P", monospace;
+  letter-spacing: 0.03em;
+}
+
+.landing-root {
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-root::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.top-nav {
+  backdrop-filter: blur(12px);
+}
+
+.nav-logo-mark {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  gap: 2px;
+}
+
+.nav-logo-top {
+  font-family: "Press Start 2P", monospace;
+  font-size: 7px;
+  letter-spacing: 0.28em;
+  color: #a78bfa;
+}
+
+.nav-logo-bottom {
+  font-family: "Press Start 2P", monospace;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  background: linear-gradient(90deg, #a78bfa 0%, #22d3ee 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-chip {
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 8px;
+  padding: 9px 11px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #c4b5fd;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12), rgba(124, 58, 237, 0.03));
+  text-decoration: none;
+  transition: 160ms ease;
+}
+
+.nav-chip:hover {
+  border-color: rgba(167, 139, 250, 0.7);
+  color: #e8eeff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+}
+
+.wallet-nav-control button[aria-haspopup="dialog"],
+.wallet-nav-control button[aria-haspopup="menu"] {
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 8px;
+  padding: 9px 11px;
+  height: auto;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #c4b5fd;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12), rgba(124, 58, 237, 0.03));
+  box-shadow: none;
+  transition: 160ms ease;
+}
+
+.wallet-nav-control button[aria-haspopup="dialog"] {
+  border-color: rgba(167, 139, 250, 0.5);
+  color: #e8eeff;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.28), rgba(124, 58, 237, 0.1));
+  box-shadow: 0 0 14px rgba(124, 58, 237, 0.24);
+}
+
+.wallet-nav-control button[aria-haspopup="dialog"]:hover,
+.wallet-nav-control button[aria-haspopup="menu"]:hover {
+  border-color: rgba(167, 139, 250, 0.8);
+  color: #f0f4ff;
+  transform: translateY(-1px);
+}
+
+.wallet-nav-control button[aria-haspopup="dialog"]:hover {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.4);
+}
+
+.wallet-gate {
+  margin: 0 auto;
+  max-width: 720px;
+  border: 1px solid rgba(167, 139, 250, 0.28);
+  border-radius: 20px;
+  background: rgba(7, 9, 26, 0.82);
+  padding: 44px 24px;
+  text-align: center;
+}
+
+.wallet-gate-title {
+  margin: 0;
+  font-size: clamp(1.1rem, 3vw, 1.7rem);
+  color: #e8eeff;
+}
+
+.wallet-gate-text {
+  margin: 16px auto 26px;
+  max-width: 520px;
+  color: rgba(196, 181, 253, 0.9);
+  font-size: 0.92rem;
+}
+
+.wallet-gate-control {
+  display: flex;
+  justify-content: center;
+}
+
+.wallet-gate-control button[aria-haspopup="dialog"],
+.wallet-gate-control button[aria-haspopup="menu"] {
+  border: 1px solid rgba(167, 139, 250, 0.55);
+  border-radius: 12px;
+  padding: 14px 20px;
+  height: auto;
+  font-family: "Press Start 2P", monospace;
+  font-size: 12px;
+  line-height: 1.25;
+  color: #e8eeff;
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.35), rgba(124, 58, 237, 0.12));
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+  transition: 160ms ease;
+}
+
+.wallet-gate-control button[aria-haspopup="dialog"]:hover,
+.wallet-gate-control button[aria-haspopup="menu"]:hover {
+  border-color: rgba(167, 139, 250, 0.85);
+  color: #f0f4ff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 28px rgba(124, 58, 237, 0.5);
+}
+
+.bet-input-no-spinner::-webkit-outer-spin-button,
+.bet-input-no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.bet-input-no-spinner[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.wallet-cta {
+  border: 1px solid rgba(167, 139, 250, 0.6);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  line-height: 1.2;
+  color: #f0f4ff;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.5), rgba(6, 182, 212, 0.28));
+  box-shadow: 0 0 18px rgba(124, 58, 237, 0.28);
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.wallet-cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 24px rgba(124, 58, 237, 0.46);
+}
+
+.race-track {
+  background:
+    linear-gradient(180deg, rgba(124, 58, 237, 0.07), rgba(6, 182, 212, 0.03)),
+    linear-gradient(140deg, #0a0d22, var(--panel));
+}
+
+.track-lane {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(167, 139, 250, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.1), rgba(6, 182, 212, 0.04));
+}
+
+.track-lane::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-bottom: 2px dashed rgba(167, 139, 250, 0.22);
+}
+
+.lane-tag {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a78bfa;
+  font-weight: 700;
+}
+
+.lane-asset {
+  font-size: 0.72rem;
+  color: #e8eeff;
+  font-weight: 700;
+}
+
+.pixel-duel {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.duel-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
+}
+
+.pixel-vs {
+  font-family: "Press Start 2P", monospace;
+  font-size: 10px;
+  background: linear-gradient(90deg, #a78bfa, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.runner {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  animation: run-lane 2.7s steps(2, end) infinite alternate;
+}
+
+.runner.delayed {
+  animation-delay: 0.5s;
+}
+
+.lane-horse {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.7));
+}
+
+.ticker-track {
+  animation: ticker-scroll 90s linear infinite;
+  width: max-content;
+}
+
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes run-lane {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
