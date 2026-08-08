@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhipHash Extension</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      width: 400px;
+      height: 600px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000000;
+      color: white;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #000000, #1a1a1a);
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .iframe-container {
+      width: 100%;
+      height: calc(100% - 60px);
+      position: relative;
+    }
+
+    .iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000000;
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #888;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #ff6b6b;
+      padding: 20px;
+    }
+
+    .error button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">whiphash.</div>
+    <div class="controls">
+      <button id="refreshBtn" class="control-btn">🔄</button>
+      <button id="fullscreenBtn" class="control-btn">⛶</button>
+      <button id="walletBtn" class="control-btn">🔗</button>
+    </div>
+  </div>
+
+  <div class="iframe-container">
+    <div id="loading" class="loading">
+      <div class="spinner"></div>
+      <div>Loading WhipHash...</div>
+    </div>
+    
+    <div id="error" class="error" style="display: none;">
+      <div>❌ Failed to load WhipHash</div>
+      <div style="font-size: 12px; margin: 10px 0;">Make sure your app is running on localhost:3000</div>
+      <button onclick="location.reload()">Retry</button>
+    </div>
+
+    <div id="wallet-warning" class="error" style="display: none; background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107;">
+      <div>⚠️ Wallet Access Limited</div>
+      <div style="font-size: 12px; margin: 10px 0;">For full wallet functionality, click the 🔗 button</div>
+      <button onclick="document.getElementById('walletBtn').click()" style="background: rgba(255, 193, 7, 0.2); border-color: rgba(255, 193, 7, 0.5);">Open Wallet Mode</button>
+    </div>
+
+    <iframe id="whiphashFrame" class="iframe" src="about:blank" style="display: none;" 
+            allow="ethereum; web3; clipboard-write; clipboard-read"
+            sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"></iframe>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
