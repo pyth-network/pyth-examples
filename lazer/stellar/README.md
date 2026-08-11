@@ -36,12 +36,14 @@ The optimized contract is written to
 
 ## Deploy (testnet)
 
-This example points at the **already-deployed** Pyth Lazer verifier on Stellar testnet — you do not
-deploy the verifier yourself:
+This example points at the **already-deployed** Pyth Lazer verifier — you do not deploy the verifier
+yourself. It is live on both testnet and mainnet; the walkthrough below stays on testnet, so pass the
+mainnet id as `--lazer` if you deploy there instead:
 
-| Contract | Testnet address |
-| -------- | --------------- |
-| Pyth Lazer verifier | `CAYFT5JE3UQTKT4Q6ZOZK4FXVYVT6RE3MFC7STA4UB6WAEGBT65MRU52` |
+| Network | Pyth Lazer verifier |
+| ------- | ------------------- |
+| Testnet | [`CAYFT5JE3UQTKT4Q6ZOZK4FXVYVT6RE3MFC7STA4UB6WAEGBT65MRU52`](https://stellar.expert/explorer/testnet/contract/CAYFT5JE3UQTKT4Q6ZOZK4FXVYVT6RE3MFC7STA4UB6WAEGBT65MRU52) |
+| Mainnet | [`CACZ3GBAKUPIAFRILUFO27J5RUH5GJ2VSJ46LP6GJYSKGDRTQ5MS3HCH`](https://stellar.expert/explorer/public/contract/CACZ3GBAKUPIAFRILUFO27J5RUH5GJ2VSJ46LP6GJYSKGDRTQ5MS3HCH) |
 
 Configure a funded testnet identity once:
 
