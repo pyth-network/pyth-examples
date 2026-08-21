@@ -27,6 +27,6 @@ jobs:
       - name: check Rust formatting
         run: cargo +1.81.0 fmt --all
       - name: check Rust clippy
-        run: cargo +1.81.0 clippy --all-targets -- --deny warnings
+        run: cargo +1.81.0 clippy --all-targets --locked -- --deny warnings
       - name: test
-        run: cargo test
+        run: cargo test --locked
