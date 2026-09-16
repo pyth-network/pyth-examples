@@ -1,0 +1,27 @@
+{
+  "name": "pyth-lazer-stellar-example-client",
+  "version": "1.0.0",
+  "description": "One-command demo client for the Pyth Lazer Stellar example consumer contract",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "demo": "tsx src/demo.ts",
+    "test": "npm run test:format && npm run test:types",
+    "fix:format": "prettier --write .",
+    "test:format": "prettier --check .",
+    "test:types": "tsc --noEmit"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^14.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "prettier": "^3.4.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
