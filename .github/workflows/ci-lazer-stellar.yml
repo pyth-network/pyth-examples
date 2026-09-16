@@ -31,3 +31,19 @@ jobs:
         run: cargo clippy --release --target wasm32v1-none --locked -- --deny warnings
       - name: Build wasm
         run: cargo build --release --target wasm32v1-none --locked
+
+  lazer-stellar-client:
+    name: Lazer Stellar Demo Client
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: lazer/stellar/client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+      # Static checks only: the demo itself needs a Lazer token, a funded Stellar
+      # account and a live network, so it cannot run in CI.
+      - run: npm test
