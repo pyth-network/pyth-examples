@@ -1,0 +1,17 @@
+{
+  "../../../lazer/evm/lib/forge-std": {
+    "rev": "d3db4ef90a72b7d24aa5a2e5c649593eaef7801d"
+  },
+  "../../../lazer/evm/lib/openzeppelin-contracts-upgradeable": {
+    "rev": "e3deb4d2a5835f5dcb5bb6afbfa81be0061bfac8"
+  },
+  "../../../lazer/evm/lib/pyth-crosschain": {
+    "rev": "e7b0f44b25efce6d16406d87cf0ca68fd970102c"
+  },
+  "lib/forge-std": {
+    "tag": {
+      "name": "v1.16.2",
+      "rev": "bf647bd6046f2f7da30d0c2bf435e5c76a780c1b"
+    }
+  }
+}
