@@ -1,0 +1,11 @@
+{
+  "name": "@anaconda/backend",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@anaconda/cardano": "workspace:*",
+    "@anaconda/core": "workspace:*",
+    "dotenv": "^17.2.3"
+  }
+}
