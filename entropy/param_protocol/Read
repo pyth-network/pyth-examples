@@ -1,0 +1,62 @@
+# Param Protocol: A Hybrid "Base + Bonus" Incentive Model
+
+This project is an example of an innovative incentive model for a data monetization platform, using Pyth Entropy to provide provably-fair, tiered bonus rewards.
+
+**Live Contract (Base Sepolia):** `0xbF26F622e0322cc7eC12561f897f397B390F97b7`
+**Test Token (Base Sepolia):** `0xaA27192Cb967Ca6c0C2e1F3c044874E5a73Fdb4B`
+
+---
+
+## Project Overview
+
+Param Protocol is a data monetization platform where users can contribute data (represented by an IPFS CID) and mint it as a Data NFT.
+
+### The Problem
+
+How do you properly incentivize users to contribute high-quality data?
+
+1.  A **fixed reward** is predictable but boring.
+2.  A **pure lottery** is exciting but risky, as users may get nothing for their contribution.
+
+### Our Pyth Entropy Innovation: The Hybrid "Base + Bonus" Model
+
+We use Pyth Entropy to power a **hybrid "Base + Bonus" reward system** that solves this problem. This model provides the best of both worlds: the **security** of a guaranteed reward and the **excitement** of a probabilistic jackpot.
+
+1.  **Base Reward (Instant):** When a user calls `mintDataNFT`, they *instantly* receive their NFT and a **guaranteed 10 PTK base reward**. This builds trust and ensures no contribution is ever wasted.
+2.  **Bonus Reward (Asynchronous):** The *exact same transaction* also pays the Pyth fee and requests a random number. About 1-2 minutes later, the `entropyCallback` function is securely called by the Pyth network, minting a **probabilistic bonus** (Common, Rare, or Legendary) to the user.
+
+This approach is innovative because it moves beyond simple lotteries and uses Pyth Entropy as a core component of a sophisticated, on-chain economic incentive system.
+
+---
+
+## How It Works: The On-Chain Flow
+
+1.  A user (the `onlyOwner` in this example) calls `mintDataNFT(cid, contributorAddress)` and attaches the Pyth fee (via `msg.value`).
+2.  The contract *instantly* mints the Data NFT to the contributor.
+3.  The contract *instantly* mints the `baseRewardAmount` (10 PTK) to the contributor.
+4.  The contract *simultaneously* calls `pyth.requestV2()`, forwarding the fee and storing the `sequenceNumber`.
+5.  (1-2 minutes later) The Pyth network calls `entropyCallback` on our contract.
+6.  `entropyCallback` securely calculates the bonus, mints the bonus tokens (if > 0), and saves the bonus amount in `s_sequenceToBonusAmount` for public tracking.
+
+---
+
+## How to Test This Example
+
+This file contains both the `MockPTK` (ERC20 token) and the `ParamProtocol` (NFT + Rewards) contracts.
+
+1.  **Deploy `MockPTK`:** Deploy the `MockPTK.sol` contract first.
+2.  **Deploy `ParamProtocol`:**
+    * Copy the deployed `MockPTK` address.
+    * Deploy the `ParamProtocol` contract, passing the `MockPTK` address and the Base Sepolia Pyth Entropy address (`0x41c9e39574F40Ad34c79f1C99B66A45eFB830d4c`) to the constructor.
+3.  **Grant Permission:**
+    * Call the `grantRole` function on your deployed `MockPTK` contract.
+    * `role`: `0x9f2df0fed2c77648de5860a4cc508cd0818c85b8b8a1ab4ceeef8d981c8956a6` (MINTER_ROLE)
+    * `account`: The address of your deployed `ParamProtocol` contract.
+4.  **Test the Flow:**
+    * Call `getPythFee()` on the `ParamProtocol` contract to get the current fee.
+    * Copy the fee and paste it into the `VALUE` field in Remix (set to `Wei`).
+    * Call `mintDataNFT` with a sample CID (e.g., `"Q..._CID"`) and a contributor's address.
+5.  **Verify Results:**
+    * **Instantly:** Call `getPtkBalance` for the contributor. It will show **10 PTK**.
+    * **After 1-2 mins:** Call `getPtkBalance` again. The balance will now be **10 PTK + Bonus** (e.g., 15, 60, or 1010 PTK).
+    * You can also find the `sequenceNumber` from the `RandomnessRequested` event and check the specific bonus by calling `s_sequenceToBonusAmount(sequenceNumber)`.
