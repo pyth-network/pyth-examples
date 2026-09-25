@@ -1,0 +1,3 @@
+export const RandomSeedAddress = "0xA13C674F8A8715E157BA42237A6b1Dff24EE274F"
+export const CoinFlipAddress = "0x762353AdF1342ba85f6dDEac0446E2DA43ab84bf"
+export const PlaylistReputationNFT = "0x0532d0A87B6013a8A086C37D39BC1EB013abC2f4"
