@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fceee3;
+  --foreground: #000000;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-rubik: var(--font-rubik);
+  --breakpoint-xs: 400px;
+  --breakpoint-bp-xs: 450px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #fceee3;
+    --foreground: #000000;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+  cursor: none !important;
+}
+
+/* Hide default cursor on all elements */
+* {
+  cursor: none !important;
+}
+
+/* Ensure custom cursor is always visible */
+.custom-cursor {
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Override cursor for input fields to show text cursor */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+textarea,
+select {
+  cursor: text !important;
+}
+
+/* Add smooth transitions for hover states */
+button,
+a,
+.cursor-pointer {
+  transition: transform 0.2s ease;
+}
