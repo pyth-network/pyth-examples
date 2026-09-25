@@ -1,0 +1,41 @@
+{
+  "name": "inventory-edge-protocol",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm run demo",
+    "build:onchain": "cd onchain && aiken build",
+    "mock-assets": "npx tsx scripts/mock_assets.ts",
+    "tx:open-vault": "npx tsx scripts/run_open_vault.ts",
+    "tx:hedge": "npx tsx scripts/run_apply_hedge.ts",
+    "tx:liquidate": "npx tsx scripts/run_liquidate.ts",
+    "dev:api": "tsx server/index.ts",
+    "dev:web": "vite --config web/vite.config.ts",
+    "demo": "concurrently -n api,web -c blue,green \"tsx server/index.ts\" \"vite --config web/vite.config.ts\"",
+    "build:web": "vite build --config web/vite.config.ts",
+    "preview:web": "vite preview --config web/vite.config.ts --port 5173"
+  },
+  "dependencies": {
+    "@evolution-sdk/evolution": "^0.3.30",
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "@pythnetwork/pyth-lazer-sdk": "^5.2.0",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.7",
+    "express": "^5.2.1",
+    "lucid-cardano": "^0.10.11",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "vite": "^8.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}
