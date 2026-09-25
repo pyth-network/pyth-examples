@@ -1,0 +1,38 @@
+{
+  "name": "megayield-backend",
+  "version": "1.0.0",
+  "description": "MegaYield blockchain backend - Lottery with Aave vesting",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network baseSepolia",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network base",
+    "node": "hardhat node",
+    "simulate:local": "hardhat run scripts/simulate-local.ts",
+    "simulate:testnet": "hardhat run scripts/simulate-lottery.ts --network baseSepolia"
+  },
+  "keywords": [
+    "blockchain",
+    "lottery",
+    "aave",
+    "pyth",
+    "base"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@types/node": "^20.10.0",
+    "hardhat": "^2.27.0",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "@aave/core-v3": "^1.19.3",
+    "@openzeppelin/contracts": "^5.0.0",
+    "@pythnetwork/entropy-sdk-solidity": "^2.2.1",
+    "@pythnetwork/pyth-sdk-solidity": "^4.3.1",
+    "dotenv": "^16.3.0"
+  }
+}
