@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/DevTools/Client.js",
+  "module": "../../dist/esm/DevTools/Client.js",
+  "types": "../../dist/dts/DevTools/Client.d.ts"
+}

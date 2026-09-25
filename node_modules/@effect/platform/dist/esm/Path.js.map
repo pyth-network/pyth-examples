@@ -1,0 +1,1 @@
+{"version":3,"file":"Path.js","names":["internal","TypeId","Path","layer"],"sources":["../../src/Path.ts"],"sourcesContent":[null],"mappings":"AAAA;;;AAQA,OAAO,KAAKA,QAAQ,MAAM,oBAAoB;AAE9C;;;;AAIA,OAAO,MAAMC,MAAM,GAAkBD,QAAQ,CAACC,MAAM;AA+CpD;;;;AAIA,OAAO,MAAMC,IAAI,GAAoBF,QAAQ,CAACE,IAAI;AAElD;;;;;;;;;AASA,OAAO,MAAMC,KAAK,GAAgBH,QAAQ,CAACG,KAAK","ignoreList":[]}

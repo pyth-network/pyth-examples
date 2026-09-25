@@ -1,0 +1,45 @@
+import type * as HeadersParser from "./HeadersParser.js";
+export interface PartInfo {
+    readonly name: string;
+    readonly filename?: string | undefined;
+    readonly contentType: string;
+    readonly contentTypeParameters: Record<string, string>;
+    readonly contentDisposition: string;
+    readonly contentDispositionParameters: Record<string, string>;
+    readonly headers: Record<string, string | Array<string>>;
+}
+export type MultipartError = {
+    readonly _tag: "InvalidBoundary";
+} | {
+    readonly _tag: "BadHeaders";
+    readonly error: HeadersParser.Failure;
+} | {
+    readonly _tag: "InvalidDisposition";
+} | {
+    readonly _tag: "ReachedLimit";
+    readonly limit: "MaxParts" | "MaxTotalSize" | "MaxPartSize" | "MaxFieldSize";
+} | {
+    readonly _tag: "EndNotReached";
+};
+export type BaseConfig = {
+    readonly headers: Record<string, string>;
+    readonly isFile?: ((info: PartInfo) => boolean) | undefined;
+    readonly maxParts?: number | undefined;
+    readonly maxTotalSize?: number | undefined;
+    readonly maxPartSize?: number | undefined;
+    readonly maxFieldSize?: number | undefined;
+};
+export type Config = BaseConfig & {
+    readonly onField: (info: PartInfo, value: Uint8Array) => void;
+    readonly onFile: (info: PartInfo) => (chunk: Uint8Array | null) => void;
+    readonly onError: (error: MultipartError) => void;
+    readonly onDone: () => void;
+};
+export interface Parser {
+    readonly write: (chunk: Uint8Array) => void;
+    readonly end: () => void;
+}
+export declare const make: (options: Config) => Parser;
+export declare const defaultIsFile: (info: PartInfo) => boolean;
+export declare const decodeField: (info: PartInfo, value: Uint8Array) => string;
+//# sourceMappingURL=index.d.ts.map

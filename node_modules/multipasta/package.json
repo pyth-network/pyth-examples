@@ -1,0 +1,59 @@
+{
+  "name": "multipasta",
+  "version": "0.2.7",
+  "description": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tim-smart/multipasta.git"
+  },
+  "sideEffects": false,
+  "author": "Tim Smart <hello@timsmart.co>",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./HeadersParser": {
+      "types": "./dist/dts/HeadersParser.d.ts",
+      "import": "./dist/esm/HeadersParser.js",
+      "default": "./dist/cjs/HeadersParser.js"
+    },
+    "./Search": {
+      "types": "./dist/dts/Search.d.ts",
+      "import": "./dist/esm/Search.js",
+      "default": "./dist/cjs/Search.js"
+    },
+    "./node": {
+      "types": "./dist/dts/node.d.ts",
+      "import": "./dist/esm/node.js",
+      "default": "./dist/cjs/node.js"
+    },
+    "./web": {
+      "types": "./dist/dts/web.d.ts",
+      "import": "./dist/esm/web.js",
+      "default": "./dist/cjs/web.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "HeadersParser": [
+        "./dist/dts/HeadersParser.d.ts"
+      ],
+      "Search": [
+        "./dist/dts/Search.d.ts"
+      ],
+      "node": [
+        "./dist/dts/node.d.ts"
+      ],
+      "web": [
+        "./dist/dts/web.d.ts"
+      ]
+    }
+  }
+}

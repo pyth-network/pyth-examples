@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcServer.js",
+  "module": "../dist/esm/RpcServer.js",
+  "types": "../dist/dts/RpcServer.d.ts"
+}

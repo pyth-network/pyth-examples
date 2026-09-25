@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Reply.js",
+  "module": "../dist/esm/Reply.js",
+  "types": "../dist/dts/Reply.d.ts"
+}

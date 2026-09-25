@@ -1,0 +1,12 @@
+/**
+ * @since 1.0.0
+ */
+import type * as PlatformError from "@effect/platform/Error";
+import * as KeyValueStore from "@effect/platform/KeyValueStore";
+import * as Layer from "effect/Layer";
+/**
+ * @since 1.0.0
+ * @category layers
+ */
+export declare const layerFileSystem: (directory: string) => Layer.Layer<KeyValueStore.KeyValueStore, PlatformError.PlatformError>;
+//# sourceMappingURL=NodeKeyValueStore.d.ts.map

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/Migrator/FileSystem.js",
+  "module": "../../dist/esm/Migrator/FileSystem.js",
+  "types": "../../dist/dts/Migrator/FileSystem.d.ts"
+}

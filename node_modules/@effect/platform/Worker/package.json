@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Worker.js",
+  "module": "../dist/esm/Worker.js",
+  "types": "../dist/dts/Worker.d.ts"
+}

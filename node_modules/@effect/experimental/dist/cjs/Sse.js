@@ -1,0 +1,253 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.makeChannel = exports.encoder = exports.RetryTypeId = exports.Retry = void 0;
+exports.makeParser = makeParser;
+var Channel = _interopRequireWildcard(require("effect/Channel"));
+var Chunk = _interopRequireWildcard(require("effect/Chunk"));
+var Data = _interopRequireWildcard(require("effect/Data"));
+var Duration = _interopRequireWildcard(require("effect/Duration"));
+var Effect = _interopRequireWildcard(require("effect/Effect"));
+var Mailbox = _interopRequireWildcard(require("effect/Mailbox"));
+var _Predicate = require("effect/Predicate");
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
+/**
+ * @since 1.0.0
+ */
+
+/**
+ * @since 1.0.0
+ * @category constructors
+ */
+const makeChannel = options => {
+  const events = Mailbox.make(options?.bufferSize ?? 16).pipe(Effect.map(mailbox => {
+    let events = [];
+    let retry;
+    const parser = makeParser(event => {
+      switch (event._tag) {
+        case "Retry":
+          return retry = event;
+        case "Event":
+          return events.push(event);
+      }
+    });
+    const input = {
+      awaitRead() {
+        return Effect.void;
+      },
+      emit(chunks) {
+        Chunk.forEach(chunks, parser.feed);
+        const toEmit = events;
+        events = [];
+        return retry ? Effect.zipRight(mailbox.offerAll(toEmit), mailbox.fail(retry)) : mailbox.offerAll(toEmit);
+      },
+      error(cause) {
+        return mailbox.failCause(cause);
+      },
+      done(_) {
+        return mailbox.end;
+      }
+    };
+    return Channel.embedInput(Mailbox.toChannel(mailbox), input);
+  }), Channel.unwrap);
+  const withRetry = Channel.catchAll(events, error => Retry.is(error) ? Effect.sleep(error.duration).pipe(Effect.as(withRetry), Channel.unwrap) : Channel.fail(error));
+  return withRetry;
+};
+/**
+ * Create a SSE parser.
+ *
+ * Adapted from https://github.com/rexxars/eventsource-parser under MIT license.
+ *
+ * @since 1.0.0
+ * @category constructors
+ */
+exports.makeChannel = makeChannel;
+function makeParser(onParse) {
+  // Processing state
+  let isFirstChunk;
+  let buffer;
+  let startingPosition;
+  let startingFieldLength;
+  // Event state
+  let eventId;
+  let lastEventId;
+  let eventName;
+  let data;
+  reset();
+  return {
+    feed,
+    reset
+  };
+  function reset() {
+    isFirstChunk = true;
+    buffer = "";
+    startingPosition = 0;
+    startingFieldLength = -1;
+    eventId = undefined;
+    eventName = undefined;
+    data = "";
+  }
+  function feed(chunk) {
+    buffer = buffer ? buffer + chunk : chunk;
+    // Strip any UTF8 byte order mark (BOM) at the start of the stream.
+    // Note that we do not strip any non - UTF8 BOM, as eventsource streams are
+    // always decoded as UTF8 as per the specification.
+    if (isFirstChunk && hasBom(buffer)) {
+      buffer = buffer.slice(BOM.length);
+    }
+    isFirstChunk = false;
+    // Set up chunk-specific processing state
+    const length = buffer.length;
+    let position = 0;
+    let discardTrailingNewline = false;
+    // Read the current buffer byte by byte
+    while (position < length) {
+      // EventSource allows for carriage return + line feed, which means we
+      // need to ignore a linefeed character if the previous character was a
+      // carriage return
+      // @todo refactor to reduce nesting, consider checking previous byte?
+      // @todo but consider multiple chunks etc
+      if (discardTrailingNewline) {
+        if (buffer[position] === "\n") {
+          ++position;
+        }
+        discardTrailingNewline = false;
+      }
+      let lineLength = -1;
+      let fieldLength = startingFieldLength;
+      let character;
+      for (let index = startingPosition; lineLength < 0 && index < length; ++index) {
+        character = buffer[index];
+        if (character === ":" && fieldLength < 0) {
+          fieldLength = index - position;
+        } else if (character === "\r") {
+          discardTrailingNewline = true;
+          lineLength = index - position;
+        } else if (character === "\n") {
+          lineLength = index - position;
+        }
+      }
+      if (lineLength < 0) {
+        startingPosition = length - position;
+        startingFieldLength = fieldLength;
+        break;
+      } else {
+        startingPosition = 0;
+        startingFieldLength = -1;
+      }
+      parseEventStreamLine(buffer, position, fieldLength, lineLength);
+      position += lineLength + 1;
+    }
+    if (position === length) {
+      // If we consumed the entire buffer to read the event, reset the buffer
+      buffer = "";
+    } else if (position > 0) {
+      // If there are bytes left to process, set the buffer to the unprocessed
+      // portion of the buffer only
+      buffer = buffer.slice(position);
+    }
+  }
+  function parseEventStreamLine(lineBuffer, index, fieldLength, lineLength) {
+    if (lineLength === 0) {
+      // We reached the last line of this event
+      if (data.length > 0) {
+        onParse({
+          _tag: "Event",
+          id: eventId,
+          event: eventName ?? "message",
+          data: data.slice(0, -1) // remove trailing newline
+        });
+        data = "";
+        eventId = undefined;
+      }
+      eventName = undefined;
+      return;
+    }
+    const noValue = fieldLength < 0;
+    const field = lineBuffer.slice(index, index + (noValue ? lineLength : fieldLength));
+    let step = 0;
+    if (noValue) {
+      step = lineLength;
+    } else if (lineBuffer[index + fieldLength + 1] === " ") {
+      step = fieldLength + 2;
+    } else {
+      step = fieldLength + 1;
+    }
+    const position = index + step;
+    const valueLength = lineLength - step;
+    const value = lineBuffer.slice(position, position + valueLength).toString();
+    if (field === "data") {
+      data += value ? `${value}\n` : "\n";
+    } else if (field === "event") {
+      eventName = value;
+    } else if (field === "id" && !value.includes("\u0000")) {
+      eventId = value;
+      lastEventId = value;
+    } else if (field === "retry") {
+      const retry = parseInt(value, 10);
+      if (!Number.isNaN(retry)) {
+        onParse(new Retry({
+          duration: Duration.millis(retry),
+          lastEventId
+        }));
+      }
+    }
+  }
+}
+const BOM = [239, 187, 191];
+function hasBom(buffer) {
+  return BOM.every((charCode, index) => buffer.charCodeAt(index) === charCode);
+}
+/**
+ * @since 1.0.0
+ * @category type ids
+ */
+const RetryTypeId = exports.RetryTypeId = /*#__PURE__*/Symbol.for("@effect/experimental/Sse/Retry");
+/**
+ * @since 1.0.0
+ * @category models
+ */
+class Retry extends /*#__PURE__*/Data.TaggedClass("Retry") {
+  /**
+   * @since 1.0.0
+   */
+  [RetryTypeId] = RetryTypeId;
+  /**
+   * @since 1.0.0
+   */
+  static is(u) {
+    return (0, _Predicate.hasProperty)(u, RetryTypeId);
+  }
+}
+/**
+ * @since 1.0.0
+ * @category constructors
+ */
+exports.Retry = Retry;
+const encoder = exports.encoder = {
+  write(event) {
+    switch (event._tag) {
+      case "Event":
+        {
+          let data = "";
+          if (event.id !== undefined) {
+            data += `id: ${event.id}\n`;
+          }
+          if (event.event !== "message") {
+            data += `event: ${event.event}\n`;
+          }
+          if (event.data !== "") {
+            data += `data: ${event.data.replace(/\n/g, "\ndata: ")}\n`;
+          }
+          return data + "\n";
+        }
+      case "Retry":
+        {
+          return `retry: ${Duration.toMillis(event.duration)}\n\n`;
+        }
+    }
+  }
+};
+//# sourceMappingURL=Sse.js.map

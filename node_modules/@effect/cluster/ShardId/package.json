@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ShardId.js",
+  "module": "../dist/esm/ShardId.js",
+  "types": "../dist/dts/ShardId.d.ts"
+}

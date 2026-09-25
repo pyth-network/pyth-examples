@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RunnerHealth.js",
+  "module": "../dist/esm/RunnerHealth.js",
+  "types": "../dist/dts/RunnerHealth.d.ts"
+}

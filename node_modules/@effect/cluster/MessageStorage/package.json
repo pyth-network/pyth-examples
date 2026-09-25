@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/MessageStorage.js",
+  "module": "../dist/esm/MessageStorage.js",
+  "types": "../dist/dts/MessageStorage.d.ts"
+}

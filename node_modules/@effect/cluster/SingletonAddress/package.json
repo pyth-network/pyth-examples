@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SingletonAddress.js",
+  "module": "../dist/esm/SingletonAddress.js",
+  "types": "../dist/dts/SingletonAddress.d.ts"
+}

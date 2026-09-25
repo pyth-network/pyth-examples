@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeSocket.js",
+  "module": "../dist/esm/NodeSocket.js",
+  "types": "../dist/dts/NodeSocket.d.ts"
+}

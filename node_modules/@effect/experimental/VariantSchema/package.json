@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/VariantSchema.js",
+  "module": "../dist/esm/VariantSchema.js",
+  "types": "../dist/dts/VariantSchema.d.ts"
+}

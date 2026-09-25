@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Cookies.js",
+  "module": "../dist/esm/Cookies.js",
+  "types": "../dist/dts/Cookies.d.ts"
+}

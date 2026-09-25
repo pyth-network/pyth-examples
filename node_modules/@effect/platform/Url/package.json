@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Url.js",
+  "module": "../dist/esm/Url.js",
+  "types": "../dist/dts/Url.d.ts"
+}

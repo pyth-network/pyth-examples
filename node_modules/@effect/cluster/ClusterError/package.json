@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ClusterError.js",
+  "module": "../dist/esm/ClusterError.js",
+  "types": "../dist/dts/ClusterError.d.ts"
+}

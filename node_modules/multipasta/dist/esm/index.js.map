@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","names":["internal","make","defaultIsFile","decodeField"],"sources":["../../src/index.ts"],"sourcesContent":[null],"mappings":"AAAA,OAAO,KAAKA,QAAQ,MAAM,yBAAyB;AAwDnD,OAAO,MAAMC,IAAI,GAAgCD,QAAQ,CAACC,IAAI;AAE9D,OAAO,MAAMC,aAAa,GAAgCF,QAAQ,CAACE,aAAa;AAEhF,OAAO,MAAMC,WAAW,GACtBH,QAAQ,CAACG,WAAW","ignoreList":[]}

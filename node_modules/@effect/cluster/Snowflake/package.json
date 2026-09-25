@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Snowflake.js",
+  "module": "../dist/esm/Snowflake.js",
+  "types": "../dist/dts/Snowflake.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeSink.js",
+  "module": "../dist/esm/NodeSink.js",
+  "types": "../dist/dts/NodeSink.d.ts"
+}

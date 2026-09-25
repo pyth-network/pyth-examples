@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/ClusterCron.js",
+  "module": "../dist/esm/ClusterCron.js",
+  "types": "../dist/dts/ClusterCron.d.ts"
+}
