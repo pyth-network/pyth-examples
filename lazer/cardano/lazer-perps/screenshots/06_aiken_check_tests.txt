@@ -1,0 +1,143 @@
+    Compiling team/lazer-perps 0.0.0 (.)
+    Resolving team/lazer-perps
+      Fetched 1 package in 0.01s from cache
+    Compiling aiken-lang/stdlib v3.0.0 (./build/packages/aiken-lang-stdlib)
+    Compiling pyth-network/pyth-lazer-cardano main (./build/packages/pyth-network-pyth-lazer-cardano)
+   Collecting all tests scenarios across all modules
+      Testing ...
+{
+  "seed": 2131193227,
+  "summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "kind": {
+      "unit": 12,
+      "property": 0
+    }
+  },
+  "modules": [
+    {
+      "name": "lazer_perps/formulas",
+      "summary": {
+        "total": 12,
+        "passed": 12,
+        "failed": 0,
+        "kind": {
+          "unit": 12,
+          "property": 0
+        }
+      },
+      "tests": [
+        {
+          "title": "pnl_long_profit",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 38109,
+            "cpu": 11660314
+          }
+        },
+        {
+          "title": "pnl_long_loss",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 38511,
+            "cpu": 11825522
+          }
+        },
+        {
+          "title": "pnl_short_profit",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 38109,
+            "cpu": 11660314
+          }
+        },
+        {
+          "title": "pnl_short_loss",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 38511,
+            "cpu": 11825522
+          }
+        },
+        {
+          "title": "payout_positive",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 49736,
+            "cpu": 16020221
+          }
+        },
+        {
+          "title": "payout_zero_floor",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 48634,
+            "cpu": 15722882
+          }
+        },
+        {
+          "title": "liq_price_long_10x",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 32402,
+            "cpu": 9936219
+          }
+        },
+        {
+          "title": "liq_price_short_10x",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 32402,
+            "cpu": 9936219
+          }
+        },
+        {
+          "title": "liquidatable_long_yes",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 22709,
+            "cpu": 7378811
+          }
+        },
+        {
+          "title": "liquidatable_long_no",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 24312,
+            "cpu": 7832199
+          }
+        },
+        {
+          "title": "liquidatable_short_yes",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 23811,
+            "cpu": 7676150
+          }
+        },
+        {
+          "title": "liquidatable_short_no",
+          "status": "pass",
+          "on_failure": "fail_immediately",
+          "execution_units": {
+            "mem": 23210,
+            "cpu": 7534860
+          }
+        }
+      ]
+    }
+  ]
+}
