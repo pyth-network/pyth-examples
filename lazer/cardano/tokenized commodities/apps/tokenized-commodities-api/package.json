@@ -1,0 +1,20 @@
+{
+  "name": "@apps/tokenized-commodities-api",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "fastify": "^5.2.1",
+    "@packages/cardano-core": "file:../../../../packages/cardano-core",
+    "@packages/config": "file:../../../../packages/config",
+    "@packages/commodities-domain": "file:../../../../packages/commodities-domain",
+    "@packages/pyth-adapter": "file:../../../../packages/pyth-adapter",
+    "@packages/shared-types": "file:../../../../packages/shared-types"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "@packages/cardano-core",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@packages/config": "file:../../../../packages/config",
+    "@packages/shared-types": "file:../../../../packages/shared-types",
+    "lucid-cardano": "^0.10.11"
+  },
+  "exports": {
+    "import": "./src/index.ts",
+    "types": "./src/index.ts"
+  }
+}
