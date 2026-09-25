@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://szoficial.com/sitemap.xml

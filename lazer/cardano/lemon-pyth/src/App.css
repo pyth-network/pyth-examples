@@ -1,0 +1,91 @@
+/* ==================================================================
+   TERMINAL - CORE STYLES
+   ================================================================== */
+
+/* 1. REACT GRID LAYOUT BASE (Obligatorio para que no se rompa) */
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+  background-color: #000; /* Fondo base */
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+  z-index: 10;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+
+.react-grid-item.resizing {
+  z-index: 100;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  will-change: width, height;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(37, 99, 235, 0.15) !important; /* Azul SZ */
+  border: 1px dashed #2563eb !important;
+  opacity: 0.8;
+  border-radius: 2px;
+  z-index: 5;
+}
+
+/* 2. MANIJAS DE REDIMENSIONAMIENTO (Resize Handles) */
+.react-resizable-handle {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  z-index: 100;
+  opacity: 0; /* Invisible hasta hacer hover */
+  transition: opacity 0.2s;
+}
+
+.react-grid-item:hover .react-resizable-handle {
+  opacity: 1;
+}
+
+.react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid #555;
+  border-bottom: 2px solid #555;
+}
+
+/* 3. SCROLLBARS (Estilo Fino) */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0e11;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2e39;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #474d57;
+}
+
+/* 4. OVERLAY FIX (Para que el gráfico no atrape el mouse al mover) */
+.resize-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 999;
+  background: transparent;
+}
+.react-grid-item.resizing .resize-overlay,
+.react-grid-item.react-draggable-dragging .resize-overlay {
+  display: block;
+}

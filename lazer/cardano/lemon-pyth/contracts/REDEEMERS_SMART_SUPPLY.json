@@ -1,0 +1,143 @@
+{
+  "_comment": "Smart-Supply-Ledger — Redeemers JSON",
+  "_nota": "Acciones en el ciclo: AcceptAgreement → DepositFunds → SettleContract → CloseContract"
+}
+
+================================================================================
+r01_accept_agreement.json — Buyer acepta el contrato
+================================================================================
+
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "aaBuyerSignature — PubKeyHash del buyer",
+      "bytes": "BUYER_PUBKEY_HASH_HEX" }
+  ]
+}
+
+================================================================================
+r02_deposit_funds.json — Buyer deposita 100% del monto en escrow
+================================================================================
+
+{
+  "constructor": 1,
+  "fields": [
+    { "_field": "dfAmount — Monto en ADA. Ejemplo: 50M USD en ADA",
+      "int": 5000000000 },
+
+    { "_field": "dfTimestamp — Timestamp del depósito",
+      "int": 1742651242000 }
+  ]
+}
+
+================================================================================
+r03_update_pyth_price.json — Oracle actualiza precios de Pyth
+================================================================================
+
+PARA SOJA (precio sube a $420/tonelada = +5%):
+{
+  "constructor": 2,
+  "fields": [
+    { "_field": "uppPrice — $420 × 100 = 42000",
+      "int": 42000 },
+
+    { "_field": "uppTimestamp — Timestamp Pyth",
+      "int": 1749675600000 }
+  ]
+}
+
+PARA MAÍZ (precio baja a $237.5/tonelada = -5%):
+{
+  "constructor": 2,
+  "fields": [
+    { "_field": "uppPrice — $237.5 × 100 = 23750",
+      "int": 23750 },
+
+    { "_field": "uppTimestamp",
+      "int": 1749675600000 }
+  ]
+}
+
+PARA TRIGO (precio sube a $367.5/tonelada = +5%):
+{
+  "constructor": 2,
+  "fields": [
+    { "_field": "uppPrice — $367.5 × 100 = 36750",
+      "int": 36750 },
+
+    { "_field": "uppTimestamp",
+      "int": 1749675600000 }
+  ]
+}
+
+================================================================================
+r04_settle_contract.json — Liquidar: calcular ajuste y liberar fondos
+================================================================================
+
+PARA SOJA (con +5% ajuste):
+{
+  "constructor": 3,
+  "fields": [
+    { "_field": "scPythPrice — $420/tonelada × 100",
+      "int": 42000 },
+
+    { "_field": "scPythTimestamp — Timestamp Pyth (< 2 min)",
+      "int": 1749675600000 },
+
+    { "_field": "scVendorAddress — Address donde enviar fondos",
+      "bytes": "addr_test1..." }
+  ]
+}
+
+================================================================================
+r05_arbitrate.json — Pausar si hay disputa
+================================================================================
+
+{
+  "constructor": 4,
+  "fields": [
+    { "_field": "arbPause — true para pausar, false para reanudar",
+      "constructor": 0, "fields": [] }
+  ]
+}
+
+================================================================================
+r06_close_contract.json — Cerrar después del settlement
+================================================================================
+
+{
+  "constructor": 5,
+  "fields": []
+}
+
+================================================================================
+ORACLE REDEEMERS
+================================================================================
+
+r_oracle_update_feeds.json — Actualizar feeds Pyth:
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "ufSojaPrice — $400 × 100",
+      "int": 40000 },
+
+    { "_field": "ufMaizPrice — $250 × 100",
+      "int": 25000 },
+
+    { "_field": "ufTrigoPrice — $350 × 100",
+      "int": 35000 },
+
+    { "_field": "ufTimestamp",
+      "int": 1742651242000 }
+  ]
+}
+
+r_oracle_pause.json — Pausar oracle:
+{
+  "constructor": 2,
+  "fields": [
+    { "_field": "poPause = True",
+      "constructor": 0, "fields": [] }
+  ]
+}
+

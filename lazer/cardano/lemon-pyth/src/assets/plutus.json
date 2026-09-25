@@ -1,0 +1,85 @@
+{
+  "preamble": {
+    "title": "lemon-pyth/validators",
+    "description": "Aiken contracts for project 'lemon-pyth/validators'",
+    "version": "0.0.0",
+    "plutusVersion": "v3",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.21+unknown"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "placeholder.peg_defense.spend",
+      "datum": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/placeholder~1Datum"
+        }
+      },
+      "redeemer": {
+        "title": "redeemer",
+        "schema": {
+          "$ref": "#/definitions/placeholder~1Redeemer"
+        }
+      },
+      "compiledCode": "59011801010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cdc3a400530070024888966002600460106ea800e26466453001159800980098059baa002899912cc004c01cc034dd5000c4cc8966002600a601e6ea802e266e24008dd6980098081baa004899b88375a600260206ea801000900e1bad3010300e3754002460226024003164030601c60186ea8008c038c030dd5180718061baa300e300f300f300f300f300f300f300f300c3754009164029300b375400f300e003488966002600800515980098079baa00a801c590104566002601000515980098079baa00a801c5901045900d201a180618068009b8748000c024dd5001c590070c01c004c00cdd5003c52689b2b20021",
+      "hash": "e860e100927503411790997938d2cd3be37334e7691bf2af50dd9d1e"
+    },
+    {
+      "title": "placeholder.peg_defense.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "59011801010029800aba2aba1aab9faab9eaab9dab9a48888896600264653001300700198039804000cdc3a400530070024888966002600460106ea800e26466453001159800980098059baa002899912cc004c01cc034dd5000c4cc8966002600a601e6ea802e266e24008dd6980098081baa004899b88375a600260206ea801000900e1bad3010300e3754002460226024003164030601c60186ea8008c038c030dd5180718061baa300e300f300f300f300f300f300f300f300c3754009164029300b375400f300e003488966002600800515980098079baa00a801c590104566002601000515980098079baa00a801c5901045900d201a180618068009b8748000c024dd5001c590070c01c004c00cdd5003c52689b2b20021",
+      "hash": "e860e100927503411790997938d2cd3be37334e7691bf2af50dd9d1e"
+    }
+  ],
+  "definitions": {
+    "ByteArray": {
+      "dataType": "bytes"
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "placeholder/Datum": {
+      "title": "Datum",
+      "anyOf": [
+        {
+          "title": "Datum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "owner",
+              "$ref": "#/definitions/ByteArray"
+            },
+            {
+              "title": "lock_until",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "placeholder/Redeemer": {
+      "title": "Redeemer",
+      "anyOf": [
+        {
+          "title": "Cancel",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Confirm",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    }
+  }
+}
