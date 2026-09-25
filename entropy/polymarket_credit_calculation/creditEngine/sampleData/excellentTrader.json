@@ -1,0 +1,66 @@
+{
+  "user": {
+    "name": "ExcellentTrader",
+    "value": "500000"
+  },
+  "closedPositions": [
+    {
+      "realizedPnl": "150000",
+      "totalBought": "200000"
+    },
+    {
+      "realizedPnl": "80000",
+      "totalBought": "100000"
+    },
+    {
+      "realizedPnl": "120000",
+      "totalBought": "150000"
+    },
+    {
+      "realizedPnl": "95000",
+      "totalBought": "110000"
+    },
+    {
+      "realizedPnl": "70000",
+      "totalBought": "80000"
+    },
+    {
+      "realizedPnl": "110000",
+      "totalBought": "130000"
+    },
+    {
+      "realizedPnl": "60000",
+      "totalBought": "75000"
+    },
+    {
+      "realizedPnl": "85000",
+      "totalBought": "100000"
+    }
+  ],
+  "currentPositions": [
+    {
+      "size": "100000",
+      "avgPrice": "1",
+      "initialValue": "100000",
+      "currentValue": "125000",
+      "cashPnl": "25000",
+      "percentPnl": "25",
+      "totalBought": "100000",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "0",
+      "curPrice": "1250000"
+    },
+    {
+      "size": "80000",
+      "avgPrice": "1",
+      "initialValue": "80000",
+      "currentValue": "95000",
+      "cashPnl": "15000",
+      "percentPnl": "19",
+      "totalBought": "80000",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "0",
+      "curPrice": "1187500"
+    }
+  ]
+}

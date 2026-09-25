@@ -1,0 +1,42 @@
+{
+  "user": {
+    "name": "PoorTrader",
+    "value": "5000"
+  },
+  "closedPositions": [
+    {
+      "realizedPnl": "-50000",
+      "totalBought": "100000"
+    },
+    {
+      "realizedPnl": "-30000",
+      "totalBought": "80000"
+    },
+    {
+      "realizedPnl": "5000",
+      "totalBought": "50000"
+    },
+    {
+      "realizedPnl": "-45000",
+      "totalBought": "90000"
+    },
+    {
+      "realizedPnl": "-20000",
+      "totalBought": "40000"
+    }
+  ],
+  "currentPositions": [
+    {
+      "size": "10000",
+      "avgPrice": "1",
+      "initialValue": "10000",
+      "currentValue": "3000",
+      "cashPnl": "-7000",
+      "percentPnl": "-70",
+      "totalBought": "10000",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "0",
+      "curPrice": "300000"
+    }
+  ]
+}
