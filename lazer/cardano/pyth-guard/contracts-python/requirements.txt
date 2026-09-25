@@ -1,0 +1,11 @@
+# PythGuard — Python Smart Contract Dependencies
+# Instalar con: pip install -r requirements.txt
+
+# OpShin: compilador Python → Plutus (Cardano)
+opshin>=0.24.0
+
+# PyCardano: librería Python para construir transacciones Cardano
+pycardano>=0.10.0
+
+# HTTP requests para consultar Pyth Hermes API
+requests>=2.31.0
