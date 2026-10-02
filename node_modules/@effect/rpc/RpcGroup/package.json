@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcGroup.js",
+  "module": "../dist/esm/RpcGroup.js",
+  "types": "../dist/dts/RpcGroup.d.ts"
+}

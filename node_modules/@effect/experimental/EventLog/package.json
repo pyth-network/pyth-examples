@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/EventLog.js",
+  "module": "../dist/esm/EventLog.js",
+  "types": "../dist/dts/EventLog.d.ts"
+}

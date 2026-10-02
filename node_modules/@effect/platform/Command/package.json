@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Command.js",
+  "module": "../dist/esm/Command.js",
+  "types": "../dist/dts/Command.d.ts"
+}

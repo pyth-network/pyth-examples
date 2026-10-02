@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeContext.js",
+  "module": "../dist/esm/NodeContext.js",
+  "types": "../dist/dts/NodeContext.d.ts"
+}

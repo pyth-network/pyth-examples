@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/DurableDeferred.js",
+  "module": "../dist/esm/DurableDeferred.js",
+  "types": "../dist/dts/DurableDeferred.d.ts",
+  "sideEffects": []
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/DeliverAt.js",
+  "module": "../dist/esm/DeliverAt.js",
+  "types": "../dist/dts/DeliverAt.d.ts"
+}

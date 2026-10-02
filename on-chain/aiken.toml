@@ -1,0 +1,23 @@
+name = "los-magnificos/synth-peso"
+version = "0.0.0"
+compiler = "v1.1.19"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Aiken contracts for project 'los-magnificos/synth-peso'"
+
+[repository]
+user = "los-magnificos"
+project = "synth-peso"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "f78b67654c871825d66e620c59a703df8843c7b8"
+source = "github"
+
+[config]

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/Machine/SerializableProcedureList.js",
+  "module": "../../dist/esm/Machine/SerializableProcedureList.js",
+  "types": "../../dist/dts/Machine/SerializableProcedureList.d.ts"
+}

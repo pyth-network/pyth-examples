@@ -1,0 +1,6 @@
+{
+  "main": "../dist/cjs/Workflow.js",
+  "module": "../dist/esm/Workflow.js",
+  "types": "../dist/dts/Workflow.d.ts",
+  "sideEffects": []
+}

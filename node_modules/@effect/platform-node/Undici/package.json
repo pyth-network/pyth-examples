@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Undici.js",
+  "module": "../dist/esm/Undici.js",
+  "types": "../dist/dts/Undici.d.ts"
+}

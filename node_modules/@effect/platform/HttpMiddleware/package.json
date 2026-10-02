@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpMiddleware.js",
+  "module": "../dist/esm/HttpMiddleware.js",
+  "types": "../dist/dts/HttpMiddleware.d.ts"
+}

@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0"
+  }
+}

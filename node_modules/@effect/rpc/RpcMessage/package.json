@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/RpcMessage.js",
+  "module": "../dist/esm/RpcMessage.js",
+  "types": "../dist/dts/RpcMessage.d.ts"
+}

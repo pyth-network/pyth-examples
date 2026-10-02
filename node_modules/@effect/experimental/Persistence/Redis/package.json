@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/Persistence/Redis.js",
+  "module": "../../dist/esm/Persistence/Redis.js",
+  "types": "../../dist/dts/Persistence/Redis.d.ts"
+}

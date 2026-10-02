@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Reactivity.js",
+  "module": "../dist/esm/Reactivity.js",
+  "types": "../dist/dts/Reactivity.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/EventJournal.js",
+  "module": "../dist/esm/EventJournal.js",
+  "types": "../dist/dts/EventJournal.d.ts"
+}

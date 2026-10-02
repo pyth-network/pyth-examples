@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpIncomingMessage.js",
+  "module": "../dist/esm/HttpIncomingMessage.js",
+  "types": "../dist/dts/HttpIncomingMessage.d.ts"
+}

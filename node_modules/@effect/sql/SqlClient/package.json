@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlClient.js",
+  "module": "../dist/esm/SqlClient.js",
+  "types": "../dist/dts/SqlClient.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Statement.js",
+  "module": "../dist/esm/Statement.js",
+  "types": "../dist/dts/Statement.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Path.js",
+  "module": "../dist/esm/Path.js",
+  "types": "../dist/dts/Path.d.ts"
+}
