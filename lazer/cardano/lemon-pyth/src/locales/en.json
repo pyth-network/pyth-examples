@@ -1,0 +1,168 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "calendar": "Calendar",
+    "screener": "Screener",
+    "terminal": "TERMINAL"
+  },
+  "hero": {
+    "title": "MASTER THE MARKETS",
+    "subtitle": "Code tested in live markets since November 2023.",
+    "cta": "Launch Workstation"
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use"
+  },
+  "indicators": {
+    "title": "SZ Catalog",
+    "subtitle": "Software engineering applied to technical analysis.",
+    "sub_public": "Public Library",
+    "and": "and",
+    "sub_vip": "Member / VIP Access",
+    "public_title": "Public Library",
+    "public_desc": "Free Access Scripts",
+    "vip_title": "Member / VIP Access",
+    "vip_subtitle": "Exclusive Suite"
+  },
+  "ind": {
+    "custom": {
+      "1": "Clean Price Action reading.",
+      "2": "Micro-trend identification.",
+      "3": "Visual reversal signals."
+    },
+    "insider": {
+      "1": "Institutional volume footprint.",
+      "2": "Hidden block detection.",
+      "3": "Real flow anomalies."
+    },
+    "matrix": {
+      "1": "Multi-oscillator matrix.",
+      "2": "Exact overbought points.",
+      "3": "Exhaustion confirmation."
+    },
+    "prime": {
+      "1": "Pro Sessions: Ranges and Pips.",
+      "2": "Accumulation and Distribution.",
+      "3": "Dynamic Auto Fibonacci."
+    },
+    "xtra": {
+      "1": "Volume Profile: Delta Nodes.",
+      "2": "HTF Chart 3 (Multi-timeframe).",
+      "3": "Confirmed Divergences."
+    },
+    "ladder": {
+      "1": "Footprint Lite: Real auction.",
+      "2": "Low memory consumption.",
+      "3": "Active orders on candle."
+    }
+  },
+  "btn": {
+    "add_chart": "Add to Chart",
+    "view_tv": "View on TradingView",
+    "view_dev": "View in Development"
+  },
+  "membership": {
+    "title": "SZ VIP Membership",
+    "desc": "Access the full arsenal by trading with our official sponsors."
+  },
+  "mem": {
+    "disc": "Discounts",
+    "disc_desc": "20% OFF on fees.",
+    "bonus": "Weekly Bonuses",
+    "bonus_desc": "Exclusive campaigns.",
+    "valid": "Fast Validation",
+    "valid_desc": "Activation via UID.",
+    "top": "Top Tier Sponsors",
+    "top_desc": "Regulated platforms.",
+    "sponsors": "Official Sponsors"
+  },
+  "form": {
+    "title": "Request Activation",
+    "select": "Select your Exchange",
+    "uid": "Your User UID",
+    "tv_user": "TradingView Username",
+    "submit": "Send Request",
+    "manual": "Manual validation via Telegram."
+  },
+  "elite": {
+    "badge": "ELITE ACCESS",
+    "title": "Do you trade large volumes?",
+    "desc": "Access superior conditions:",
+    "benefits": "Higher % Rebate, Direct Payments (USDT), and Exclusivity.",
+    "contact": "Contact Support"
+  },
+  "toolkit": {
+    "title": "SZ TOOLKIT",
+    "subtitle": "Professional command center: Risk management and macro events.",
+    "system_status": "SYSTEM STATUS",
+    "operational": "OPERATIONAL",
+    "calendar_title": "ECONOMIC CALENDAR",
+    "calc_title": "RISK CALCULATOR",
+    "instrument": "Instrument",
+    "capital": "Capital ($)",
+    "risk": "Risk (%)",
+    "sl_dist": "Stop Loss Distance",
+    "pip_value": "Pip Value",
+    "calc_btn": "CALCULATE POSITION",
+    "max_loss": "Max Loss",
+    "sugg_lots": "SUGGESTED LOTS",
+    "std_lots": "Standard Lots",
+    "hint_forex_usd": "Standard: $10 USD per pip",
+    "hint_pips": "in Pips (Ex: 15)",
+    "hint_forex_cross": "Approx $9 USD (Variable)",
+    "hint_gold": "XAU: $10 per Pip (0.10 mov)",
+    "hint_pips_gold": "in Pips (20 pips = $2.00)",
+    "hint_indices": "Indices: $1 per point",
+    "hint_points": "in Points (Ex: 50)",
+    "hint_crypto": "Crypto: 1 Lot = 1 Coin",
+    "hint_dist": "Distance in Price USD"
+  },
+  "contact": {
+    "back": "RETURN TO PLATFORM",
+    "support_tag": "SUPPORT",
+    "title": "Contact Center",
+    "subtitle": "Official support and community channels.",
+    "comm_support_title": "Community",
+    "comm_support_desc": "Join our public channel for updates.",
+    "join_channel": "Join Channel",
+    "formal_title": "Email Support",
+    "formal_desc": "Commercial inquiries or specific technical issues."
+  },
+  "privacy": {
+    "back": "RETURN TO PLATFORM",
+    "title": "Privacy Policy",
+    "update": "Last updated: January 2026",
+    "intro": "At SZ Oficial, we value your trust. This policy details how we handle the technical information necessary to provide the Terminal service.",
+    "sec1_title": "Data We Collect",
+    "sec1_text": "Currently, SZ Oficial operates under a simplified access model. We do not manage user accounts or databases containing sensitive personal information.",
+    "sec1_li1": "Session cookies and local preferences (language, theme).",
+    "sec1_li2": "IP addresses and browser data for security and DDoS protection.",
+    "sec2_title": "Use of Information",
+    "sec2_intro": "Technical information is used exclusively to:",
+    "sec2_li1": "Maintain Terminal functionality.",
+    "sec2_li2": "Remember your visual preferences between visits.",
+    "sec2_li3": "Ensure infrastructure security.",
+    "sec3_title": "Cookie Management and Storage",
+    "sec3_text": "You may restrict, block, or delete cookies from the Services at any time by modifying your browser configuration.",
+    "sec3_sub1_title": "How to delete cookies",
+    "sec3_sub1_text": "Most browsers allow you to refuse to accept cookies and to delete them. Methods vary by version.",
+    "sec3_sub2_title": "Deleting Local Storage",
+    "sec3_sub2_text": "Our Terminal uses Local Storage to save your drawings and chart configurations without needing a server. Most browsers allow blocking and deleting local storage via privacy settings.",
+    "sec4_title": "Security",
+    "sec4_text": "Although we do not store credentials, we implement SSL/TLS (https) encryption on all communications to protect your browsing.",
+    "sec5_title": "Your Rights",
+    "sec5_text1": "Since we do not currently store user registries (accounts, passwords, or names) on our servers, we do not possess personal data that can be deleted upon request. Full control of your browsing data resides on your own device.",
+    "sec5_text2": "If a registration system is implemented in the future, this policy will be updated to reflect your rights (GDPR/CCPA).",
+    "rights": "All rights reserved."
+  },
+  "live": {
+    "title": "SZ Live",
+    "online": "LIVE NOW",
+    "offline": "OFFLINE",
+    "offline_msg": "Real-time market analysis and educational sessions.",
+    "expand": "Click to expand"
+  }
+}
