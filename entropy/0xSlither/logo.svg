@@ -1,0 +1,111 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="256" fill="url(#bgGradient)"/>
+  
+  <!-- Definitions -->
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    
+    <!-- Snake Body Gradient -->
+    <linearGradient id="snakeGradient" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="50%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    
+    <!-- Glow Effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Hexagon Pattern -->
+    <pattern id="hexPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M20 5 L30 12.5 L30 27.5 L20 35 L10 27.5 L10 12.5 Z" 
+            stroke="#10b981" stroke-width="0.5" fill="none" opacity="0.1"/>
+    </pattern>
+  </defs>
+  
+  <!-- Hexagon Pattern Background -->
+  <rect x="0" y="0" width="512" height="512" fill="url(#hexPattern)"/>
+  
+  <!-- Snake Body - Stylized S Shape -->
+  <g filter="url(#glow)">
+    <!-- Tail -->
+    <circle cx="140" cy="380" r="18" fill="url(#snakeGradient)" opacity="0.8"/>
+    
+    <!-- Body Segments -->
+    <path d="M 150 370 Q 180 340, 200 320 T 240 280 T 270 240 T 280 200 T 270 160 T 240 120 T 180 90" 
+          stroke="url(#snakeGradient)" 
+          stroke-width="50" 
+          stroke-linecap="round" 
+          fill="none"
+          opacity="0.9"/>
+    
+    <!-- Head -->
+    <ellipse cx="180" cy="90" rx="32" ry="28" fill="url(#snakeGradient)"/>
+    
+    <!-- Eyes -->
+    <circle cx="170" cy="85" r="5" fill="#0f172a"/>
+    <circle cx="190" cy="85" r="5" fill="#0f172a"/>
+    <circle cx="172" cy="84" r="2" fill="#10b981"/>
+    <circle cx="192" cy="84" r="2" fill="#10b981"/>
+    
+    <!-- Tongue -->
+    <path d="M 180 100 L 180 115 M 180 115 L 175 120 M 180 115 L 185 120" 
+          stroke="#ef4444" 
+          stroke-width="2" 
+          stroke-linecap="round"
+          fill="none"/>
+  </g>
+  
+  <!-- Blockchain Accent - Hexagon Grid on Snake -->
+  <path d="M 240 280 L 250 275 L 260 280 L 260 290 L 250 295 L 240 290 Z" 
+        fill="#10b981" opacity="0.3"/>
+  <path d="M 270 200 L 280 195 L 290 200 L 290 210 L 280 215 L 270 210 Z" 
+        fill="#10b981" opacity="0.3"/>
+  
+  <!-- "0x" Text -->
+  <g opacity="0.9">
+    <text x="320" y="180" 
+          font-family="monospace" 
+          font-size="72" 
+          font-weight="bold" 
+          fill="#10b981">0x</text>
+  </g>
+  
+  <!-- "SLITHER" Text -->
+  <g opacity="0.85">
+    <text x="290" y="250" 
+          font-family="Arial, sans-serif" 
+          font-size="48" 
+          font-weight="900" 
+          letter-spacing="2"
+          fill="#10b981">SLITHER</text>
+  </g>
+  
+  <!-- Decorative Hexagons -->
+  <g opacity="0.4">
+    <path d="M 380 340 L 390 335 L 400 340 L 400 350 L 390 355 L 380 350 Z" 
+          stroke="#10b981" stroke-width="2" fill="none"/>
+    <path d="M 100 120 L 110 115 L 120 120 L 120 130 L 110 135 L 100 130 Z" 
+          stroke="#10b981" stroke-width="2" fill="none"/>
+    <path d="M 420 150 L 430 145 L 440 150 L 440 160 L 430 165 L 420 160 Z" 
+          stroke="#10b981" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- Subtle Grid Lines -->
+  <g opacity="0.05" stroke="#10b981" stroke-width="1">
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <circle cx="256" cy="256" r="200" fill="none" stroke="#10b981" stroke-width="1"/>
+  </g>
+</svg>
+
