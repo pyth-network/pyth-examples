@@ -1,0 +1,30 @@
+{
+  "name": "guards-one",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit && pnpm typecheck:ui",
+    "typecheck:ui": "tsc -p apps/ui/tsconfig.json --noEmit",
+    "simulate": "tsx apps/backend/src/simulate.ts",
+    "pyth:fetch-live": "tsx apps/blockchain/cardano/offchain/scripts/fetch-live.ts",
+    "cardano:contract:doctor": "bash apps/blockchain/cardano/contracts/aiken/scripts/doctor.sh",
+    "cardano:contract:build": "bash apps/blockchain/cardano/contracts/aiken/scripts/build.sh",
+    "cardano:contract:address": "bash apps/blockchain/cardano/contracts/aiken/scripts/derive-address.sh",
+    "export:ui-data": "tsx apps/backend/src/export-ui-data.ts",
+    "preview": "pnpm build:ui && pnpm --dir apps/ui start",
+    "preview:legacy": "tsx apps/backend/src/preview-server.ts",
+    "dev:ui": "pnpm --dir apps/ui dev",
+    "build:ui": "pnpm --dir apps/ui build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
+}
