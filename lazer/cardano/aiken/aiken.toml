@@ -1,0 +1,23 @@
+name = "iron-piggy/iron-piggy"
+version = "0.0.0"
+compiler = "v1.1.21"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Iron Pig — Pyth-aware ADA + stable vault demo (preprod-oriented)"
+
+[repository]
+user = "iron-piggy"
+project = "iron-piggy"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "main"
+source = "github"
+
+[config]
