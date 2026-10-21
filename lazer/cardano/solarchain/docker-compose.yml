@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: cardano-hackathon-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cardano_hackathon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_cardano_hackathon:/var/lib/postgresql/data
+
+volumes:
+  postgres_cardano_hackathon:
