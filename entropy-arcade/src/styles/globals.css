@@ -1,0 +1,154 @@
+@import "tailwindcss";
+/* Base */
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: "Eudoxus Sans", ui-sans-serif, system-ui, sans-serif;
+  background: #0a0a0a;
+  color: white;
+}
+
+/* Minimal utility aliases so you don't need Tailwind extend right away */
+.text-secondary-white {
+  color: #b0b0b0;
+}
+.bg-primary-black {
+  background-color: #0a0a0a;
+}
+.font-eudoxus {
+  font-family: "Eudoxus Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Ambient background like before (subtle but present) */
+.ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(
+      40% 50% at 20% 10%,
+      rgba(99, 102, 241, 0.16),
+      transparent 60%
+    ),
+    radial-gradient(
+      45% 55% at 80% 20%,
+      rgba(244, 114, 182, 0.12),
+      transparent 60%
+    ),
+    radial-gradient(
+      60% 60% at 50% 90%,
+      rgba(59, 130, 246, 0.1),
+      transparent 60%
+    ),
+    #0a0a0a;
+}
+.grid-overlay {
+  /* soft grid texture */
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 30%,
+    black 60%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(circle at 50% 30%, black 60%, transparent 100%);
+}
+
+/* Reveal (content visible without JS) */
+[data-animate] {
+  opacity: 1;
+  transform: none;
+}
+.js-anim [data-animate] {
+  opacity: 0;
+  transform: translateY(18px) scale(0.985);
+  transition:
+    opacity 0.6s ease,
+    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.in-view {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Glow card */
+.game-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.45s,
+    border-color 0.3s;
+}
+.game-card::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(59, 130, 246, 0),
+    rgba(59, 130, 246, 0.5),
+    rgba(236, 72, 153, 0.5),
+    rgba(241, 196, 15, 0.4),
+    rgba(59, 130, 246, 0)
+  );
+  filter: blur(30px);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.game-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+}
+.game-card:hover::before {
+  opacity: 0.9;
+  animation: spin 3.5s linear infinite;
+}
+.game-card .inner {
+  position: relative;
+  z-index: 1;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.game-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.9rem;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Nav pills */
+.nav-pill {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  padding: 10px 16px;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.06);
+}
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.nav-pill.active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.24);
+}
