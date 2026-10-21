@@ -1,0 +1,25 @@
+{
+  "name": "off-chain",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "add-fund-validator-utxo": "bun run scripts/add-fund-validator-utxo.ts",
+    "create-validator-utxo": "bun run scripts/create-validator-utxo.ts",
+    "evaluate-ogmios": "bun run scripts/evaluate-ogmios.ts",
+    "fetch-ada-usdt-update": "bun run scripts/fetch-ada-usdt-update.ts",
+    "spend-validator-utxo": "bun run scripts/spend-validator-utxo.ts",
+    "typecheck": "bun x tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@evolution-sdk/evolution": "^0.3.30",
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "@pythnetwork/pyth-lazer-sdk": "^6.2.1",
+    "dotenv": "^17.3.1"
+  }
+}
