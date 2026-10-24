@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/KeyValueStore.js",
+  "module": "../dist/esm/KeyValueStore.js",
+  "types": "../dist/dts/KeyValueStore.d.ts"
+}

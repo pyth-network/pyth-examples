@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Ndjson.js",
+  "module": "../dist/esm/Ndjson.js",
+  "types": "../dist/dts/Ndjson.d.ts"
+}

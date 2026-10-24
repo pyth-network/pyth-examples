@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/NodeTerminal.js",
+  "module": "../dist/esm/NodeTerminal.js",
+  "types": "../dist/dts/NodeTerminal.d.ts"
+}

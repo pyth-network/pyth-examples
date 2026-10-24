@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlMessageStorage.js",
+  "module": "../dist/esm/SqlMessageStorage.js",
+  "types": "../dist/dts/SqlMessageStorage.d.ts"
+}

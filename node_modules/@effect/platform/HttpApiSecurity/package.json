@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpApiSecurity.js",
+  "module": "../dist/esm/HttpApiSecurity.js",
+  "types": "../dist/dts/HttpApiSecurity.d.ts"
+}

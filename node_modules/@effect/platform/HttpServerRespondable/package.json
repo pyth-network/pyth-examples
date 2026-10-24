@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpServerRespondable.js",
+  "module": "../dist/esm/HttpServerRespondable.js",
+  "types": "../dist/dts/HttpServerRespondable.d.ts"
+}

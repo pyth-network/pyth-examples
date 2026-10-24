@@ -1,0 +1,1 @@
+{"version":3,"file":"NodeHttpPlatform.js","names":["internal","make","layer"],"sources":["../../src/NodeHttpPlatform.ts"],"sourcesContent":[null],"mappings":"AAQA,OAAO,KAAKA,QAAQ,MAAM,4BAA4B;AAEtD;;;;AAIA,OAAO,MAAMC,IAAI,GAAwFD,QAAQ,CAACC,IAAI;AAEtH;;;;AAIA,OAAO,MAAMC,KAAK,GAAuCF,QAAQ,CAACE,KAAK","ignoreList":[]}

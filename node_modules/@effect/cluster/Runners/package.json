@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Runners.js",
+  "module": "../dist/esm/Runners.js",
+  "types": "../dist/dts/Runners.d.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/Effectify.js",
+  "module": "../dist/esm/Effectify.js",
+  "types": "../dist/dts/Effectify.d.ts"
+}

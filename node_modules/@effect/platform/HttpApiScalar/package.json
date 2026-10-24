@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/HttpApiScalar.js",
+  "module": "../dist/esm/HttpApiScalar.js",
+  "types": "../dist/dts/HttpApiScalar.d.ts"
+}

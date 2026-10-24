@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SocketRunner.js",
+  "module": "../dist/esm/SocketRunner.js",
+  "types": "../dist/dts/SocketRunner.d.ts"
+}

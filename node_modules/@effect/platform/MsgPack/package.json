@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/MsgPack.js",
+  "module": "../dist/esm/MsgPack.js",
+  "types": "../dist/dts/MsgPack.d.ts"
+}

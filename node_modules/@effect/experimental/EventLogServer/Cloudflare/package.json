@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/EventLogServer/Cloudflare.js",
+  "module": "../../dist/esm/EventLogServer/Cloudflare.js",
+  "types": "../../dist/dts/EventLogServer/Cloudflare.d.ts"
+}

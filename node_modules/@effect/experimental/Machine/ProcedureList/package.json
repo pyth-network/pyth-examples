@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../../dist/cjs/Machine/ProcedureList.js",
+  "module": "../../dist/esm/Machine/ProcedureList.js",
+  "types": "../../dist/dts/Machine/ProcedureList.d.ts"
+}

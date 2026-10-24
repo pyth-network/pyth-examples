@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlError.js",
+  "module": "../dist/esm/SqlError.js",
+  "types": "../dist/dts/SqlError.d.ts"
+}

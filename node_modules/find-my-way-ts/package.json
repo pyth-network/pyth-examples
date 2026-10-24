@@ -1,0 +1,35 @@
+{
+  "name": "find-my-way-ts",
+  "version": "0.1.6",
+  "description": "Crazy fast http radix based router",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tim-smart/find-my-way-ts.git"
+  },
+  "sideEffects": [],
+  "author": "Tomas Della Vedova - @delvedor (http://delved.org)",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/dts/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/dts/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "default": "./dist/cjs/index.js"
+    },
+    "./QueryString": {
+      "types": "./dist/dts/QueryString.d.ts",
+      "import": "./dist/esm/QueryString.js",
+      "default": "./dist/cjs/QueryString.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "QueryString": [
+        "./dist/dts/QueryString.d.ts"
+      ]
+    }
+  }
+}

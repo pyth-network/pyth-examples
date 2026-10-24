@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/PersistedCache.js",
+  "module": "../dist/esm/PersistedCache.js",
+  "types": "../dist/dts/PersistedCache.d.ts"
+}

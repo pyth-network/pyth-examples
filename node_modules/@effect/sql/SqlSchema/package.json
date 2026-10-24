@@ -1,0 +1,6 @@
+{
+  "sideEffects": [],
+  "main": "../dist/cjs/SqlSchema.js",
+  "module": "../dist/esm/SqlSchema.js",
+  "types": "../dist/dts/SqlSchema.d.ts"
+}
