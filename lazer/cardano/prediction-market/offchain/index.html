@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BTC Prediction Market</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          animation: {
+            'flash-green': 'flash-green 0.5s ease-out',
+            'flash-red': 'flash-red 0.5s ease-out',
+          },
+          keyframes: {
+            'flash-green': { '0%': { color: '#4ade80' }, '100%': { color: '#f8fafc' } },
+            'flash-red': { '0%': { color: '#f87171' }, '100%': { color: '#f8fafc' } },
+          },
+        },
+      },
+    }
+  </script>
+</head>
+<body class="bg-gray-950 text-slate-50 min-h-screen font-mono">
+  <div id="root"></div>
+  <script type="module" src="./frontend.tsx"></script>
+</body>
+</html>
