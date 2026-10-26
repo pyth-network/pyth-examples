@@ -22,11 +22,7 @@
 **Blockchain/Platform:**
 - [ ] Ethereum/EVM
 - [ ] Solana  
-- [ ] Aptos
 - [ ] Sui
-- [ ] Fuel
-- [ ] Starknet
-- [ ] TON
 - [ ] Other: ___________
 
 ## Description
