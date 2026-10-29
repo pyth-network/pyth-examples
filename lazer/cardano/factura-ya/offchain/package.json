@@ -1,0 +1,26 @@
+{
+  "name": "factura-ya-offchain",
+  "version": "0.0.1",
+  "description": "Off-chain transaction builders for Factura Ya",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "check": "tsc --noEmit",
+    "server": "tsx src/deploy-server.ts",
+    "test-mint": "tsx src/test-mint.ts"
+  },
+  "dependencies": {
+    "@anastasia-labs/cardano-multiplatform-lib-nodejs": "^6.0.2-3",
+    "@emurgo/cardano-serialization-lib-nodejs": "^15.0.3",
+    "@evolution-sdk/evolution": "^0.3.30",
+    "@lucid-evolution/lucid": "^0.4.29",
+    "@lucid-evolution/provider": "^0.1.90",
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "@pythnetwork/pyth-lazer-sdk": "^0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.0"
+  }
+}
