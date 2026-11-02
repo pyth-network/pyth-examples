@@ -1,2 +1,16 @@
 enabled: true
 required_reviewer_checks: []
+# Greenlight requires this key; without it the whole file is malformed and
+# Greenlight ignores the repo. Empty: no path can auto-approve, so every
+# PR needs a human.
+auto_approve_paths: []
+
+# Opt in to the two-humans rule. Greenlight posts a
+# `greenlight/two-humans` check on every PR: one human for a PR
+# Greenlight could auto-approve, two for any other PR. The check is not
+# required in the ruleset yet, so it blocks nothing. `machine_users`
+# lists user accounts that are bots; GitHub App (`[bot]`) accounts are
+# excluded automatically. See greenlight/docs/onboarding-a-repo.md in
+# dourolabs/prototypes.
+two_humans:
+  machine_users: [pyth-ops]
