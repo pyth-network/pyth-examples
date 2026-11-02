@@ -1,2 +1,50 @@
 enabled: true
+
+# No third-party reviewer check is required. The AI review below is
+# wired through require_reviews, not through this list.
 required_reviewer_checks: []
+
+# The AI reviewer. Greenlight dispatches
+# .github/workflows/greenlight-review.yml with this prompt path; the
+# prompt is always read from the PR's BASE branch, so a PR cannot
+# rewrite the reviewer that judges it.
+reviews:
+  docs-and-comments:
+    prompt: .github/greenlight/prompts/docs-and-comments.md
+
+# Nothing auto-approved here before this group, so this is a loosening:
+# no PR that merges today changes behaviour, and no PR can become more
+# blocked than it already is.
+#
+# The path list is deliberately broad and the REVIEW is the gate. An
+# extension cannot tell a comment edit from a logic edit, so gating on
+# "**/*.md" would have admitted only prose and left every comment and
+# docstring in the repo needing a human. Admitting "**" and asking the
+# reviewer "does this change behaviour?" is the only way a comment fix
+# in a .ts or .sol file ever auto-merges. That puts real weight on the
+# prompt: it is the whole gate for source files, so read it before
+# widening anything here.
+#
+# Groups admit as a union and denies are scoped to the group they sit
+# in, so with this as the only group admission is exactly "every file
+# in the PR is outside .github/". If a second group is ever added here,
+# it must not re-admit .github/**.
+#
+# The !.github/** deny is load-bearing, not tidiness. Workflows there
+# run with real permissions, and this file is the policy itself -- it
+# must not be broadenable through a gate it defines. Same reasoning
+# pyth-network/research already uses. The greenlight deployment also
+# enforces a server-side hard floor over .github/greenlight.yml and
+# .github/greenlight/prompts/**, which this file can restrict but never
+# relax; the deny here is belt to that braces, since the floor is not
+# visible from this repo and could change.
+#
+# `check` is deliberately omitted, so the verdict lands on the derived
+# check-run name `greenlight/review-docs-and-comments`. Do not add that
+# name to branch-protection required_status_checks: a reject posts
+# conclusion `neutral`, which GitHub counts as satisfying a required
+# check. Greenlight gates on the verdict it persisted, not on the
+# roll-up.
+auto_approve_paths:
+  - paths: ["**", "!.github/**"]
+    require_reviews: [docs-and-comments]
