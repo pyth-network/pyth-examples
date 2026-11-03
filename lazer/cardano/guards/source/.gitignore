@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+.pnpm-store/
+*.log
+.env
+.env.*
+!.env.example
+secrets/
+*.sqlite
+apps/blockchain/cardano/contracts/aiken/build/

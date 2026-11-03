@@ -1,0 +1,268 @@
+{
+  "generatedAtUs": 360000000,
+  "source": "backend-demo",
+  "workspace": {
+    "name": "Anaconda Treasury Demo",
+    "label": "guards.one live desk",
+    "chain": "Cardano preprod",
+    "stage": "Normal",
+    "threshold": "3 governance signers",
+    "members": "1 risk manager · 2 keepers",
+    "hotWallet": "addr_tes..._hot_1",
+    "governanceWallet": "addr_tes..._gov_1",
+    "totalBalance": "$6,646",
+    "primaryAsset": "ADA",
+    "stableAsset": "USDM",
+    "vaultId": "vault-anaconda-demo"
+  },
+  "topbarChips": [
+    {
+      "label": "Network status",
+      "value": "Cardano preprod live",
+      "tone": "live"
+    },
+    {
+      "label": "Approved route",
+      "value": "Minswap · USDM",
+      "tone": "neutral"
+    },
+    {
+      "label": "Execution wallet",
+      "value": "addr_tes..._hot_1",
+      "tone": "neutral"
+    }
+  ],
+  "heroMetrics": [
+    {
+      "label": "Current stage",
+      "value": "Normal",
+      "copy": "Final policy state after the simulated breach and recovery run.",
+      "chip": "ok"
+    },
+    {
+      "label": "Treasury liquid value",
+      "value": "$6,646",
+      "copy": "Valued from the latest Pyth price and haircut-aware liquid value math."
+    },
+    {
+      "label": "Stable protection",
+      "value": "36.0%",
+      "copy": "Current treasury share parked in the approved stable reserve."
+    },
+    {
+      "label": "Oracle freshness",
+      "value": "20s",
+      "copy": "Age of the primary feed update relative to the latest policy evaluation."
+    }
+  ],
+  "dashboardCards": [
+    {
+      "label": "Protected floor",
+      "value": "$4,500",
+      "copy": "Minimum fiat-equivalent value the policy tries to keep defended at all times.",
+      "chip": "ok"
+    },
+    {
+      "label": "Emergency floor",
+      "value": "$3,400",
+      "copy": "Crossing this floor escalates the vault into a full stable exit or freeze path.",
+      "chip": "danger"
+    },
+    {
+      "label": "Primary reason",
+      "value": "Cooldown prevents an automatic state transition",
+      "copy": "Top reason emitted by the risk engine for the current snapshot set.",
+      "chip": "warn"
+    },
+    {
+      "label": "Execution policy",
+      "value": "CARDANO · Minswap · USDM",
+      "copy": "Only allowlisted routes can spend from the execution hot wallet.",
+      "chip": "ok"
+    }
+  ],
+  "chainCards": [
+    {
+      "chain": "CARDANO",
+      "title": "Live execution surface",
+      "copy": "Cardano is the only live execution target in the MVP. Execution uses a two-step authorize-and-swap flow.",
+      "chip": "live"
+    },
+    {
+      "chain": "SVM",
+      "title": "Scaffolded adapter",
+      "copy": "Scaffolding only in the MVP. Designed to share the same policy and role model.",
+      "chip": "scaffold"
+    },
+    {
+      "chain": "EVM",
+      "title": "Scaffolded adapter",
+      "copy": "Scaffolding only in the MVP. Connectors remain simulation-first until phase 2.",
+      "chip": "scaffold"
+    }
+  ],
+  "riskLadder": [
+    {
+      "stage": "Normal",
+      "title": "Operate with full permissions",
+      "copy": "Fresh oracle, healthy confidence, and no forced action path active."
+    },
+    {
+      "stage": "Watch",
+      "title": "Increase monitoring",
+      "copy": "The drawdown or fiat floor approaches the first trigger band.",
+      "tone": "partial"
+    },
+    {
+      "stage": "Partial De-Risk",
+      "title": "Sell only what restores the safe floor",
+      "copy": "The keeper sells a bounded slice of the risky bucket into the approved stable route.",
+      "tone": "partial"
+    },
+    {
+      "stage": "Full Stable Exit",
+      "title": "Move the vault fully defensive",
+      "copy": "A deeper breach exits the risk bucket and keeps the hot wallet on one stable rail.",
+      "tone": "full"
+    },
+    {
+      "stage": "Auto Re-entry",
+      "title": "Re-risk only after hysteresis clears",
+      "copy": "Recovery must clear a separate band and cooldown before exposure comes back.",
+      "tone": "reentry"
+    }
+  ],
+  "executionTimeline": [
+    {
+      "title": "Step 1 · Partial De-Risk",
+      "copy": "Intent 815ede7a-6cf0-49fe-939f-262dfa1b6a4c anchored and settled in tx tx-8eb5d881-9efe-4ae5-9cb8-11d7a5d06424.",
+      "status": "executed"
+    },
+    {
+      "title": "Step 2 · Full Stable Exit",
+      "copy": "Intent 27535a6c-6d30-4a06-9e8b-655c620913c8 anchored and settled in tx tx-b713b68d-6d8e-42d3-8ec6-f20e66c0a61f.",
+      "status": "executed"
+    },
+    {
+      "title": "Step 3 · Normal",
+      "copy": "Intent 8205bd55-2e1e-452d-b0ca-5c1889e371d4 anchored and settled in tx tx-41e2236d-9cd7-4f9b-958b-b9de83246025.",
+      "status": "executed"
+    }
+  ],
+  "auditTrail": [
+    {
+      "title": "INTENT · intent:27535a6c-6d30-4a06-9e8b-655c620913c8",
+      "copy": "Authorized derisk swap at stage full exit.",
+      "stamp": "100s"
+    },
+    {
+      "title": "EXECUTION · execution:tx-b713b68d-6d8e-42d3-8ec6-f20e66c0a61f",
+      "copy": "Settled full exit. Sold 5,466 and bought 2,106.",
+      "stamp": "100s"
+    },
+    {
+      "title": "SNAPSHOT · snapshot:snapshot-ada-recovery",
+      "copy": "Observed ADA from snapshot-ada-recovery.",
+      "stamp": "20s"
+    },
+    {
+      "title": "SNAPSHOT · snapshot:snapshot-usdm-3",
+      "copy": "Observed USDM from snapshot-usdm-3.",
+      "stamp": "20s"
+    },
+    {
+      "title": "INTENT · intent:8205bd55-2e1e-452d-b0ca-5c1889e371d4",
+      "copy": "Authorized reentry swap at stage normal.",
+      "stamp": "0s"
+    },
+    {
+      "title": "EXECUTION · execution:tx-41e2236d-9cd7-4f9b-958b-b9de83246025",
+      "copy": "Settled normal. Sold 4,440 and bought 5,553.",
+      "stamp": "0s"
+    }
+  ],
+  "accounts": [
+    {
+      "label": "ADA risk bucket",
+      "address": "addr_tes..._hot_1",
+      "balance": "5,553 ADA",
+      "fiatValue": "$4,255",
+      "weight": "64.0%",
+      "role": "Risk asset",
+      "bucket": "Execution hot"
+    },
+    {
+      "label": "USDM stable reserve",
+      "address": "addr_tes..._hot_1",
+      "balance": "2,391 USDM",
+      "fiatValue": "$2,391",
+      "weight": "36.0%",
+      "role": "Stable reserve",
+      "bucket": "Execution hot"
+    }
+  ],
+  "portfolioSeries": [
+    {
+      "label": "Watch",
+      "stage": "watch",
+      "value": 8775,
+      "displayValue": "$8,775"
+    },
+    {
+      "label": "Partial",
+      "stage": "partial_derisk",
+      "value": 8542.754226799423,
+      "displayValue": "$8,543"
+    },
+    {
+      "label": "Exit",
+      "stage": "full_exit",
+      "value": 6831.30402061,
+      "displayValue": "$6,831"
+    },
+    {
+      "label": "Recovery",
+      "stage": "normal",
+      "value": 6646.407945987443,
+      "displayValue": "$6,646"
+    }
+  ],
+  "demoFrames": [
+    {
+      "label": "01",
+      "title": "Watchlist breach detected",
+      "copy": "ADA slips under its EMA while Pyth freshness and confidence remain healthy enough to authorize a policy action.",
+      "stage": "watch",
+      "balance": "$8,775",
+      "stableRatio": "17.1%",
+      "reason": "Primary asset drawdown crossed watch threshold"
+    },
+    {
+      "label": "02",
+      "title": "Partial de-risk executes",
+      "copy": "The keeper emits an intent, swaps only the bounded amount needed, and restores the defended stable floor.",
+      "stage": "partial_derisk",
+      "balance": "$8,543",
+      "stableRatio": "55.3%",
+      "reason": "Primary asset drawdown crossed watch threshold"
+    },
+    {
+      "label": "03",
+      "title": "Full stable exit after the second leg down",
+      "copy": "A deeper price break and thinner asset cushion push the vault into a full defensive configuration on the approved stable route.",
+      "stage": "full_exit",
+      "balance": "$6,831",
+      "stableRatio": "100.0%",
+      "reason": "Primary asset drawdown crossed watch threshold"
+    },
+    {
+      "label": "04",
+      "title": "Auto re-entry restores exposure",
+      "copy": "Recovery clears the hysteresis band, cooldown expires, and the treasury re-enters risk according to the configured target ratio.",
+      "stage": "normal",
+      "balance": "$6,646",
+      "stableRatio": "36.0%",
+      "reason": "Cooldown prevents an automatic state transition"
+    }
+  ]
+}
