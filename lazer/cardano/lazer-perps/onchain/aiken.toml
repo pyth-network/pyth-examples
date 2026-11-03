@@ -1,0 +1,23 @@
+name = "team/lazer-perps"
+version = "0.0.0"
+compiler = "v1.1.21"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Perpetual futures protocol powered by Pyth Lazer price feeds on Cardano"
+
+[repository]
+user = "team"
+project = "lazer-perps"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "main"
+source = "github"
+
+[config]

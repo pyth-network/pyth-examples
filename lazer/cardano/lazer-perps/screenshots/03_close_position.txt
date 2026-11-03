@@ -1,0 +1,16 @@
+
+> lazer-perps@1.0.0 close-position
+> npx tsx src/close_position.ts
+
+=== Close position on XAUT/USD (Tether Gold) ===
+
+1. Fetching exit price witness...
+   Exit price: 452498566197 (exp: -8)
+
+2. Building close position tx...
+3. Signing and submitting...
+   Tx: 6532eebc942166b562baf58c535284b6fffa56d794c434421f141842e5b29d47
+   https://preprod.cardanoscan.io/transaction/6532eebc942166b562baf58c535284b6fffa56d794c434421f141842e5b29d47
+
+Waiting for confirmation...
+Position closed on XAUT/USD (Tether Gold). PnL settled.
