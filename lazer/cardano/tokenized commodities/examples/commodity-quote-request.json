@@ -1,0 +1,21 @@
+{
+  "agreement": {
+    "agreementId": "agr-wheat-001",
+    "commodity": "WHEAT",
+    "buyerAddress": "addr_test1qpbuyer000000000000000000000000000000000000",
+    "sellerAddress": "addr_test1qpseller00000000000000000000000000000000000",
+    "quantity": 100,
+    "unit": "TON",
+    "referencePriceFeedId": 16,
+    "strikePriceUsd": 240,
+    "floorPriceUsd": 220,
+    "capPriceUsd": 280,
+    "expiresAt": "2026-04-30T00:00:00.000Z",
+    "collateralAda": "50000000"
+  },
+  "demoOraclePriceUsd": 255,
+  "demoOracleAsOf": "2026-03-22T18:00:00.000Z",
+  "demoAdaUsdFx": 1,
+  "maxOracleAgeSeconds": 900,
+  "allowDemoFallback": false
+}
