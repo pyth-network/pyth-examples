@@ -1,0 +1,155 @@
+cabal-version:      2.4
+name:               smartsupply
+version:            0.1.0.0
+license:            MIT
+author:             Team Smart-Supply
+maintainer:         team@smartsupply.io
+category:           Blockchain
+synopsis:           Smart-Supply-Ledger: Commodities con Pyth Oracle
+description:
+    Smart-Supply-Ledger: Protocolo para contratos de commodities
+    con ajuste automático de precio basado en Pyth Network.
+    Soja, Maíz, Trigo. Cardano + Pyth.
+
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall -Wcompat -Wincomplete-record-updates
+                 -Wincomplete-uni-patterns -Wredundant-constraints
+                 -Wunused-packages
+
+library
+    import:           warnings
+    exposed-modules:
+        SmartSupplyLedger
+        CommodityOracle
+
+    build-depends:
+        base >=4.14 && <5,
+        aeson,
+        bytestring,
+        containers,
+        cryptohash-sha256,
+        data-default,
+        deriving-aeson,
+        deriving-compat,
+        text,
+        time,
+        -- Plutus
+        plutus-core,
+        plutus-tx,
+        plutus-tx-plugin,
+        plutus-contract,
+        plutus-ledger,
+        plutus-ledger-api,
+        plutus-ledger-constraints,
+        plutus-script-utils,
+        -- Cardano
+        cardano-api,
+        cardano-addresses,
+        cardano-cli,
+        -- Misc
+        containers,
+        freer-extras,
+        hex-text,
+        iohk-monitoring,
+        lens,
+        monad-logger,
+        mtl,
+        openapi3,
+        pretty-show,
+        prettyprinter,
+        row-types,
+        servant,
+        servant-client,
+        servant-server,
+        stm,
+        streaming-bytestring,
+        tasty,
+        tasty-hunit,
+        tasty-quickcheck,
+        prettyprinter,
+        template-haskell,
+        text,
+        transformers,
+        utf8-string,
+        vector,
+        wai,
+        warp,
+        yaml
+
+    hs-source-dirs:   src
+    default-language: Haskell2010
+    ghc-options:
+        -fobject-code
+        -fno-ignore-interface-pragmas
+        -fno-omit-interface-pragmas
+        -fno-strictness
+        -fno-specialise
+        -fexpose-all-unfoldings
+        -fno-worker-wrapper
+        -freduction-depth=400
+        -fmax-simplifier-iterations=6000
+        -Wall
+        -Wcompat
+        -Wincomplete-record-updates
+        -Wincomplete-uni-patterns
+        -Wredundant-constraints
+        -O0
+
+test-suite smartsupply-test
+    import:           warnings
+    type:             exitcode-stdio-1.0
+    main-is:          SmartSupplyTests.hs
+    hs-source-dirs:   test
+    default-language: Haskell2010
+    build-depends:
+        base >=4.14 && <5,
+        smartsupply,
+        tasty,
+        tasty-hunit,
+        tasty-quickcheck,
+        bytestring,
+        text
+
+    ghc-options:
+        -threaded
+        -rtsopts
+        -with-rtsopts=-N
+        -Wall
+        -Wcompat
+        -Wincomplete-record-updates
+        -Wincomplete-uni-patterns
+        -Wredundant-constraints
+
+executable smartsupply-deploy
+    import:           warnings
+    main-is:          SmartSupplyDeploy.hs
+    hs-source-dirs:   app
+    default-language: Haskell2010
+    build-depends:
+        base >=4.14 && <5,
+        smartsupply,
+        bytestring,
+        serialise,
+        plutus-core,
+        plutus-tx,
+        plutus-ledger-api,
+        plutus-script-utils,
+        cardano-api,
+        directory,
+        filepath,
+        text,
+        mtl
+
+    ghc-options:
+        -threaded
+        -rtsopts
+        -with-rtsopts=-N
+        -Wall
+        -Wcompat
+        -Wincomplete-record-updates
+        -Wincomplete-uni-patterns
+        -Wredundant-constraints
+        -O2
+

@@ -1,0 +1,287 @@
+{
+  "_comment": "Smart-Supply-Ledger — Datums para 3 Commodities",
+  "_fecha": "22 de Marzo de 2026"
+}
+
+================================================================================
+DATUM 1: CONTRATO SOJA
+================================================================================
+
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "ssdContractId",
+      "bytes": "434f4e54524143542d534f4a412d3030312d3230323630333232" },
+
+    { "_field": "ssdCommodity = Soja",
+      "constructor": 0, "fields": [] },
+
+    { "_field": "ssdVendor — PubKeyHash del productor",
+      "bytes": "VENDOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdBuyer — PubKeyHash del comprador/acopiador",
+      "bytes": "BUYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdArbitrator",
+      "bytes": "ARBITRATOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdQuantityTonnes — 100 toneladas",
+      "int": 100000 },
+
+    { "_field": "ssdBasePriceUsdCents — $400/tonelada = 40000",
+      "int": 40000 },
+
+    { "_field": "ssdTotalBaseAmountUsdCents — 100 toneladas × $400 = 40,000,000 centavos",
+      "int": 4000000000 },
+
+    { "_field": "ssdMinAdjustmentPct — 5% para activar ajuste",
+      "int": 500 },
+
+    { "_field": "ssdMaxCap — máximo -15% si precio baja",
+      "int": 1500 },
+
+    { "_field": "ssdMaxFloor — máximo +15% si precio sube",
+      "int": 1500 },
+
+    { "_field": "ssdAgreementDateMs — 2026-03-22 00:00 UTC",
+      "int": 1742651242000 },
+
+    { "_field": "ssdDeliveryDateMs — 2026-06-01 00:00 UTC (90 días después)",
+      "int": 1749675600000 },
+
+    { "_field": "ssdSettlementDateMs — Se completa al settlement",
+      "int": 0 },
+
+    { "_field": "ssdStatus = Agreed (recién firmado)",
+      "constructor": 0, "fields": [] },
+
+    { "_field": "ssdPythPriceUsdCents — Se llena al settlement",
+      "int": 0 },
+
+    { "_field": "ssdFinalAdjustmentPct — Se calcula al settlement",
+      "int": 0 },
+
+    { "_field": "ssdFinalAmountUsdCents — Se calcula al settlement",
+      "int": 0 },
+
+    { "_field": "ssdOracleRelayer",
+      "bytes": "ORACLE_RELAYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdPaused = False",
+      "constructor": 1, "fields": [] }
+  ]
+}
+
+================================================================================
+DATUM 2: CONTRATO MAÍZ
+================================================================================
+
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "ssdContractId",
+      "bytes": "434f4e54524143542d4d415a2d3030312d3230323630333232" },
+
+    { "_field": "ssdCommodity = Maiz",
+      "constructor": 1, "fields": [] },
+
+    { "_field": "ssdVendor",
+      "bytes": "VENDOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdBuyer",
+      "bytes": "BUYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdArbitrator",
+      "bytes": "ARBITRATOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdQuantityTonnes — 200 toneladas",
+      "int": 200000 },
+
+    { "_field": "ssdBasePriceUsdCents — $250/tonelada = 25000",
+      "int": 25000 },
+
+    { "_field": "ssdTotalBaseAmountUsdCents — 200 × $250 = 50,000,000 centavos",
+      "int": 5000000000 },
+
+    { "_field": "ssdMinAdjustmentPct — 5%",
+      "int": 500 },
+
+    { "_field": "ssdMaxCap — -15%",
+      "int": 1500 },
+
+    { "_field": "ssdMaxFloor — +15%",
+      "int": 1500 },
+
+    { "_field": "ssdAgreementDateMs — 2026-03-22",
+      "int": 1742651242000 },
+
+    { "_field": "ssdDeliveryDateMs — 2026-06-01 (90 días)",
+      "int": 1749675600000 },
+
+    { "_field": "ssdSettlementDateMs",
+      "int": 0 },
+
+    { "_field": "ssdStatus = Agreed",
+      "constructor": 0, "fields": [] },
+
+    { "_field": "ssdPythPriceUsdCents",
+      "int": 0 },
+
+    { "_field": "ssdFinalAdjustmentPct",
+      "int": 0 },
+
+    { "_field": "ssdFinalAmountUsdCents",
+      "int": 0 },
+
+    { "_field": "ssdOracleRelayer",
+      "bytes": "ORACLE_RELAYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdPaused = False",
+      "constructor": 1, "fields": [] }
+  ]
+}
+
+================================================================================
+DATUM 3: CONTRATO TRIGO
+================================================================================
+
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "ssdContractId",
+      "bytes": "434f4e54524143542d5452494c2d3030312d3230323630333232" },
+
+    { "_field": "ssdCommodity = Trigo",
+      "constructor": 2, "fields": [] },
+
+    { "_field": "ssdVendor",
+      "bytes": "VENDOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdBuyer",
+      "bytes": "BUYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdArbitrator",
+      "bytes": "ARBITRATOR_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdQuantityTonnes — 150 toneladas",
+      "int": 150000 },
+
+    { "_field": "ssdBasePriceUsdCents — $350/tonelada = 35000",
+      "int": 35000 },
+
+    { "_field": "ssdTotalBaseAmountUsdCents — 150 × $350 = 52,500,000 centavos",
+      "int": 5250000000 },
+
+    { "_field": "ssdMinAdjustmentPct — 5%",
+      "int": 500 },
+
+    { "_field": "ssdMaxCap — -15%",
+      "int": 1500 },
+
+    { "_field": "ssdMaxFloor — +15%",
+      "int": 1500 },
+
+    { "_field": "ssdAgreementDateMs — 2026-03-22",
+      "int": 1742651242000 },
+
+    { "_field": "ssdDeliveryDateMs — 2026-06-01",
+      "int": 1749675600000 },
+
+    { "_field": "ssdSettlementDateMs",
+      "int": 0 },
+
+    { "_field": "ssdStatus = Agreed",
+      "constructor": 0, "fields": [] },
+
+    { "_field": "ssdPythPriceUsdCents",
+      "int": 0 },
+
+    { "_field": "ssdFinalAdjustmentPct",
+      "int": 0 },
+
+    { "_field": "ssdFinalAmountUsdCents",
+      "int": 0 },
+
+    { "_field": "ssdOracleRelayer",
+      "bytes": "ORACLE_RELAYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "ssdPaused = False",
+      "constructor": 1, "fields": [] }
+  ]
+}
+
+================================================================================
+DATUM 4: ORACLE — FEEDS DE COMMODITIES
+================================================================================
+
+{
+  "constructor": 0,
+  "fields": [
+    { "_field": "codFeedSoja",
+      "constructor": 0,
+      "fields": [
+        { "_field": "cfsId = FeedSoja",
+          "constructor": 0, "fields": [] },
+        { "_field": "cfsPriceCents — $400/tonelada x100",
+          "int": 40000 },
+        { "_field": "cfsConfidencePPM — 0.5%",
+          "int": 5000 },
+        { "_field": "cfsPublishTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsOnChainTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsExponent",
+          "int": -2 }
+      ]
+    },
+
+    { "_field": "codFeedMaiz",
+      "constructor": 0,
+      "fields": [
+        { "_field": "cfsId = FeedMaiz",
+          "constructor": 1, "fields": [] },
+        { "_field": "cfsPriceCents — $250/tonelada",
+          "int": 25000 },
+        { "_field": "cfsConfidencePPM — 0.5%",
+          "int": 5000 },
+        { "_field": "cfsPublishTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsOnChainTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsExponent",
+          "int": -2 }
+      ]
+    },
+
+    { "_field": "codFeedTrigo",
+      "constructor": 0,
+      "fields": [
+        { "_field": "cfsId = FeedTrigo",
+          "constructor": 2, "fields": [] },
+        { "_field": "cfsPriceCents — $350/tonelada",
+          "int": 35000 },
+        { "_field": "cfsConfidencePPM — 0.5%",
+          "int": 5000 },
+        { "_field": "cfsPublishTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsOnChainTimeMs",
+          "int": 1742651242000 },
+        { "_field": "cfsExponent",
+          "int": -2 }
+      ]
+    },
+
+    { "_field": "codAuthorizedRelayer",
+      "bytes": "ORACLE_RELAYER_PUBKEY_HASH_HEX" },
+
+    { "_field": "codOwner",
+      "bytes": "OWNER_PUBKEY_HASH_HEX" },
+
+    { "_field": "codUpdateCount",
+      "int": 0 },
+
+    { "_field": "codIsPaused = False",
+      "constructor": 1, "fields": [] }
+  ]
+}
+
