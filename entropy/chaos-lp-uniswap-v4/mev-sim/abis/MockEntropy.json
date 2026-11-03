@@ -1,0 +1,404 @@
+{
+  "abi": [
+    {
+      "type": "function",
+      "name": "consumer",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+      "stateMutability": "view"
+    },
+    {
+      "type": "function",
+      "name": "getFeeV2",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "uint128", "internalType": "uint128" }],
+      "stateMutability": "pure"
+    },
+    {
+      "type": "function",
+      "name": "requestV2",
+      "inputs": [],
+      "outputs": [{ "name": "", "type": "uint64", "internalType": "uint64" }],
+      "stateMutability": "payable"
+    },
+    {
+      "type": "function",
+      "name": "setConsumer",
+      "inputs": [
+        { "name": "_consumer", "type": "address", "internalType": "address" }
+      ],
+      "outputs": [],
+      "stateMutability": "nonpayable"
+    }
+  ],
+  "bytecode": {
+    "object": "0x6080806040523460155761015f908161001a8239f35b5f80fdfe6080806040526004361015610012575f80fd5b5f3560e01c90816363a579d5146100e95781637b43155d14610094575080638204b67a146100735763b4fd729614610048575f80fd5b3461006f575f36600319011261006f575f546040516001600160a01b039091168152602090f35b5f80fd5b3461006f575f36600319011261006f57602060405166038d7ea4c680008152f35b5f36600319011261006f5766038d7ea4c6800034106100c157602060405167ffffffffffffffff43168152f35b62461bcd60e51b815260206004820152600360248201526266656560e81b6044820152606490fd5b3461006f57602036600319011261006f576004356001600160a01b0381169081900361006f576bffffffffffffffffffffffff60a01b5f5416175f555f80f3fea26469706673582212206fcff8267cdb5af3cd3b6e2754c8ef961bc21a7db8ab575926659b53c8c02daa64736f6c634300081a0033",
+    "sourceMap": "116:413:77:-:0;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x6080806040526004361015610012575f80fd5b5f3560e01c90816363a579d5146100e95781637b43155d14610094575080638204b67a146100735763b4fd729614610048575f80fd5b3461006f575f36600319011261006f575f546040516001600160a01b039091168152602090f35b5f80fd5b3461006f575f36600319011261006f57602060405166038d7ea4c680008152f35b5f36600319011261006f5766038d7ea4c6800034106100c157602060405167ffffffffffffffff43168152f35b62461bcd60e51b815260206004820152600360248201526266656560e81b6044820152606490fd5b3461006f57602036600319011261006f576004356001600160a01b0381169081900361006f576bffffffffffffffffffffffff60a01b5f5416175f555f80f3fea26469706673582212206fcff8267cdb5af3cd3b6e2754c8ef961bc21a7db8ab575926659b53c8c02daa64736f6c634300081a0033",
+    "sourceMap": "116:413:77:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;;116:413:77;;;;;;;;-1:-1:-1;;;;;116:413:77;;;;;;;;;;;;;;;;;;-1:-1:-1;;116:413:77;;;;;;;330:4;116:413;;;;;;-1:-1:-1;;116:413:77;;;;330:4;420:9;:23;116:413;;;;;;475:12;116:413;;;;;-1:-1:-1;;;116:413:77;;;;;;;;;;;;-1:-1:-1;;;116:413:77;;;;;;;;;;;;;-1:-1:-1;;116:413:77;;;;;;-1:-1:-1;;;;;116:413:77;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "consumer()": "b4fd7296",
+    "getFeeV2()": "8204b67a",
+    "requestV2()": "7b43155d",
+    "setConsumer(address)": "63a579d5"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"consumer\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getFeeV2\",\"outputs\":[{\"internalType\":\"uint128\",\"name\":\"\",\"type\":\"uint128\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"requestV2\",\"outputs\":[{\"internalType\":\"uint64\",\"name\":\"\",\"type\":\"uint64\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_consumer\",\"type\":\"address\"}],\"name\":\"setConsumer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"test/mocks/MockEntropy.sol\":\"MockEntropy\"},\"evmVersion\":\"cancun\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@ensdomains/=lib/v4-core/node_modules/@ensdomains/\",\":@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/\",\":@pythnetwork/entropy-sdk-solidity/=node_modules/@pythnetwork/entropy-sdk-solidity/\",\":@pythnetwork/pyth-sdk-solidity/=node_modules/@pythnetwork/pyth-sdk-solidity/\",\":@uniswap/v4-core/=lib/v4-core/\",\":@uniswap/v4-periphery/=lib/v4-periphery/\",\":ds-test/=lib/v4-core/lib/forge-std/lib/ds-test/src/\",\":erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/\",\":forge-gas-snapshot/=lib/v4-periphery/lib/permit2/lib/forge-gas-snapshot/src/\",\":forge-std/=lib/forge-std/src/\",\":halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/\",\":hardhat/=lib/v4-core/node_modules/hardhat/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":permit2/=lib/v4-periphery/lib/permit2/\",\":pyth-sdk-solidity/=lib/pyth-sdk-solidity/\",\":solmate/=lib/v4-core/lib/solmate/\",\":v4-core/=lib/v4-core/\",\":v4-periphery/=lib/v4-periphery/\"],\"viaIR\":true},\"sources\":{\"contracts/ChaosHook.sol\":{\"keccak256\":\"0xed20c5ab97ef0d943e2e05a93e832c508137abac5ffc36cd76a8584aaa53f178\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fcec31ea7ec66110f1da35feff3be80bfea2bfe5bc1969ccb24008d3f11cd3d5\",\"dweb:/ipfs/QmRjTok17MZqkMcfcsaFiXfGD1RMcFmSJAXSEYXAPLBrhk\"]},\"lib/v4-core/src/interfaces/IExtsload.sol\":{\"keccak256\":\"0x80b53ca4907d6f0088c3b931f2b72cad1dc4615a95094d96bd0fb8dff8d5ba43\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://375c69148622aab7a3537d5fd37d373a8e9731022c8d87bdaee46233b0a99fe1\",\"dweb:/ipfs/QmXFjdoYRxsA5B1kyuxEXgNf3FBoL1zPvy26Qy8EtpdFRN\"]},\"lib/v4-core/src/interfaces/IExttload.sol\":{\"keccak256\":\"0xc6b68283ebd8d1c789df536756726eed51c589134bb20821b236a0d22a135937\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://294394f72dfc219689209f4130d85601dfd0d63c8d47578050d312db70f9b6c8\",\"dweb:/ipfs/QmTDMQ3oxCGHgEBU48a3Lp4S1rRjc8vVCxkhE5ZNej1bsY\"]},\"lib/v4-core/src/interfaces/IHooks.sol\":{\"keccak256\":\"0xc131ffa2d04c10a012fe715fe2c115811526b7ea34285cf0a04ce7ce8320da8d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3b212358897db5d99c21244d88f97b2e788527552cb430629b472a8cc6289aec\",\"dweb:/ipfs/QmQtwV4dDe2RYk2ErLpaAX7U82jWh1L6Lw2HRuKDvBi84G\"]},\"lib/v4-core/src/interfaces/IPoolManager.sol\":{\"keccak256\":\"0xbdab3544da3d32dfdf7457baa94e17d5a3012952428559e013ffac45d067038e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ce95ff864468e37c76adf71df061d4f3d6f3a5ec1f9bc3aea090463bc72798f4\",\"dweb:/ipfs/QmSbWh1pLbz51yQF4HEu5NRhr8XVv9JYGEw1hq1HudAnCi\"]},\"lib/v4-core/src/interfaces/IProtocolFees.sol\":{\"keccak256\":\"0x32a666e588a2f66334430357bb1e2424fe7eebeb98a3364b1dd16eb6ccca9848\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://85751d302125881f72e5f8af051c2d5d9b1f606ebaea8ca7d04fccdd27cc252d\",\"dweb:/ipfs/QmeRwomeh9NWm6A6fgNA4KZPQZHPpdKsPQyYsHSFmvud7J\"]},\"lib/v4-core/src/interfaces/external/IERC20Minimal.sol\":{\"keccak256\":\"0xeccadf1bf69ba2eb51f2fe4fa511bc7bb05bbd6b9f9a3cb8e5d83d9582613e0f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://118757369892687b99ef46ce28d6861f62c098285bd7687a4f17f7e44e5f81de\",\"dweb:/ipfs/QmUxqbYqQtcEwwFbb9e6BBMePEaSgN8C45v6RKubD4ib8d\"]},\"lib/v4-core/src/interfaces/external/IERC6909Claims.sol\":{\"keccak256\":\"0xa586f345739e52b0488a0fe40b6e375cce67fdd25758408b0efcb5133ad96a48\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e8c557b7e52abdbbd82e415a1acc27921446a7fd090b7d4877e52be72619547f\",\"dweb:/ipfs/QmXE2KNPbXmGX8BQF3ei6zhzRTnhoTQg39XmqMnkhbr6QK\"]},\"lib/v4-core/src/libraries/BitMath.sol\":{\"keccak256\":\"0x51b9be4f5c4fd3e80cbc9631a65244a2eb2be250b6b7f128a2035080e18aee8d\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fe98bbd5498e912146b9319827fc63621eb66ff55d5baae0fa02a7a972ab8d1e\",\"dweb:/ipfs/QmY5hCuyrtgsJtk4AavrxcvBkRrChfr4N6ZnhdC8roPpNi\"]},\"lib/v4-core/src/libraries/CustomRevert.sol\":{\"keccak256\":\"0x111ed3031b6990c80a93ae35dde6b6ac0b7e6af471388fdd7461e91edda9b7de\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c9ea883c98d6ae1829160d0977bb5195761cfd5bc81692d0a941f45717f594cd\",\"dweb:/ipfs/QmZPwxzaeMNv536wzrAMrMswu7vMHuqPVpjcqL3YvCMoxt\"]},\"lib/v4-core/src/libraries/Hooks.sol\":{\"keccak256\":\"0xd679b4b2d429689bc44f136050ebc958fb2d7d0d3a3c7b3e48c08ab4fba09aaa\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://287190cb72840e5eb63cc7a8a1d0b9150af17d8e4ea0323f47c7e7928f2033cb\",\"dweb:/ipfs/QmVfqWBnAQM2jUcuREDdvjcP21gNuLU35CoL3NG5CEhNcx\"]},\"lib/v4-core/src/libraries/LPFeeLibrary.sol\":{\"keccak256\":\"0xbf6914e01014e7c1044111feb7df7a3d96bb503b3da827ad8464b1955580d13b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://33823c20a91882c9aacdcbb02f0558c05209f4d5954aa6dd4fa17c95664db475\",\"dweb:/ipfs/QmR7owkFgpfztpp1QUg3ut3nw9iPVQqLGP4hzgmZtRUQ2J\"]},\"lib/v4-core/src/libraries/ParseBytes.sol\":{\"keccak256\":\"0x7533b13f53ee2c2c55500100b22ffd6e37e7523c27874edc98663d53a8672b15\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://82449058634fde28a085f3c59a6a5f412550c02181590593fd84c3e8b329aa17\",\"dweb:/ipfs/Qmev4E9Au6SsE4wsArChCwfg94KhHc5gYsEsZUnjF5sRLa\"]},\"lib/v4-core/src/libraries/SafeCast.sol\":{\"keccak256\":\"0x42c4a24f996a14d358be397b71f7ec9d7daf666aaec78002c63315a6ee67aa86\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://c3db86e2ba3679105fc32edec656c70282e1fede6cab11217702443f6c26fa59\",\"dweb:/ipfs/QmX4yaaSPdKQzYNRsezjTvZKsubzS8JRTEGFD3fPpTTCcj\"]},\"lib/v4-core/src/libraries/TickMath.sol\":{\"keccak256\":\"0x4e1a11e154eb06106cb1c4598f06cca5f5ca16eaa33494ba2f0e74981123eca8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a79a57f7b240783b045168d1c4f774ac1812caf8f9a83cb6959a86b0b07b6c70\",\"dweb:/ipfs/QmTb5kvxwDNW8jDuQaqdJ445cCFejNkUqEB17Bjo8UBiva\"]},\"lib/v4-core/src/types/BalanceDelta.sol\":{\"keccak256\":\"0xa719c8fe51e0a9524280178f19f6851bcc3b3b60e73618f3d60905d35ae5569f\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7436928dc9de35c6c7c5c636cb51adaf295cfd590da83b19a004ae33cbec9ef9\",\"dweb:/ipfs/QmRJ9yZkUpzk4433GX3LgVVL8jwpbSYSUwXcucKisf3v4H\"]},\"lib/v4-core/src/types/BeforeSwapDelta.sol\":{\"keccak256\":\"0x2a774312d91285313d569da1a718c909655da5432310417692097a1d4dc83a78\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a2c7a0379955cff9c17ab9e61f95e42909aa5947c22740f86ce940d09856f782\",\"dweb:/ipfs/QmaAuo8UBYXsGrVuKh8iRoAAdqwtg1jDq515cW1ZRP5m9K\"]},\"lib/v4-core/src/types/Currency.sol\":{\"keccak256\":\"0x4a0b84b282577ff6f8acf13ec9f4d32dbb9348748b49611d00e68bee96609c93\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://45f9d62ab3d51b52957279e353853ba1547c3182c9a1e3d1846ada4a90263b01\",\"dweb:/ipfs/QmS8NG84ccQS1yXVD8cv3eKX7J1UKxuJhbUfHTQR2opKF5\"]},\"lib/v4-core/src/types/PoolId.sol\":{\"keccak256\":\"0x308311916ea0f5c2fd878b6a2751eb223d170a69e33f601fae56dfe3c5d392af\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://669c2cd7ac17690b5d8831e0bda72822376c3a04b36afed6d31df4d75fe60918\",\"dweb:/ipfs/QmT6EpkxqU8VF3WsgrZ66F3s1cCQRffR95z1HDYZz7ph6y\"]},\"lib/v4-core/src/types/PoolKey.sol\":{\"keccak256\":\"0xf89856e0580d7a4856d3187a76858377ccee9d59702d230c338d84388221b786\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://6f3118fa189025695c37fdf0bdd1190f085ad097484d3c88cf4c56d1db65f639\",\"dweb:/ipfs/QmamXpgtB8GV1CaFLvqefPWSoikLDhMk1yU4heBnVzU8gi\"]},\"lib/v4-core/src/types/PoolOperation.sol\":{\"keccak256\":\"0x7a1a107fc1f2208abb2c9364c8c54e56e98dca27673e9441bed2b949b6382162\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4ad2470383bc5595d5af17840c64971f457adac68895a4db41ba5c71a4478e07\",\"dweb:/ipfs/QmdwKhBHDZFuqXrR2BfDBD9r7rB2ULGQBznsajRTkTmL4c\"]},\"lib/v4-periphery/src/base/ImmutableState.sol\":{\"keccak256\":\"0x1867c9fa2f9b4fa73bab0fcdc9d19ccef4eeac552273d8b84a170cd1cc90350a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://af2d699b439e13b599632fddfe82718aebd41055fba7c075f186675c588d1337\",\"dweb:/ipfs/Qmc111gckSKb9aESn3wRFLeLiS4KGujaUcaYJgRnCRfwQU\"]},\"lib/v4-periphery/src/interfaces/IImmutableState.sol\":{\"keccak256\":\"0x36ab3100e87457ecf04887f4f540e34fd7f21d8e3b83880cb679239e60b7b06b\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://7f290c7ce8e4832608d637a51b13dff95abecf6549485448e647a11c8ed01341\",\"dweb:/ipfs/QmfD1R6mTp8j4EjQXmQZW3vCh11EYFjnvoaw8rXRP27mMq\"]},\"lib/v4-periphery/src/utils/BaseHook.sol\":{\"keccak256\":\"0x6268607345149d912996d1c2bac693b2102304cc97c19ec4fef184d6fa390e89\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d6c0dddffa6c5eb3c10bc45d56d58bc3f4773778322fa10a4acf46e2292b61b3\",\"dweb:/ipfs/Qmc1Srhh6ne5Lsi2Y5BBz8pgPLmJdg8uN1UCeJzKnr6Kra\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/EntropyEvents.sol\":{\"keccak256\":\"0x385eb7fb335b3c7037e5d2ecf119f42baa4f69fbc535daf1effbc26e774a6a4a\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://b62bfbf9e5969390d22c4ad0a6c5d64a1091d0cdef3e19e72482333c88c0e39b\",\"dweb:/ipfs/QmaN1oB9u82CaxYcGyKDxZKDhjYiM8J324AE6j5yCjFReK\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/EntropyEventsV2.sol\":{\"keccak256\":\"0xc8c2438857680a605d6b441f0b5fa21054dce0ae1db0a7ef8b8ab14a97249e4e\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://81739805ac90c9bc91e87e4e42d57c5420cfb179a3f9088fb8416e4ba2eeade3\",\"dweb:/ipfs/QmSvrb38Bn8tDCcaC9vZpV4J8BnXy8y9fSNMaUdNaKMA28\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/EntropyStructs.sol\":{\"keccak256\":\"0xc23ba702644b68f402b5cd1ef98da7c194ae4a3d05249a88b75160c503704809\",\"license\":\"Apache 2\",\"urls\":[\"bzz-raw://b2ac288f4e8cd2484cf8abb7bb709e4709e4ffa10697945498ba365312cfe191\",\"dweb:/ipfs/Qme9QS4P94gb9B81qLYX3EE2pQrb7MJSAaZygHuydpZo6n\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/EntropyStructsV2.sol\":{\"keccak256\":\"0xca3e9a064e5e557f767475d4a543399c315babce9681f98454950e7fe52ed44c\",\"license\":\"Apache 2\",\"urls\":[\"bzz-raw://149efc8c37b0d325da7ee2dae5bfffcbd6f420acdb8445f0744e351b4a392688\",\"dweb:/ipfs/QmUW5Z72iFDwxdeWh76kYNyT1agDao2AVmpc4zSC5q8Laz\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol\":{\"keccak256\":\"0xf3d3dee1e9cbdef70b6c1f4d79aa8b438413e4636c00e79e615da9dc4df9c379\",\"license\":\"Apache 2\",\"urls\":[\"bzz-raw://0e473522447c8f92a43f4fa3e54d83a789e12cc44b2a86847bd238a7f8827952\",\"dweb:/ipfs/Qmdihx73a89EZYy2GpitTxK92SWDLyPWeWnJTZ4Acva958\"]},\"node_modules/@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol\":{\"keccak256\":\"0xbfa09defc676b17bc4cb9d8e17f703c885de676d16396e45963dbe104afaba6a\",\"license\":\"Apache 2\",\"urls\":[\"bzz-raw://cdf892b3def9c3e506e197ffe1ed1c040d6e4e668b9249439eacac965d98c3d5\",\"dweb:/ipfs/QmRzQev7pKackFa33pVqwjf3iYt6GdDzCCvwUY5c8Z4tXU\"]},\"node_modules/@pythnetwork/pyth-sdk-solidity/IPyth.sol\":{\"keccak256\":\"0xdd07c2c02083b3cbb23f40608c15c5531f59014955216fc7f513926e01c8b70b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://fa1c4eea55dabbca94c55e6d7159b4794ca19440faea11e2d4e1f30283427eed\",\"dweb:/ipfs/QmeAz8t4yh5DsDhX5v64s3THHzAUVpK2dWCYiy9vSciyp7\"]},\"node_modules/@pythnetwork/pyth-sdk-solidity/IPythEvents.sol\":{\"keccak256\":\"0xd67239becd2c39bd9d065830be24e70606f5747ab31b8818bea849d09ac17ddc\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://e719bd2d8c1d8d46713aeb700dd6b5ddd766a77830ea9ae3cc9327f67ed775d1\",\"dweb:/ipfs/QmNQYyRVFLEvLsCSTkHkAemTvvZm4CzLN7hUdMidMcBS7u\"]},\"node_modules/@pythnetwork/pyth-sdk-solidity/PythStructs.sol\":{\"keccak256\":\"0x474436bf0d558cc9b2c00a9d0ce318147acdf7963f34ef4acadb9248e65bbc7b\",\"license\":\"Apache-2.0\",\"urls\":[\"bzz-raw://2b8f9bd9de35e67c7bdbf04d8c2e771718fcc8666456ca5f92dbd914e4a5f2b3\",\"dweb:/ipfs/QmNP3ShBYRp4RiVbAudMB7rNHAqgtwn8pPBzb8JTUaViRh\"]},\"test/mocks/MockEntropy.sol\":{\"keccak256\":\"0xa751a3d0a472aeb02a75098da0b3b45a8633db728347f2f7178bd509f0975be0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0c7dff01661280ea3d681ec0649da55dfc87c7b6d7e709e59792f16deedb5282\",\"dweb:/ipfs/Qma5WDAreoaaEuwS7CCun2Fyi4naQsZ6EPVY2Ngt6mXsrt\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": { "version": "0.8.26+commit.8a97fa7a" },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "consumer",
+          "outputs": [
+            { "internalType": "address", "name": "", "type": "address" }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "pure",
+          "type": "function",
+          "name": "getFeeV2",
+          "outputs": [
+            { "internalType": "uint128", "name": "", "type": "uint128" }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "payable",
+          "type": "function",
+          "name": "requestV2",
+          "outputs": [
+            { "internalType": "uint64", "name": "", "type": "uint64" }
+          ]
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "_consumer",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "setConsumer"
+        }
+      ],
+      "devdoc": { "kind": "dev", "methods": {}, "version": 1 },
+      "userdoc": { "kind": "user", "methods": {}, "version": 1 }
+    },
+    "settings": {
+      "remappings": [
+        "@ensdomains/=lib/v4-core/node_modules/@ensdomains/",
+        "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+        "@pythnetwork/entropy-sdk-solidity/=node_modules/@pythnetwork/entropy-sdk-solidity/",
+        "@pythnetwork/pyth-sdk-solidity/=node_modules/@pythnetwork/pyth-sdk-solidity/",
+        "@uniswap/v4-core/=lib/v4-core/",
+        "@uniswap/v4-periphery/=lib/v4-periphery/",
+        "ds-test/=lib/v4-core/lib/forge-std/lib/ds-test/src/",
+        "erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+        "forge-gas-snapshot/=lib/v4-periphery/lib/permit2/lib/forge-gas-snapshot/src/",
+        "forge-std/=lib/forge-std/src/",
+        "halmos-cheatcodes/=lib/openzeppelin-contracts/lib/halmos-cheatcodes/src/",
+        "hardhat/=lib/v4-core/node_modules/hardhat/",
+        "openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        "permit2/=lib/v4-periphery/lib/permit2/",
+        "pyth-sdk-solidity/=lib/pyth-sdk-solidity/",
+        "solmate/=lib/v4-core/lib/solmate/",
+        "v4-core/=lib/v4-core/",
+        "v4-periphery/=lib/v4-periphery/"
+      ],
+      "optimizer": { "enabled": true, "runs": 200 },
+      "metadata": { "bytecodeHash": "ipfs" },
+      "compilationTarget": { "test/mocks/MockEntropy.sol": "MockEntropy" },
+      "evmVersion": "cancun",
+      "libraries": {},
+      "viaIR": true
+    },
+    "sources": {
+      "contracts/ChaosHook.sol": {
+        "keccak256": "0xed20c5ab97ef0d943e2e05a93e832c508137abac5ffc36cd76a8584aaa53f178",
+        "urls": [
+          "bzz-raw://fcec31ea7ec66110f1da35feff3be80bfea2bfe5bc1969ccb24008d3f11cd3d5",
+          "dweb:/ipfs/QmRjTok17MZqkMcfcsaFiXfGD1RMcFmSJAXSEYXAPLBrhk"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/IExtsload.sol": {
+        "keccak256": "0x80b53ca4907d6f0088c3b931f2b72cad1dc4615a95094d96bd0fb8dff8d5ba43",
+        "urls": [
+          "bzz-raw://375c69148622aab7a3537d5fd37d373a8e9731022c8d87bdaee46233b0a99fe1",
+          "dweb:/ipfs/QmXFjdoYRxsA5B1kyuxEXgNf3FBoL1zPvy26Qy8EtpdFRN"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/IExttload.sol": {
+        "keccak256": "0xc6b68283ebd8d1c789df536756726eed51c589134bb20821b236a0d22a135937",
+        "urls": [
+          "bzz-raw://294394f72dfc219689209f4130d85601dfd0d63c8d47578050d312db70f9b6c8",
+          "dweb:/ipfs/QmTDMQ3oxCGHgEBU48a3Lp4S1rRjc8vVCxkhE5ZNej1bsY"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/IHooks.sol": {
+        "keccak256": "0xc131ffa2d04c10a012fe715fe2c115811526b7ea34285cf0a04ce7ce8320da8d",
+        "urls": [
+          "bzz-raw://3b212358897db5d99c21244d88f97b2e788527552cb430629b472a8cc6289aec",
+          "dweb:/ipfs/QmQtwV4dDe2RYk2ErLpaAX7U82jWh1L6Lw2HRuKDvBi84G"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/IPoolManager.sol": {
+        "keccak256": "0xbdab3544da3d32dfdf7457baa94e17d5a3012952428559e013ffac45d067038e",
+        "urls": [
+          "bzz-raw://ce95ff864468e37c76adf71df061d4f3d6f3a5ec1f9bc3aea090463bc72798f4",
+          "dweb:/ipfs/QmSbWh1pLbz51yQF4HEu5NRhr8XVv9JYGEw1hq1HudAnCi"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/IProtocolFees.sol": {
+        "keccak256": "0x32a666e588a2f66334430357bb1e2424fe7eebeb98a3364b1dd16eb6ccca9848",
+        "urls": [
+          "bzz-raw://85751d302125881f72e5f8af051c2d5d9b1f606ebaea8ca7d04fccdd27cc252d",
+          "dweb:/ipfs/QmeRwomeh9NWm6A6fgNA4KZPQZHPpdKsPQyYsHSFmvud7J"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/external/IERC20Minimal.sol": {
+        "keccak256": "0xeccadf1bf69ba2eb51f2fe4fa511bc7bb05bbd6b9f9a3cb8e5d83d9582613e0f",
+        "urls": [
+          "bzz-raw://118757369892687b99ef46ce28d6861f62c098285bd7687a4f17f7e44e5f81de",
+          "dweb:/ipfs/QmUxqbYqQtcEwwFbb9e6BBMePEaSgN8C45v6RKubD4ib8d"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/interfaces/external/IERC6909Claims.sol": {
+        "keccak256": "0xa586f345739e52b0488a0fe40b6e375cce67fdd25758408b0efcb5133ad96a48",
+        "urls": [
+          "bzz-raw://e8c557b7e52abdbbd82e415a1acc27921446a7fd090b7d4877e52be72619547f",
+          "dweb:/ipfs/QmXE2KNPbXmGX8BQF3ei6zhzRTnhoTQg39XmqMnkhbr6QK"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/BitMath.sol": {
+        "keccak256": "0x51b9be4f5c4fd3e80cbc9631a65244a2eb2be250b6b7f128a2035080e18aee8d",
+        "urls": [
+          "bzz-raw://fe98bbd5498e912146b9319827fc63621eb66ff55d5baae0fa02a7a972ab8d1e",
+          "dweb:/ipfs/QmY5hCuyrtgsJtk4AavrxcvBkRrChfr4N6ZnhdC8roPpNi"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/CustomRevert.sol": {
+        "keccak256": "0x111ed3031b6990c80a93ae35dde6b6ac0b7e6af471388fdd7461e91edda9b7de",
+        "urls": [
+          "bzz-raw://c9ea883c98d6ae1829160d0977bb5195761cfd5bc81692d0a941f45717f594cd",
+          "dweb:/ipfs/QmZPwxzaeMNv536wzrAMrMswu7vMHuqPVpjcqL3YvCMoxt"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/Hooks.sol": {
+        "keccak256": "0xd679b4b2d429689bc44f136050ebc958fb2d7d0d3a3c7b3e48c08ab4fba09aaa",
+        "urls": [
+          "bzz-raw://287190cb72840e5eb63cc7a8a1d0b9150af17d8e4ea0323f47c7e7928f2033cb",
+          "dweb:/ipfs/QmVfqWBnAQM2jUcuREDdvjcP21gNuLU35CoL3NG5CEhNcx"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/LPFeeLibrary.sol": {
+        "keccak256": "0xbf6914e01014e7c1044111feb7df7a3d96bb503b3da827ad8464b1955580d13b",
+        "urls": [
+          "bzz-raw://33823c20a91882c9aacdcbb02f0558c05209f4d5954aa6dd4fa17c95664db475",
+          "dweb:/ipfs/QmR7owkFgpfztpp1QUg3ut3nw9iPVQqLGP4hzgmZtRUQ2J"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/ParseBytes.sol": {
+        "keccak256": "0x7533b13f53ee2c2c55500100b22ffd6e37e7523c27874edc98663d53a8672b15",
+        "urls": [
+          "bzz-raw://82449058634fde28a085f3c59a6a5f412550c02181590593fd84c3e8b329aa17",
+          "dweb:/ipfs/Qmev4E9Au6SsE4wsArChCwfg94KhHc5gYsEsZUnjF5sRLa"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/SafeCast.sol": {
+        "keccak256": "0x42c4a24f996a14d358be397b71f7ec9d7daf666aaec78002c63315a6ee67aa86",
+        "urls": [
+          "bzz-raw://c3db86e2ba3679105fc32edec656c70282e1fede6cab11217702443f6c26fa59",
+          "dweb:/ipfs/QmX4yaaSPdKQzYNRsezjTvZKsubzS8JRTEGFD3fPpTTCcj"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/libraries/TickMath.sol": {
+        "keccak256": "0x4e1a11e154eb06106cb1c4598f06cca5f5ca16eaa33494ba2f0e74981123eca8",
+        "urls": [
+          "bzz-raw://a79a57f7b240783b045168d1c4f774ac1812caf8f9a83cb6959a86b0b07b6c70",
+          "dweb:/ipfs/QmTb5kvxwDNW8jDuQaqdJ445cCFejNkUqEB17Bjo8UBiva"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/BalanceDelta.sol": {
+        "keccak256": "0xa719c8fe51e0a9524280178f19f6851bcc3b3b60e73618f3d60905d35ae5569f",
+        "urls": [
+          "bzz-raw://7436928dc9de35c6c7c5c636cb51adaf295cfd590da83b19a004ae33cbec9ef9",
+          "dweb:/ipfs/QmRJ9yZkUpzk4433GX3LgVVL8jwpbSYSUwXcucKisf3v4H"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/BeforeSwapDelta.sol": {
+        "keccak256": "0x2a774312d91285313d569da1a718c909655da5432310417692097a1d4dc83a78",
+        "urls": [
+          "bzz-raw://a2c7a0379955cff9c17ab9e61f95e42909aa5947c22740f86ce940d09856f782",
+          "dweb:/ipfs/QmaAuo8UBYXsGrVuKh8iRoAAdqwtg1jDq515cW1ZRP5m9K"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/Currency.sol": {
+        "keccak256": "0x4a0b84b282577ff6f8acf13ec9f4d32dbb9348748b49611d00e68bee96609c93",
+        "urls": [
+          "bzz-raw://45f9d62ab3d51b52957279e353853ba1547c3182c9a1e3d1846ada4a90263b01",
+          "dweb:/ipfs/QmS8NG84ccQS1yXVD8cv3eKX7J1UKxuJhbUfHTQR2opKF5"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/PoolId.sol": {
+        "keccak256": "0x308311916ea0f5c2fd878b6a2751eb223d170a69e33f601fae56dfe3c5d392af",
+        "urls": [
+          "bzz-raw://669c2cd7ac17690b5d8831e0bda72822376c3a04b36afed6d31df4d75fe60918",
+          "dweb:/ipfs/QmT6EpkxqU8VF3WsgrZ66F3s1cCQRffR95z1HDYZz7ph6y"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/PoolKey.sol": {
+        "keccak256": "0xf89856e0580d7a4856d3187a76858377ccee9d59702d230c338d84388221b786",
+        "urls": [
+          "bzz-raw://6f3118fa189025695c37fdf0bdd1190f085ad097484d3c88cf4c56d1db65f639",
+          "dweb:/ipfs/QmamXpgtB8GV1CaFLvqefPWSoikLDhMk1yU4heBnVzU8gi"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-core/src/types/PoolOperation.sol": {
+        "keccak256": "0x7a1a107fc1f2208abb2c9364c8c54e56e98dca27673e9441bed2b949b6382162",
+        "urls": [
+          "bzz-raw://4ad2470383bc5595d5af17840c64971f457adac68895a4db41ba5c71a4478e07",
+          "dweb:/ipfs/QmdwKhBHDZFuqXrR2BfDBD9r7rB2ULGQBznsajRTkTmL4c"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-periphery/src/base/ImmutableState.sol": {
+        "keccak256": "0x1867c9fa2f9b4fa73bab0fcdc9d19ccef4eeac552273d8b84a170cd1cc90350a",
+        "urls": [
+          "bzz-raw://af2d699b439e13b599632fddfe82718aebd41055fba7c075f186675c588d1337",
+          "dweb:/ipfs/Qmc111gckSKb9aESn3wRFLeLiS4KGujaUcaYJgRnCRfwQU"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-periphery/src/interfaces/IImmutableState.sol": {
+        "keccak256": "0x36ab3100e87457ecf04887f4f540e34fd7f21d8e3b83880cb679239e60b7b06b",
+        "urls": [
+          "bzz-raw://7f290c7ce8e4832608d637a51b13dff95abecf6549485448e647a11c8ed01341",
+          "dweb:/ipfs/QmfD1R6mTp8j4EjQXmQZW3vCh11EYFjnvoaw8rXRP27mMq"
+        ],
+        "license": "MIT"
+      },
+      "lib/v4-periphery/src/utils/BaseHook.sol": {
+        "keccak256": "0x6268607345149d912996d1c2bac693b2102304cc97c19ec4fef184d6fa390e89",
+        "urls": [
+          "bzz-raw://d6c0dddffa6c5eb3c10bc45d56d58bc3f4773778322fa10a4acf46e2292b61b3",
+          "dweb:/ipfs/Qmc1Srhh6ne5Lsi2Y5BBz8pgPLmJdg8uN1UCeJzKnr6Kra"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/EntropyEvents.sol": {
+        "keccak256": "0x385eb7fb335b3c7037e5d2ecf119f42baa4f69fbc535daf1effbc26e774a6a4a",
+        "urls": [
+          "bzz-raw://b62bfbf9e5969390d22c4ad0a6c5d64a1091d0cdef3e19e72482333c88c0e39b",
+          "dweb:/ipfs/QmaN1oB9u82CaxYcGyKDxZKDhjYiM8J324AE6j5yCjFReK"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/EntropyEventsV2.sol": {
+        "keccak256": "0xc8c2438857680a605d6b441f0b5fa21054dce0ae1db0a7ef8b8ab14a97249e4e",
+        "urls": [
+          "bzz-raw://81739805ac90c9bc91e87e4e42d57c5420cfb179a3f9088fb8416e4ba2eeade3",
+          "dweb:/ipfs/QmSvrb38Bn8tDCcaC9vZpV4J8BnXy8y9fSNMaUdNaKMA28"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/EntropyStructs.sol": {
+        "keccak256": "0xc23ba702644b68f402b5cd1ef98da7c194ae4a3d05249a88b75160c503704809",
+        "urls": [
+          "bzz-raw://b2ac288f4e8cd2484cf8abb7bb709e4709e4ffa10697945498ba365312cfe191",
+          "dweb:/ipfs/Qme9QS4P94gb9B81qLYX3EE2pQrb7MJSAaZygHuydpZo6n"
+        ],
+        "license": "Apache 2"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/EntropyStructsV2.sol": {
+        "keccak256": "0xca3e9a064e5e557f767475d4a543399c315babce9681f98454950e7fe52ed44c",
+        "urls": [
+          "bzz-raw://149efc8c37b0d325da7ee2dae5bfffcbd6f420acdb8445f0744e351b4a392688",
+          "dweb:/ipfs/QmUW5Z72iFDwxdeWh76kYNyT1agDao2AVmpc4zSC5q8Laz"
+        ],
+        "license": "Apache 2"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol": {
+        "keccak256": "0xf3d3dee1e9cbdef70b6c1f4d79aa8b438413e4636c00e79e615da9dc4df9c379",
+        "urls": [
+          "bzz-raw://0e473522447c8f92a43f4fa3e54d83a789e12cc44b2a86847bd238a7f8827952",
+          "dweb:/ipfs/Qmdihx73a89EZYy2GpitTxK92SWDLyPWeWnJTZ4Acva958"
+        ],
+        "license": "Apache 2"
+      },
+      "node_modules/@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol": {
+        "keccak256": "0xbfa09defc676b17bc4cb9d8e17f703c885de676d16396e45963dbe104afaba6a",
+        "urls": [
+          "bzz-raw://cdf892b3def9c3e506e197ffe1ed1c040d6e4e668b9249439eacac965d98c3d5",
+          "dweb:/ipfs/QmRzQev7pKackFa33pVqwjf3iYt6GdDzCCvwUY5c8Z4tXU"
+        ],
+        "license": "Apache 2"
+      },
+      "node_modules/@pythnetwork/pyth-sdk-solidity/IPyth.sol": {
+        "keccak256": "0xdd07c2c02083b3cbb23f40608c15c5531f59014955216fc7f513926e01c8b70b",
+        "urls": [
+          "bzz-raw://fa1c4eea55dabbca94c55e6d7159b4794ca19440faea11e2d4e1f30283427eed",
+          "dweb:/ipfs/QmeAz8t4yh5DsDhX5v64s3THHzAUVpK2dWCYiy9vSciyp7"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@pythnetwork/pyth-sdk-solidity/IPythEvents.sol": {
+        "keccak256": "0xd67239becd2c39bd9d065830be24e70606f5747ab31b8818bea849d09ac17ddc",
+        "urls": [
+          "bzz-raw://e719bd2d8c1d8d46713aeb700dd6b5ddd766a77830ea9ae3cc9327f67ed775d1",
+          "dweb:/ipfs/QmNQYyRVFLEvLsCSTkHkAemTvvZm4CzLN7hUdMidMcBS7u"
+        ],
+        "license": "Apache-2.0"
+      },
+      "node_modules/@pythnetwork/pyth-sdk-solidity/PythStructs.sol": {
+        "keccak256": "0x474436bf0d558cc9b2c00a9d0ce318147acdf7963f34ef4acadb9248e65bbc7b",
+        "urls": [
+          "bzz-raw://2b8f9bd9de35e67c7bdbf04d8c2e771718fcc8666456ca5f92dbd914e4a5f2b3",
+          "dweb:/ipfs/QmNP3ShBYRp4RiVbAudMB7rNHAqgtwn8pPBzb8JTUaViRh"
+        ],
+        "license": "Apache-2.0"
+      },
+      "test/mocks/MockEntropy.sol": {
+        "keccak256": "0xa751a3d0a472aeb02a75098da0b3b45a8633db728347f2f7178bd509f0975be0",
+        "urls": [
+          "bzz-raw://0c7dff01661280ea3d681ec0649da55dfc87c7b6d7e709e59792f16deedb5282",
+          "dweb:/ipfs/Qma5WDAreoaaEuwS7CCun2Fyi4naQsZ6EPVY2Ngt6mXsrt"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "id": 77
+}
