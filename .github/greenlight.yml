@@ -1,9 +1,11 @@
 enabled: true
 required_reviewer_checks: []
 # Greenlight requires this key; without it the whole file is malformed and
-# Greenlight ignores the repo. Empty: no path can auto-approve, so every
-# PR needs a human.
-auto_approve_paths: []
+# Greenlight ignores the repo. This repo holds example code only, so every
+# path can auto-approve. The server's hard floor still keeps
+# .github/workflows/**, .github/greenlight.yml, .github/greenlight/prompts/**
+# and **/CODEOWNERS behind a human.
+auto_approve_paths: ["**"]
 
 # Opt in to the two-humans rule. Greenlight posts a
 # `greenlight/two-humans` check on every PR: one human for a PR
