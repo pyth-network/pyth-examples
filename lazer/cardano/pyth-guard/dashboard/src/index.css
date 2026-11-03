@@ -1,0 +1,576 @@
+/* ============================================================
+   PYTHGUARD — Terminal de Trading
+   Dark Theme + Lavender Accent
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ── Tokens ── */
+:root {
+  --font-editorial: 'Plus Jakarta Sans', sans-serif;
+  --font-body:      'Manrope', sans-serif;
+  --font-mono:      'JetBrains Mono', monospace;
+
+  /* Dark terminal palette */
+  --bg:                       #0d0f1a;
+  --surface:                  #141623;
+  --surface-container:        #1a1d2e;
+  --surface-container-low:    #16182a;
+  --surface-container-lowest: #101320;
+  --on-background:            #e4e2f0;
+  --on-surface:               #c5c2d8;
+  --outline:                  #2a2d45;
+  --outline-faint:            #1f2138;
+
+  /* Brand */
+  --primary:           #7c5cfa;
+  --primary-light:     #9d82fc;
+  --primary-container: rgba(124, 92, 250, 0.15);
+  --secondary-container: rgba(124, 92, 250, 0.08);
+
+  /* Semantic */
+  --buy:   #00d26a;
+  --buy-container:  rgba(0, 210, 106, 0.12);
+  --sell:  #ff3d5a;
+  --sell-container: rgba(255, 61, 90, 0.12);
+  --error: #ff3d5a;
+  --warn:  #f5a623;
+
+  /* Chart */
+  --chart-pyth:   #7c5cfa;
+  --chart-oracle: rgba(180, 160, 255, 0.35);
+  --chart-grid:   rgba(42, 45, 69, 0.6);
+  --chart-bg:     #0d0f1a;
+
+  /* Misc */
+  --header-h:  56px;
+  --sidebar-w: 52px;
+  --panel-w:   340px;
+  --radius:    10px;
+  --radius-sm: 6px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--on-background);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--outline); border-radius: 2px; }
+
+/* ── Typography ── */
+.title-lg {
+  font-family: var(--font-editorial);
+  font-weight: 800;
+  font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.title-md {
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: clamp(1.1rem, 1.5vw, 1.4rem);
+  letter-spacing: -0.02em;
+}
+.text-muted   { color: var(--on-surface); }
+.text-mono    { font-family: var(--font-mono); }
+.text-buy     { color: var(--buy); }
+.text-sell    { color: var(--sell); }
+
+/* ── Header ── */
+.header {
+  height: var(--header-h);
+  min-height: var(--header-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  gap: 1rem;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-editorial);
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--on-background);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.header-logo svg { color: var(--primary); }
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-dot.live {
+  background: var(--buy);
+  box-shadow: 0 0 6px var(--buy);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+.status-dot.offline { background: var(--outline); }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--buy); }
+  50% { opacity: 0.6; box-shadow: 0 0 2px var(--buy); }
+}
+
+.header-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--outline);
+  flex-shrink: 0;
+}
+
+/* Asset selector */
+.asset-select {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--on-background);
+  transition: border-color 150ms;
+}
+.asset-select:hover { border-color: var(--primary); }
+
+/* Wallet button */
+.wallet-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--primary-container);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0.35rem 0.85rem;
+  cursor: pointer;
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--primary-light);
+  transition: all 150ms;
+}
+.wallet-btn:hover { background: rgba(124, 92, 250, 0.25); }
+
+/* Icon button (notifications, profile) */
+.icon-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--outline);
+  background: var(--surface-container);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--on-surface);
+  transition: all 150ms;
+  position: relative;
+  flex-shrink: 0;
+}
+.icon-btn:hover { border-color: var(--primary); color: var(--primary-light); }
+
+.notification-dot {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--sell);
+  border: 1.5px solid var(--surface);
+}
+
+.profile-pic {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--primary);
+  cursor: pointer;
+}
+
+/* ── Analysis Sidebar ── */
+.analysis-sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--surface);
+  border-right: 1px solid var(--outline);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem 0;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+.tool-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--on-surface);
+  transition: all 150ms;
+  position: relative;
+}
+.tool-btn:hover, .tool-btn.active {
+  background: var(--primary-container);
+  color: var(--primary-light);
+}
+.tool-btn.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 2px; height: 60%;
+  background: var(--primary);
+  border-radius: 0 2px 2px 0;
+}
+.tool-separator {
+  width: 28px; height: 1px;
+  background: var(--outline);
+  margin: 0.25rem 0;
+}
+
+/* ── Chart Panel ── */
+.chart-panel {
+  flex: 1;
+  background: var(--chart-bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--outline);
+}
+
+.chart-header {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--outline);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface-container-lowest);
+  flex-shrink: 0;
+}
+
+.price-tag {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--on-background);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--on-surface);
+}
+.legend-line {
+  width: 16px; height: 2px;
+  border-radius: 1px;
+}
+
+/* ── Order Panel ── */
+.order-panel {
+  width: var(--panel-w);
+  min-width: var(--panel-w);
+  background: var(--surface);
+  border-left: 1px solid var(--outline);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.order-section {
+  padding: 1rem;
+  border-bottom: 1px solid var(--outline);
+}
+.order-section:last-child { border-bottom: none; }
+
+.section-title {
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--on-surface);
+  margin-bottom: 0.75rem;
+}
+
+/* Tabs */
+.tab-group {
+  display: flex;
+  background: var(--surface-container);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 1rem;
+}
+.tab-btn {
+  flex: 1;
+  padding: 0.4rem;
+  border-radius: calc(var(--radius-sm) - 2px);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--on-surface);
+  transition: all 150ms;
+}
+.tab-btn.active {
+  background: var(--surface);
+  color: var(--on-background);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+/* Number inputs */
+.input-group { margin-bottom: 0.75rem; }
+.input-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--on-surface);
+  margin-bottom: 0.35rem;
+}
+.input-field {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  color: var(--on-background);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 150ms;
+}
+.input-field:focus { border-color: var(--primary); }
+.input-field::placeholder { color: var(--on-surface); opacity: 0.5; }
+
+/* Action buttons */
+.btn-buy {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--buy);
+  color: #fff;
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 150ms;
+  box-shadow: 0 0 16px rgba(0, 210, 106, 0.25);
+}
+.btn-buy:hover { filter: brightness(1.1); box-shadow: 0 0 24px rgba(0, 210, 106, 0.40); }
+
+.btn-sell {
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: var(--sell);
+  color: #fff;
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 150ms;
+  box-shadow: 0 0 16px rgba(255, 61, 90, 0.25);
+}
+.btn-sell:hover { filter: brightness(1.1); box-shadow: 0 0 24px rgba(255, 61, 90, 0.40); }
+
+/* Neon switch (Stop-Loss) */
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.switch-label {
+  font-family: var(--font-editorial);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--on-background);
+}
+.switch-sub {
+  font-size: 0.72rem;
+  color: var(--on-surface);
+  margin-top: 0.15rem;
+}
+
+.neon-switch {
+  position: relative;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+.neon-switch input { opacity: 0; width: 0; height: 0; }
+.neon-slider {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--surface-container);
+  border: 1px solid var(--outline);
+  cursor: pointer;
+  transition: all 250ms;
+}
+.neon-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--on-surface);
+  top: 3px; left: 3px;
+  transition: all 250ms;
+}
+.neon-switch input:checked + .neon-slider {
+  background: var(--primary-container);
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(124, 92, 250, 0.5);
+}
+.neon-switch input:checked + .neon-slider::before {
+  transform: translateX(20px);
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+
+/* Performance widget */
+.performance-widget {
+  background: var(--surface-container-low);
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.perf-label {
+  font-size: 0.72rem;
+  color: var(--on-surface);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.perf-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--buy);
+  margin-top: 0.2rem;
+}
+
+/* Panic button */
+.btn-panic {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--sell);
+  background: var(--sell-container);
+  color: var(--sell);
+  font-family: var(--font-editorial);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 150ms;
+  letter-spacing: 0.02em;
+}
+.btn-panic:hover {
+  background: var(--sell);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 61, 90, 0.5);
+}
+
+/* Auth Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 15, 26, 0.8);
+  backdrop-filter: blur(6px);
+}
+.modal-card {
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* ============================================================
+   MODO CLARO — Paleta Stitch "Digital Curator"
+   Activado con: document.documentElement.setAttribute('data-theme','light')
+   ============================================================ */
+[data-theme="light"] {
+  --bg:                       #faf8ff;
+  --surface:                  #f0ecfe;
+  --surface-container:        #e5e0fa;
+  --surface-container-low:    #ede9fc;
+  --surface-container-lowest: #ffffff;
+  --on-background:            #1d1a2e;
+  --on-surface:               #5e5a7a;
+  --outline:                  #d5cff0;
+  --outline-faint:            #ede8fd;
+
+  --primary:           #6549c0;
+  --primary-light:     #7c62d9;
+  --primary-container: rgba(101, 73, 192, 0.12);
+  --secondary-container: rgba(101, 73, 192, 0.07);
+
+  --chart-pyth:   #6549c0;
+  --chart-oracle: rgba(101, 73, 192, 0.25);
+  --chart-grid:   rgba(149, 130, 220, 0.15);
+  --chart-bg:     #faf8ff;
+
+  /* buy/sell se mantienen */
+  --buy:  #00a854;
+  --buy-container:  rgba(0, 168, 84, 0.1);
+  --sell: #e03351;
+  --sell-container: rgba(224, 51, 81, 0.1);
+}
+
+/* En light mode ajustamos el header y sidebar que usan --surface */
+[data-theme="light"] .header {
+  border-bottom-color: var(--outline);
+}
+[data-theme="light"] .analysis-sidebar {
+  border-right-color: var(--outline);
+}
+[data-theme="light"] .order-panel {
+  border-left-color: var(--outline);
+}
+[data-theme="light"] .chart-panel {
+  border-right-color: var(--outline);
+}

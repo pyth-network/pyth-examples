@@ -1,0 +1,3 @@
+opshin
+pycardano
+requests
