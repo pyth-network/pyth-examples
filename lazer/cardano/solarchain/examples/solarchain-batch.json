@@ -1,0 +1,33 @@
+{
+  "batchId": "batch-solar-001",
+  "producerId": "coop-01",
+  "beneficiaryAddress": "addr_test1qpz8examplebeneficiary0000000000000000000",
+  "periodStart": "2026-03-21T00:00:00.000Z",
+  "periodEnd": "2026-03-21T23:59:59.000Z",
+  "allocationRule": "EXPORTED_ENERGY_ONLY",
+  "tariffUsdPerKwh": 0.12,
+  "emissionFactorKgCo2eAvoided": 0.42,
+  "readings": [
+    {
+      "meterId": "m-001",
+      "timestamp": "2026-03-21T10:00:00.000Z",
+      "generatedWh": 2500,
+      "consumedWh": 1800,
+      "irradianceWm2": 730
+    },
+    {
+      "meterId": "m-001",
+      "timestamp": "2026-03-21T11:00:00.000Z",
+      "generatedWh": 2700,
+      "consumedWh": 1900,
+      "irradianceWm2": 760
+    },
+    {
+      "meterId": "m-001",
+      "timestamp": "2026-03-21T12:00:00.000Z",
+      "generatedWh": 3100,
+      "consumedWh": 2100,
+      "irradianceWm2": 810
+    }
+  ]
+}
