@@ -1,0 +1,58 @@
+{
+  "user": {
+    "name": "AverageTrader",
+    "value": "50000"
+  },
+  "closedPositions": [
+    {
+      "realizedPnl": "15000",
+      "totalBought": "30000"
+    },
+    {
+      "realizedPnl": "-5000",
+      "totalBought": "20000"
+    },
+    {
+      "realizedPnl": "8000",
+      "totalBought": "25000"
+    },
+    {
+      "realizedPnl": "-3000",
+      "totalBought": "15000"
+    },
+    {
+      "realizedPnl": "12000",
+      "totalBought": "35000"
+    },
+    {
+      "realizedPnl": "6000",
+      "totalBought": "18000"
+    }
+  ],
+  "currentPositions": [
+    {
+      "size": "25000",
+      "avgPrice": "1",
+      "initialValue": "25000",
+      "currentValue": "26500",
+      "cashPnl": "1500",
+      "percentPnl": "6",
+      "totalBought": "25000",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "0",
+      "curPrice": "1060000"
+    },
+    {
+      "size": "20000",
+      "avgPrice": "1",
+      "initialValue": "20000",
+      "currentValue": "19000",
+      "cashPnl": "-1000",
+      "percentPnl": "-5",
+      "totalBought": "20000",
+      "realizedPnl": "0",
+      "percentRealizedPnl": "0",
+      "curPrice": "950000"
+    }
+  ]
+}
