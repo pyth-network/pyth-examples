@@ -1,0 +1,14 @@
+name = "pyth-examples/pay-with-pyth"
+version = "0.0.1"
+license = "Apache-2.0"
+description = "Payment agreements in USD settled in ADA using Pyth oracle prices"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "main"
+source = "github"

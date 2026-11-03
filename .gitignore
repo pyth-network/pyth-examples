@@ -56,3 +56,9 @@ typings/
 
 # Cargo build output
 target/
+
+# Local SQLite files
+lazer/cardano/backend/data/*.db
+
+# Backend build output
+lazer/cardano/backend/dist/
