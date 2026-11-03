@@ -1,0 +1,23 @@
+name = "team/inventory-edge-protocol"
+version = "0.0.0"
+compiler = "v1.1.21"
+plutus = "v3"
+license = "Apache-2.0"
+description = "Aiken contracts for project 'team/inventory-edge-protocol'"
+
+[repository]
+user = "team"
+project = "inventory-edge-protocol"
+platform = "github"
+
+[[dependencies]]
+name = "aiken-lang/stdlib"
+version = "v3.0.0"
+source = "github"
+
+[[dependencies]]
+name = "pyth-network/pyth-lazer-cardano"
+version = "main"
+source = "github"
+
+[config]
