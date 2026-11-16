@@ -1,0 +1,14 @@
+name = "venehsoftw/integral-payments"
+version = "0.1.0"
+license  = "Apache-2.0"
+description = "IntegralPayments — Pyth-oracle-backed crypto payment gateway for ERP/CRM platforms on Cardano"
+
+[repository]
+user     = "venehsoftw"
+project  = "integral-payments"
+platform = "github"
+
+[[dependencies]]
+name    = "aiken-lang/stdlib"
+version = "v3"
+source  = "github"
