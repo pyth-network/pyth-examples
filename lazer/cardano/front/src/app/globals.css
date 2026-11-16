@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-surface: #111827;
+  --bg-elevated: #1a2236;
+  --border-default: #1e293b;
+  --border-light: #334155;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent-green: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-purple: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --accent-blue: #3b82f6;
+  /* Cardano layer palette */
+  --offchain-primary: #00B0FF;
+  --offchain-secondary: #3399FF;
+  --onchain-primary: #8E24AA;
+  --onchain-secondary: #B388FF;
+  /* Special node roles */
+  --source-primary: #f97316;
+  --source-secondary: #fb923c;
+  --outcome-primary: #06b6d4;
+  --outcome-secondary: #22d3ee;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-surface: var(--bg-surface);
+  --color-elevated: var(--bg-elevated);
+  --color-border: var(--border-default);
+  --color-border-light: var(--border-light);
+  --color-muted: var(--text-muted);
+  --color-secondary: var(--text-secondary);
+  --color-accent-green: var(--accent-green);
+  --color-accent-amber: var(--accent-amber);
+  --color-accent-red: var(--accent-red);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-cyan: var(--accent-cyan);
+  --color-accent-blue: var(--accent-blue);
+  --color-offchain-primary: var(--offchain-primary);
+  --color-offchain-secondary: var(--offchain-secondary);
+  --color-onchain-primary: var(--onchain-primary);
+  --color-onchain-secondary: var(--onchain-secondary);
+  --color-source-primary: var(--source-primary);
+  --color-source-secondary: var(--source-secondary);
+  --color-outcome-primary: var(--outcome-primary);
+  --color-outcome-secondary: var(--outcome-secondary);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* ReactFlow overrides for dark theme */
+.react-flow__background {
+  background: var(--bg-primary) !important;
+}
+
+.react-flow__controls button {
+  background: var(--bg-surface) !important;
+  border-color: var(--border-default) !important;
+  color: var(--text-secondary) !important;
+  fill: var(--text-secondary) !important;
+}
+
+.react-flow__controls button:hover {
+  background: var(--bg-elevated) !important;
+}
+
+.react-flow__edge-path {
+  stroke: var(--border-light) !important;
+}
+
+/* Node running pulse animation */
+@keyframes pulse-border {
+  0%, 100% { border-color: var(--accent-amber); opacity: 1; }
+  50% { border-color: var(--accent-amber); opacity: 0.5; }
+}
+
+.animate-pulse-border {
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
