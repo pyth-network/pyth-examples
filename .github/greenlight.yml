@@ -14,5 +14,5 @@ auto_approve_paths: ["**"]
 # lists user accounts that are bots; GitHub App (`[bot]`) accounts are
 # excluded automatically. See greenlight/docs/onboarding-a-repo.md in
 # dourolabs/prototypes.
-two_humans:
+approval:
   machine_users: [pyth-ops]
