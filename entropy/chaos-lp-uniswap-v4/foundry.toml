@@ -1,0 +1,35 @@
+[profile.default]
+src = "contracts"
+test = "test"
+out = "out"
+via_ir = true
+optimizer = true
+optimizer_runs = 200
+libs = ["lib", "node_modules"]
+ffi = true
+remappings = [
+  "forge-std/=lib/forge-std/src/",
+
+  "v4-core/=lib/v4-core/",
+  "v4-periphery/=lib/v4-periphery/",
+  "@uniswap/v4-core/=lib/v4-core/",
+  "@uniswap/v4-periphery/=lib/v4-periphery/",
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+
+  "@pythnetwork/pyth-sdk-solidity/=node_modules/@pythnetwork/pyth-sdk-solidity/",
+  "@pythnetwork/entropy-sdk-solidity/=node_modules/@pythnetwork/entropy-sdk-solidity/"
+]
+fs_permissions = [
+  { access = "write", path = "./deployments" }
+]
+
+[rpc_endpoints]
+base = "${BASE_MAINNET_RPC_URL}"
+baseSepolia = "${BASE_SEPOLIA_RPC_URL}"
+
+[etherscan]
+# Basescan mainnet (optional for now)
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }
+
+# Basescan Sepolia
+baseSepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
