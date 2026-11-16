@@ -1,0 +1,639 @@
+{
+	"compiler": {
+		"version": "0.8.30+commit.73712a01"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_pythContract",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_entropyContract",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_entropyProvider",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "sequenceNumber",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "randomNumber",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "EntropyReceived",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "sequenceNumber",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "EntropyRequested",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "bytes32",
+						"name": "priceFeedId",
+						"type": "bytes32"
+					}
+				],
+				"name": "PriceFeedIdSet",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "int64",
+						"name": "price",
+						"type": "int64"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint64",
+						"name": "confidence",
+						"type": "uint64"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "publishTime",
+						"type": "uint256"
+					}
+				],
+				"name": "PriceUpdated",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "market",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "fundamental",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "risk",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "reputation",
+						"type": "uint256"
+					}
+				],
+				"name": "ScoresUpdated",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "PRICE_STALENESS_THRESHOLD",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint64",
+						"name": "sequence",
+						"type": "uint64"
+					},
+					{
+						"internalType": "address",
+						"name": "provider",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "randomNumber",
+						"type": "bytes32"
+					}
+				],
+				"name": "_entropyCallback",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string[]",
+						"name": "tokens",
+						"type": "string[]"
+					},
+					{
+						"internalType": "bytes32[]",
+						"name": "priceFeedIds",
+						"type": "bytes32[]"
+					}
+				],
+				"name": "batchSetPriceFeedIds",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getAllTokens",
+				"outputs": [
+					{
+						"internalType": "string[]",
+						"name": "",
+						"type": "string[]"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "getLatestPrice",
+				"outputs": [
+					{
+						"internalType": "int64",
+						"name": "price",
+						"type": "int64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "confidence",
+						"type": "uint64"
+					},
+					{
+						"internalType": "int32",
+						"name": "expo",
+						"type": "int32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "publishTime",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "age",
+						"type": "uint256"
+					}
+				],
+				"name": "getPriceNoOlderThan",
+				"outputs": [
+					{
+						"internalType": "int64",
+						"name": "price",
+						"type": "int64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "confidence",
+						"type": "uint64"
+					},
+					{
+						"internalType": "int32",
+						"name": "expo",
+						"type": "int32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "publishTime",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "getScores",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "marketStability",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fundamentalStrength",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "risk",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reputationScore",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "getTokenData",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "marketStability",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fundamentalStrength",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "risk",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reputationScore",
+						"type": "uint256"
+					},
+					{
+						"internalType": "int64",
+						"name": "price",
+						"type": "int64"
+					},
+					{
+						"internalType": "uint64",
+						"name": "confidence",
+						"type": "uint64"
+					},
+					{
+						"internalType": "int32",
+						"name": "expo",
+						"type": "int32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "publishTime",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "owner",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "pyth",
+				"outputs": [
+					{
+						"internalType": "contract IPyth",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					}
+				],
+				"name": "requestRandomEntropy",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "priceFeedId",
+						"type": "bytes32"
+					}
+				],
+				"name": "setPriceFeedId",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "token",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "marketStability",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "fundamentalStrength",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "risk",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "reputationScore",
+						"type": "uint256"
+					}
+				],
+				"name": "setScores",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"name": "tokenPriceFeedIds",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes[]",
+						"name": "priceUpdateData",
+						"type": "bytes[]"
+					}
+				],
+				"name": "updatePriceFeeds",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdraw",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"stateMutability": "payable",
+				"type": "receive"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/test.sol": "TokenReputationContract"
+		},
+		"evmVersion": "prague",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@pythnetwork/entropy-sdk-solidity/EntropyEvents.sol": {
+			"keccak256": "0x385eb7fb335b3c7037e5d2ecf119f42baa4f69fbc535daf1effbc26e774a6a4a",
+			"license": "Apache-2.0",
+			"urls": [
+				"bzz-raw://b62bfbf9e5969390d22c4ad0a6c5d64a1091d0cdef3e19e72482333c88c0e39b",
+				"dweb:/ipfs/QmaN1oB9u82CaxYcGyKDxZKDhjYiM8J324AE6j5yCjFReK"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/EntropyEventsV2.sol": {
+			"keccak256": "0xc8c2438857680a605d6b441f0b5fa21054dce0ae1db0a7ef8b8ab14a97249e4e",
+			"license": "Apache-2.0",
+			"urls": [
+				"bzz-raw://81739805ac90c9bc91e87e4e42d57c5420cfb179a3f9088fb8416e4ba2eeade3",
+				"dweb:/ipfs/QmSvrb38Bn8tDCcaC9vZpV4J8BnXy8y9fSNMaUdNaKMA28"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/EntropyStructs.sol": {
+			"keccak256": "0xc23ba702644b68f402b5cd1ef98da7c194ae4a3d05249a88b75160c503704809",
+			"license": "Apache 2",
+			"urls": [
+				"bzz-raw://b2ac288f4e8cd2484cf8abb7bb709e4709e4ffa10697945498ba365312cfe191",
+				"dweb:/ipfs/Qme9QS4P94gb9B81qLYX3EE2pQrb7MJSAaZygHuydpZo6n"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/EntropyStructsV2.sol": {
+			"keccak256": "0xca3e9a064e5e557f767475d4a543399c315babce9681f98454950e7fe52ed44c",
+			"license": "Apache 2",
+			"urls": [
+				"bzz-raw://149efc8c37b0d325da7ee2dae5bfffcbd6f420acdb8445f0744e351b4a392688",
+				"dweb:/ipfs/QmUW5Z72iFDwxdeWh76kYNyT1agDao2AVmpc4zSC5q8Laz"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/IEntropy.sol": {
+			"keccak256": "0xa75f679e5dfec8b3d5f8dcfe09fc10a2c8e5f04a2612cd47c07e47294cc7c332",
+			"license": "Apache 2",
+			"urls": [
+				"bzz-raw://d5b5edc3fbbb98a5a4ea4f60335b60c5c395b7fdb58596d6e25bfb01c8179a60",
+				"dweb:/ipfs/QmWqbFNTZrAwmZkHbDq9qR9QojsRCjDv1rExPU5Bh4icRZ"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/IEntropyConsumer.sol": {
+			"keccak256": "0xf3d3dee1e9cbdef70b6c1f4d79aa8b438413e4636c00e79e615da9dc4df9c379",
+			"license": "Apache 2",
+			"urls": [
+				"bzz-raw://0e473522447c8f92a43f4fa3e54d83a789e12cc44b2a86847bd238a7f8827952",
+				"dweb:/ipfs/Qmdihx73a89EZYy2GpitTxK92SWDLyPWeWnJTZ4Acva958"
+			]
+		},
+		"@pythnetwork/entropy-sdk-solidity/IEntropyV2.sol": {
+			"keccak256": "0xbfa09defc676b17bc4cb9d8e17f703c885de676d16396e45963dbe104afaba6a",
+			"license": "Apache 2",
+			"urls": [
+				"bzz-raw://cdf892b3def9c3e506e197ffe1ed1c040d6e4e668b9249439eacac965d98c3d5",
+				"dweb:/ipfs/QmRzQev7pKackFa33pVqwjf3iYt6GdDzCCvwUY5c8Z4tXU"
+			]
+		},
+		"@pythnetwork/pyth-sdk-solidity/IPyth.sol": {
+			"keccak256": "0xada6a1f4898b056d2804409ecad466b786dc6a12bc6f8f247e7f1471c1b86fcd",
+			"license": "Apache-2.0",
+			"urls": [
+				"bzz-raw://ecee3c205896236fc11bfb1367f033353448fa462b08e5212a32e767f72022c9",
+				"dweb:/ipfs/QmeEQpRRza2Swm2gCCC61TDxQ2GNLjqPhdtbSznADMuMni"
+			]
+		},
+		"@pythnetwork/pyth-sdk-solidity/IPythEvents.sol": {
+			"keccak256": "0xd67239becd2c39bd9d065830be24e70606f5747ab31b8818bea849d09ac17ddc",
+			"license": "Apache-2.0",
+			"urls": [
+				"bzz-raw://e719bd2d8c1d8d46713aeb700dd6b5ddd766a77830ea9ae3cc9327f67ed775d1",
+				"dweb:/ipfs/QmNQYyRVFLEvLsCSTkHkAemTvvZm4CzLN7hUdMidMcBS7u"
+			]
+		},
+		"@pythnetwork/pyth-sdk-solidity/PythStructs.sol": {
+			"keccak256": "0x474436bf0d558cc9b2c00a9d0ce318147acdf7963f34ef4acadb9248e65bbc7b",
+			"license": "Apache-2.0",
+			"urls": [
+				"bzz-raw://2b8f9bd9de35e67c7bdbf04d8c2e771718fcc8666456ca5f92dbd914e4a5f2b3",
+				"dweb:/ipfs/QmNP3ShBYRp4RiVbAudMB7rNHAqgtwn8pPBzb8JTUaViRh"
+			]
+		},
+		"contracts/test.sol": {
+			"keccak256": "0xb330142769a12ffc87fabc6c24fc291550e2ba0b888179a5f1affdca82473569",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://366dc366fd089b1477c6a4b9bec2d4308071b62456f04994de69ced8984449d9",
+				"dweb:/ipfs/QmcFGGB2uJjuVSgQzK8fYZQL8wSUdMXmpHpiASH1jeDaFZ"
+			]
+		}
+	},
+	"version": 1
+}
