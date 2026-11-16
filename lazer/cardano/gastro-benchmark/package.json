@@ -1,0 +1,27 @@
+{
+  "name": "gastro-benchmark",
+  "version": "1.0.0",
+  "description": "Backend microservice for Cuqui that compares supplier offers against international commodity benchmarks using Pyth and Cardano.",
+  "main": "index.js",
+  "scripts": {
+    "serve": "ts-node src/server.ts",
+    "start": "ts-node src/server.ts",
+    "dashboard": "ts-node src/dashboard.ts",
+    "test": "ts-node test.ts",
+    "check": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@pythnetwork/pyth-lazer-cardano-js": "^0.1.0",
+    "@pythnetwork/pyth-lazer-sdk": "^6.2.1",
+    "dotenv": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
