@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap');
+
+:root {
+  --bg: #050c16;
+  --bg-soft: #0d1b2f;
+  --surface: #122640cc;
+  --surface-solid: #10243d;
+  --line: #2f4668;
+  --text: #ecf4ff;
+  --muted: #9ab2d4;
+  --accent-lime: #c6ff1a;
+  --accent-cyan: #3be6ff;
+  --accent-orange: #ff6f3b;
+  --success: #5cf0a4;
+  --danger: #ff6767;
+  --radius-xl: 24px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --shadow-card: 0 22px 48px -30px rgba(22, 255, 229, 0.7);
+  --shadow-hover: 0 28px 50px -26px rgba(255, 111, 59, 0.7);
+  --ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: var(--bg);
+}
