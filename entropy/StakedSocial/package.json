@@ -1,0 +1,27 @@
+{
+  "name": "my-celo-app",
+  "version": "0.1.0",
+  "description": "A new Celo blockchain project",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "type-check": "turbo type-check"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "turbo": "^1.10.16",
+    "typescript": "^5.2.2"
+  },
+  "packageManager": "pnpm@8.10.0",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@noble/hashes": "^2.0.1",
+    "@xmtp/browser-sdk": "^5.1.0"
+  }
+}
