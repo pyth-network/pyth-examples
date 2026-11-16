@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@packages/config": ["packages/config/src/index.ts"],
+      "@packages/shared-types": ["packages/shared-types/src/index.ts"],
+      "@packages/cardano-core": ["packages/cardano-core/src/index.ts"],
+      "@packages/pyth-adapter": ["packages/pyth-adapter/src/index.ts"],
+      "@packages/solarchain-domain": ["packages/solarchain-domain/src/index.ts"]
+    }
+  }
+}
