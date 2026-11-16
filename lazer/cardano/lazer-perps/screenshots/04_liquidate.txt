@@ -1,0 +1,16 @@
+
+> lazer-perps@1.0.0 liquidate
+> npx tsx src/liquidate.ts
+
+=== Liquidation on XAUT/USD (Tether Gold) ===
+
+1. Fetching price witness...
+   Current price: 450996129938 (exp: -8)
+
+2. Building liquidation tx...
+3. Signing and submitting...
+   Tx: 477bfe3ffb991f745b6ce50c38564e099af415fc5e3b2177358d0d03dfdce4dd
+   https://preprod.cardanoscan.io/transaction/477bfe3ffb991f745b6ce50c38564e099af415fc5e3b2177358d0d03dfdce4dd
+
+Waiting for confirmation...
+Liquidation executed on XAUT/USD (Tether Gold). Keeper fee: 1%.
