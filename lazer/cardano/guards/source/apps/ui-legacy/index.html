@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="guards.one - oracle-aware treasury control center for Cardano, styled as a premium treasury operating system."
+    />
+    <title>guards.one</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="guards.one home">
+          <span class="brand-mark"><span></span></span>
+          <span class="brand-copy">
+            <strong>guards.one</strong>
+            <small>treasury autopilot</small>
+          </span>
+        </a>
+
+        <section class="panel-soft workspace-card" id="workspace-card"></section>
+
+        <nav class="sidebar-nav" aria-label="Primary">
+          <a class="nav-item active" href="#overview">Overview</a>
+          <a class="nav-item" href="#accounts">Accounts</a>
+          <a class="nav-item" href="#policy">Policy</a>
+          <a class="nav-item" href="#risk">Risk ladder</a>
+          <a class="nav-item" href="#execution">Execution</a>
+          <a class="nav-item" href="#audit">Audit log</a>
+        </nav>
+
+        <section class="panel-soft sidebar-foot">
+          <p class="side-label">Docs and submission</p>
+          <div class="doc-links">
+            <a href="/docs/functional-v4.md">Functional spec</a>
+            <a href="/docs/roadmap.md">Roadmap</a>
+            <a href="/docs/landing-frontend-spec.md">Frontend spec</a>
+          </div>
+        </section>
+      </aside>
+
+      <div class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Cardano live · Pyth-backed controls</p>
+            <h1>Treasury Control Center</h1>
+          </div>
+          <div class="topbar-chips" id="topbar-chips"></div>
+        </header>
+
+        <main class="content">
+          <section class="overview-grid" id="overview">
+            <article class="panel balance-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-eyebrow">Overview</p>
+                  <h2>Liquid treasury value</h2>
+                </div>
+                <span class="status-pill" id="overview-stage"></span>
+              </div>
+
+              <div class="balance-row">
+                <div>
+                  <p class="balance-label">Current total balance</p>
+                  <div class="balance-value" id="overview-balance"></div>
+                  <p class="balance-copy" id="overview-copy"></p>
+                </div>
+                <div class="action-row">
+                  <button class="button button-primary" id="replay-button" type="button">
+                    Replay breach
+                  </button>
+                  <a class="button button-secondary" href="#execution">Open runbook</a>
+                  <a class="button button-secondary" href="/docs/functional-v4.md">Read spec</a>
+                </div>
+              </div>
+
+              <div class="metric-grid" id="hero-metrics"></div>
+            </article>
+
+            <article class="panel chart-panel">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-eyebrow">Simulation</p>
+                  <h2 id="demo-title">Demo frame</h2>
+                </div>
+                <span class="status-pill subtle" id="demo-stage"></span>
+              </div>
+
+              <p class="panel-copy" id="demo-copy"></p>
+              <div class="frame-strip" id="frame-strip"></div>
+              <div class="chart-shell">
+                <svg id="portfolio-chart" viewBox="0 0 640 280" aria-hidden="true"></svg>
+              </div>
+              <div class="demo-summary">
+                <article class="summary-block">
+                  <span>Frame balance</span>
+                  <strong id="frame-balance"></strong>
+                </article>
+                <article class="summary-block">
+                  <span>Stable ratio</span>
+                  <strong id="frame-stable-ratio"></strong>
+                </article>
+                <article class="summary-block summary-reason">
+                  <span>Trigger</span>
+                  <strong id="frame-reason"></strong>
+                </article>
+              </div>
+            </article>
+          </section>
+
+          <section class="content-grid">
+            <article class="panel accounts-panel" id="accounts">
+              <div class="panel-header">
+                <div>
+                  <p class="panel-eyebrow">Accounts</p>
+                  <h2>Hot and cold treasury buckets</h2>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Account</th>
+                      <th>Balance</th>
+                      <th>Fiat value</th>
+                      <th>Weight</th>
+                    </tr>
+                  </thead>
+                  <tbody id="accounts-body"></tbody>
+                </table>
+              </div>
+            </article>
+
+            <div class="side-stack">
+              <article class="panel policy-panel" id="policy">
+                <div class="panel-header compact">
+                  <div>
+                    <p class="panel-eyebrow">Policy</p>
+                    <h2>Guardrails</h2>
+                  </div>
+                </div>
+                <div class="policy-grid" id="dashboard-cards"></div>
+              </article>
+
+              <article class="panel chain-panel">
+                <div class="panel-header compact">
+                  <div>
+                    <p class="panel-eyebrow">Multichain</p>
+                    <h2>Execution surfaces</h2>
+                  </div>
+                </div>
+                <div class="chain-list" id="chain-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="split-grid">
+            <article class="panel" id="risk">
+              <div class="panel-header compact">
+                <div>
+                  <p class="panel-eyebrow">Risk ladder</p>
+                  <h2>Escalation path</h2>
+                </div>
+              </div>
+              <div class="ladder-list" id="risk-ladder-list"></div>
+            </article>
+
+            <article class="panel" id="execution">
+              <div class="panel-header compact">
+                <div>
+                  <p class="panel-eyebrow">Execution</p>
+                  <h2>Runbook timeline</h2>
+                </div>
+              </div>
+              <div class="timeline-list" id="execution-timeline"></div>
+            </article>
+          </section>
+
+          <section class="panel" id="audit">
+            <div class="panel-header compact">
+              <div>
+                <p class="panel-eyebrow">Audit log</p>
+                <h2>Deterministic replay trail</h2>
+              </div>
+            </div>
+            <div class="audit-list" id="audit-trail"></div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
