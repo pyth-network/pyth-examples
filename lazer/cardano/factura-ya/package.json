@@ -1,0 +1,19 @@
+{
+  "name": "factura-ya",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Factura Ya — Invoice factoring marketplace on Cardano",
+  "scripts": {
+    "install:all": "cd contracts && aiken build && cd ../offchain && npm install && cd ../frontend && npm install && cd ../indexer && npm install",
+    "contracts:build": "cd contracts && aiken build",
+    "contracts:test": "cd contracts && aiken check",
+    "server": "cd offchain && npm run server",
+    "frontend": "cd frontend && npm run dev",
+    "indexer": "cd indexer && npm start",
+    "dev": "echo 'Run in separate terminals:\\n  npm run server    → tx server on :3002\\n  npm run frontend  → UI on :5173\\n  npm run indexer   → API on :3001 (optional)'",
+    "test-mint": "cd offchain && npm run test-mint"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
