@@ -1,0 +1,27 @@
+[package]
+name = "pyth-lazer-solana-pinocchio-example"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anchor-lang = { version = "1.2.1", default-features = false, features = ["solana-v4"] }
+pinocchio = { version = "0.11.2", features = ["cpi"] }
+pinocchio-system = "0.6.1"
+pyth-lazer-solana-contract = { version = "0.11.0", features = ["no-entrypoint"] }
+
+[dev-dependencies]
+hex = "0.4.3"
+litesvm = { version = "0.18.1", features = ["precompiles"] }
+solana-keypair = "3.1.2"
+solana-message = "4.6.0"
+solana-native-token = "3.0.0"
+solana-pubkey = { version = "4.3.0", features = ["curve25519"] }
+solana-signer = "3.0.1"
+solana-system-interface = { version = "3.3.0", features = ["bincode"] }
+solana-transaction = "4.3.0"
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
