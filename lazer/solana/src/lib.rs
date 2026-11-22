@@ -1,7 +1,7 @@
 #![allow(unexpected_cfgs)]
 
 use {
-    anchor_lang::{prelude::AccountMeta, InstructionData},
+    anchor_lang::InstructionData,
     bytemuck::{bytes_of, try_from_bytes, try_from_bytes_mut, Pod, Zeroable},
     num_derive::FromPrimitive,
     num_traits::FromPrimitive,
@@ -10,21 +10,21 @@ use {
         protocol::{
             message::{LeEcdsaMessage, SolanaMessage},
             payload::{PayloadData, PayloadPropertyValue},
-            router::{Channel, FixedRate},
+            ChannelId,
         },
     },
     solana_program::{
         account_info::AccountInfo,
         declare_id,
         entrypoint::ProgramResult,
-        instruction::Instruction as ProgramInstruction,
+        instruction::{AccountMeta, Instruction as ProgramInstruction},
         program::{invoke, invoke_signed},
         program_error::ProgramError,
         pubkey::Pubkey,
         rent::Rent,
-        system_instruction::create_account,
         sysvar::Sysvar,
     },
+    solana_system_interface::instruction::create_account,
     std::mem::size_of,
 };
 
@@ -328,17 +328,16 @@ fn apply_update(data_account: &AccountInfo<'_>, data: &PayloadData) -> ProgramRe
     if state.price_feed != data.feeds[0].feed_id.0 {
         return Err(ProgramError::InvalidInstructionData);
     }
-    let expected_channel = Channel::FixedRate(FixedRate::from_ms(1).unwrap());
-    if data.channel_id != expected_channel.id() {
+    if data.channel_id != ChannelId::REAL_TIME {
         return Err(ProgramError::InvalidInstructionData);
     }
-    if data.timestamp_us.0 <= state.latest_timestamp {
+    if data.timestamp_us.as_micros() <= state.latest_timestamp {
         return Err(ProgramError::AccountAlreadyInitialized);
     }
     let PayloadPropertyValue::Price(Some(price)) = data.feeds[0].properties[0] else {
         return Err(ProgramError::InvalidInstructionData);
     };
-    state.latest_price = price.into_inner().into();
-    state.latest_timestamp = data.timestamp_us.0;
+    state.latest_price = price.mantissa_i64();
+    state.latest_timestamp = data.timestamp_us.as_micros();
     Ok(())
 }
