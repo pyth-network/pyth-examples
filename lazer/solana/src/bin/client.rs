@@ -6,16 +6,16 @@ use {
     pyth_lazer_solana_example::{
         InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
     },
-    solana_client::rpc_client::RpcClient,
-    solana_sdk::{
+    solana_keypair::read_keypair_file,
+    solana_message::Message,
+    solana_program::{
         instruction::{AccountMeta, Instruction},
-        message::Message,
         pubkey::Pubkey,
-        signature::read_keypair_file,
-        signer::Signer,
-        system_program, sysvar,
-        transaction::Transaction,
     },
+    solana_rpc_client::rpc_client::RpcClient,
+    solana_sdk_ids::{ed25519_program, system_program, sysvar},
+    solana_signer::Signer,
+    solana_transaction::Transaction,
     std::env,
     std::mem::size_of,
 };
@@ -82,7 +82,7 @@ fn main() -> anyhow::Result<()> {
             Message::new(
                 &[
                     Instruction::new_with_bytes(
-                        solana_program::ed25519_program::ID,
+                        ed25519_program::ID,
                         &ed25519_program_args(&[ed25519_args]),
                         vec![],
                     ),

@@ -1,48 +1,46 @@
 use {
     anchor_lang::InstructionData,
     bytemuck::{bytes_of, from_bytes},
+    litesvm::LiteSVM,
     pyth_lazer_solana_contract::ed25519_program_args,
     pyth_lazer_solana_example::{
-        process_instruction, InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
+        InitializeArgs, Instruction as ExampleInstruction, State, UpdateArgs,
     },
-    solana_program::instruction::{AccountMeta, Instruction},
-    solana_program_test::{processor, ProgramTest},
-    solana_sdk::{
-        pubkey::Pubkey, signer::Signer, system_instruction, system_program, sysvar,
-        transaction::Transaction,
+    solana_keypair::Keypair,
+    solana_program::{
+        instruction::{AccountMeta, Instruction},
+        native_token::LAMPORTS_PER_SOL,
+        pubkey::Pubkey,
     },
-    std::env,
-    std::mem::size_of,
+    solana_sdk_ids::{ed25519_program, system_program, sysvar},
+    solana_signer::Signer,
+    solana_system_interface::instruction as system_instruction,
+    solana_transaction::Transaction,
+    std::{env, mem::size_of, path::PathBuf},
 };
 
-#[tokio::test]
-async fn test1() {
-    if env::var("SBF_OUT_DIR").is_err() {
-        env::set_var(
-            "SBF_OUT_DIR",
-            format!(
-                "{}/target/sbpf-solana-solana/release",
-                env::var("CARGO_MANIFEST_DIR").unwrap()
-            ),
-        );
-    }
-    println!("if add_program fails, run `cargo build-sbf` first.");
-    let mut program_test = ProgramTest::new(
-        "pyth_lazer_solana_example",
-        pyth_lazer_solana_example::ID,
-        processor!(process_instruction),
-    );
-    program_test.add_program(
-        "pyth_lazer_solana_contract",
+#[test]
+fn test1() {
+    let mut svm = LiteSVM::new();
+    let payer = Keypair::new();
+    svm.airdrop(&payer.pubkey(), LAMPORTS_PER_SOL).unwrap();
+
+    let program_path = env::var_os("SBF_OUT_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|| PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("target/deploy"))
+        .join("pyth_lazer_solana_example.so");
+    svm.add_program_from_file(pyth_lazer_solana_example::ID, program_path)
+        .expect("run cargo build-sbf before running this test");
+    svm.add_program(
         pyth_lazer_solana_contract::ID,
-        None,
-    );
-    let (mut banks_client, payer, recent_blockhash) = program_test.start().await;
+        include_bytes!("fixtures/pyth_lazer_solana_contract.so"),
+    )
+    .unwrap();
 
     let treasury =
         Pubkey::create_with_seed(&payer.pubkey(), "treasury", &system_program::ID).unwrap();
 
-    let mut transaction_create_treasury = Transaction::new_with_payer(
+    let transaction_create_treasury = Transaction::new_signed_with_payer(
         &[system_instruction::create_account_with_seed(
             &payer.pubkey(),
             &treasury,
@@ -53,14 +51,12 @@ async fn test1() {
             &system_program::ID,
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_create_treasury.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_create_treasury)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_create_treasury).unwrap();
 
-    let mut transaction_init_contract = Transaction::new_with_payer(
+    let transaction_init_contract = Transaction::new_signed_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
             &pyth_lazer_solana_contract::instruction::Initialize {
@@ -75,12 +71,10 @@ async fn test1() {
             ],
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_init_contract.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_init_contract)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_init_contract).unwrap();
 
     let verifying_key =
         hex::decode("74313a6525edf99936aa1477e94c72bc5cc617b21745f5f03296f3154461f214").unwrap();
@@ -91,7 +85,7 @@ async fn test1() {
     )
     .unwrap();
 
-    let mut transaction_set_trusted = Transaction::new_with_payer(
+    let transaction_set_trusted = Transaction::new_signed_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
             &pyth_lazer_solana_contract::instruction::Update {
@@ -105,12 +99,10 @@ async fn test1() {
             ],
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_set_trusted.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_set_trusted)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_set_trusted).unwrap();
 
     let (data_pda_key, _) =
         Pubkey::find_program_address(&[b"data"], &pyth_lazer_solana_example::ID);
@@ -118,7 +110,7 @@ async fn test1() {
     let mut init_data = vec![ExampleInstruction::Initialize as u8];
     init_data.extend_from_slice(bytes_of(&InitializeArgs { price_feed_id: 2 }));
 
-    let mut transaction_init = Transaction::new_with_payer(
+    let transaction_init = Transaction::new_signed_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_example::ID,
             &init_data,
@@ -129,18 +121,12 @@ async fn test1() {
             ],
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_init.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_init)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_init).unwrap();
 
-    let state = banks_client
-        .get_account(data_pda_key)
-        .await
-        .unwrap()
-        .unwrap();
+    let state = svm.get_account(&data_pda_key).unwrap();
     let state = from_bytes::<State>(&state.data);
     assert_eq!({ state.price_feed }, 2);
     assert_eq!({ state.latest_price }, 0);
@@ -161,10 +147,10 @@ async fn test1() {
         instruction_index,
         message_offset,
     );
-    let mut transaction_update = Transaction::new_with_payer(
+    let transaction_update = Transaction::new_signed_with_payer(
         &[
             Instruction::new_with_bytes(
-                solana_program::ed25519_program::ID,
+                ed25519_program::ID,
                 &ed25519_program_args(&[ed25519_args]),
                 vec![],
             ),
@@ -183,18 +169,12 @@ async fn test1() {
             ),
         ],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_update.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_update)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_update).unwrap();
 
-    let state = banks_client
-        .get_account(data_pda_key)
-        .await
-        .unwrap()
-        .unwrap();
+    let state = svm.get_account(&data_pda_key).unwrap();
     let state = from_bytes::<State>(&state.data);
     assert_eq!({ state.price_feed }, 2);
     assert_eq!({ state.latest_timestamp }, 1728479312975644);
@@ -206,7 +186,7 @@ async fn test1() {
     )
     .unwrap();
 
-    let mut transaction_set_ecdsa_trusted = Transaction::new_with_payer(
+    let transaction_set_ecdsa_trusted = Transaction::new_signed_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_contract::ID,
             &pyth_lazer_solana_contract::instruction::UpdateEcdsaSigner {
@@ -220,18 +200,16 @@ async fn test1() {
             ],
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_set_ecdsa_trusted.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_set_ecdsa_trusted)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_set_ecdsa_trusted).unwrap();
 
     let mut update_ecdsa_data = vec![ExampleInstruction::UpdateEcdsa as u8];
     update_ecdsa_data.extend_from_slice(bytes_of(&UpdateArgs { hello: 42 }));
     update_ecdsa_data.extend_from_slice(&message_ecdsa);
 
-    let mut transaction_update = Transaction::new_with_payer(
+    let transaction_update = Transaction::new_signed_with_payer(
         &[Instruction::new_with_bytes(
             pyth_lazer_solana_example::ID,
             &update_ecdsa_data,
@@ -245,18 +223,12 @@ async fn test1() {
             ],
         )],
         Some(&payer.pubkey()),
+        &[&payer],
+        svm.latest_blockhash(),
     );
-    transaction_update.sign(&[&payer], recent_blockhash);
-    banks_client
-        .process_transaction(transaction_update)
-        .await
-        .unwrap();
+    svm.send_transaction(transaction_update).unwrap();
 
-    let state = banks_client
-        .get_account(data_pda_key)
-        .await
-        .unwrap()
-        .unwrap();
+    let state = svm.get_account(&data_pda_key).unwrap();
     let state = from_bytes::<State>(&state.data);
     assert_eq!({ state.price_feed }, 2);
     assert_eq!({ state.latest_timestamp }, 1740480250860000);
